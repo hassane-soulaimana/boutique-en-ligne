@@ -12,6 +12,9 @@ import Accessoires from '../pages/Accessoires';
 import Collections from '../pages/Collections';
 import CollectionDetail from '../pages/CollectionDetail';
 import ProductDetail from '../pages/ProductDetail';
+import Connexion from '../pages/Connexion';
+import Inscription from '../pages/Inscription';
+import Profil from '../pages/Profil';
 import NotFound from '../pages/NotFound';
 
 // Composant qui gère toutes les routes de notre application
@@ -36,6 +39,11 @@ function AppRouter() {
           
           {/* Route dynamique pour le détail d'un produit : :id sera l'id du produit */}
           <Route path="produit/:id" element={<ProductDetail />} />
+          
+          {/* Routes utilisateur */}
+          <Route path="connexion" element={<Connexion />} />
+          <Route path="inscription" element={<Inscription />} />
+          <Route path="profil" element={<Profil />} />
           
           {/* Route 404 : toutes les autres URLs */}
           <Route path="*" element={<NotFound />} />
