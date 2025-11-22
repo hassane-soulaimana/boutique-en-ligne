@@ -4,7 +4,6 @@ import { FiSearch, FiUser, FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [collectionsOpen, setCollectionsOpen] = useState(false);
 
   return (
     <header className="bg-white border-b border-gray-200">
@@ -22,26 +21,32 @@ export default function Header() {
 
         {/* CENTER - NAV LINKS (desktop) */}
         <nav className="hidden md:flex items-center gap-8 text-gray-700">
-          
-          {/* Collections + dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setCollectionsOpen(!collectionsOpen)}
-              className="hover:text-black"
-            >
-              Collections
-            </button>
 
-            {collectionsOpen && (
-              <div className="absolute left-0 mt-2 w-40 bg-white border border-gray-200 shadow-md rounded-md py-2">
-                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/naruto">Naruto</Link>
-                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/ghibli">Studio Ghibli</Link>
-                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/hxh">Hunter x Hunter</Link>
-                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/demonslayer">Demon Slayer</Link>
-                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/onepiece">One Piece</Link>
-              </div>
-            )}
-          </div>
+         {/* Collections - hover dropdown */}
+<div className="relative group">
+  <button className="flex items-center gap-1 hover:text-black">
+    Collections
+    <span className="transition-transform duration-200 group-hover:rotate-180">
+      ▼
+    </span>
+  </button>
+
+  <div
+    className="
+      absolute left-0 top-full mt-0 w-40 bg-white border border-gray-200 shadow-md rounded-md py-2
+      opacity-0 pointer-events-none translate-y-1
+      group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0
+      transition-all duration-200
+    "
+  >
+    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/naruto">Naruto</Link>
+    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/ghibli">Studio Ghibli</Link>
+    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/hxh">Hunter x Hunter</Link>
+    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/demonslayer">Demon Slayer</Link>
+    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/onepiece">One Piece</Link>
+  </div>
+</div>
+
 
           <span className="w-px h-6 bg-gray-300"></span>
 
