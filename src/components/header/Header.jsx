@@ -1,49 +1,111 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  HiOutlineSearch,
-  HiOutlineUser,
-  HiOutlineShoppingCart,
-} from "react-icons/hi";
-import logo from "./logo.png";
+import { FiSearch, FiUser, FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
 
 export default function Header() {
-  return (
-    <header className="w-full bg-white border-b border-gray-300">
-      <div className="max-w-6xl mx-auto h-16 px-4 flex items-center justify-between">
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [collectionsOpen, setCollectionsOpen] = useState(false);
 
-        {/* LOGO */}
-        <Link to="/" className="flex items-center">
-          <img src={logo} alt="Logo" className="h-8 w-auto" />
+  return (
+    <header className="bg-white border-b border-gray-200">
+      {/* NAVBAR DESKTOP */}
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+        {/* LEFT - LOGO */}
+        <Link to="/" className="text-xl font-semibold tracking-wide">
+          <img
+            src="/logo.png"
+            alt="Logo"
+            className="h-10 w-auto"
+          />
         </Link>
 
-        {/* MENU DESKTOP */}
-        <nav className="hidden md:flex items-center gap-8 text-gray-700 text-sm font-medium">
-
-          {/* Collections + sous-menu */}
-          <div className="relative group">
-            <span className="cursor-pointer hover:text-black">
+        {/* CENTER - NAV LINKS (desktop) */}
+        <nav className="hidden md:flex items-center gap-8 text-gray-700">
+          
+          {/* Collections + dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setCollectionsOpen(!collectionsOpen)}
+              className="hover:text-black"
+            >
               Collections
-            </span>
+            </button>
 
-            <div className="absolute hidden group-hover:block bg-white border shadow-lg p-3 rounded mt-2 w-40">
-              <Link to="/collections/naruto" className="block py-1 hover:text-black">Naruto</Link>
-              <Link to="/collections/ghibli" className="block py-1 hover:text-black">Ghibli</Link>
-              <Link to="/collections/hxh" className="block py-1 hover:text-black">Hunter x Hunter</Link>
-              <Link to="/collections/demonslayer" className="block py-1 hover:text-black">Demon Slayer</Link>
-              <Link to="/collections/onepiece" className="block py-1 hover:text-black">One Piece</Link>
-            </div>
+            {collectionsOpen && (
+              <div className="absolute left-0 mt-2 w-40 bg-white border border-gray-200 shadow-md rounded-md py-2">
+                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/naruto">Naruto</Link>
+                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/ghibli">Studio Ghibli</Link>
+                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/hxh">Hunter x Hunter</Link>
+                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/demonslayer">Demon Slayer</Link>
+                <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/onepiece">One Piece</Link>
+              </div>
+            )}
           </div>
 
-          <Link to="/echiquiers" className="hover:text-black">Échiquiers</Link>
-          <Link to="/pieces" className="hover:text-black">Pièces d'échecs</Link>
-          <Link to="/accessoires" className="hover:text-black">Accessoires</Link>
+          <span className="w-px h-6 bg-gray-300"></span>
+
+          <Link className="hover:text-black" to="/echiquiers">Échiquiers</Link>
+          <Link className="hover:text-black" to="/pieces">Pièces d'échecs</Link>
+          <Link className="hover:text-black" to="/accessoires">Accessoires</Link>
         </nav>
 
-        {/* ICÔNES */}
-        <div className="flex items-center gap-4 text-xl text-gray-700">
-          <HiOutlineSearch />
-          <HiOutlineUser />
-          <HiOutlineShoppingCart />
+        {/* RIGHT - ICONS (desktop) */}
+        <div className="hidden md:flex items-center gap-6 text-gray-700">
+          <FiSearch size={20} className="cursor-pointer hover:text-black" />
+          <FiUser size={20} className="cursor-pointer hover:text-black" />
+          <FiShoppingCart size={20} className="cursor-pointer hover:text-black" />
+        </div>
+
+        {/* BURGER (mobile) */}
+        <button
+          className="md:hidden text-gray-700"
+          onClick={() => setMenuOpen(true)}
+        >
+          <FiMenu size={28} />
+        </button>
+      </div>
+
+      {/* MOBILE MENU OVERLAY */}
+      {menuOpen && (
+        <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setMenuOpen(false)}></div>
+      )}
+
+      {/* MOBILE SIDEBAR */}
+      <div
+        className={`fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${
+          menuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Close button */}
+        <div className="p-4 flex justify-end">
+          <FiX size={26} className="cursor-pointer" onClick={() => setMenuOpen(false)} />
+        </div>
+
+        {/* Mobile links */}
+        <nav className="flex flex-col gap-4 px-6 text-gray-700">
+
+          <details className="border-b pb-2">
+            <summary className="cursor-pointer hover:text-black">Collections</summary>
+            <div className="pl-4 flex flex-col gap-2 mt-2">
+              <Link to="/collections/naruto">Naruto</Link>
+              <Link to="/collections/ghibli">Studio Ghibli</Link>
+              <Link to="/collections/hxh">Hunter x Hunter</Link>
+              <Link to="/collections/demonslayer">Demon Slayer</Link>
+              <Link to="/collections/onepiece">One Piece</Link>
+            </div>
+          </details>
+
+          <Link className="border-b pb-2" to="/echiquiers">Échiquiers</Link>
+          <Link className="" to="/pieces">Pièces d'échecs</Link>
+          <Link className="" to="/accessoires">Accessoires</Link>
+        </nav>
+
+        {/* Icons at bottom */}
+        <div className="px-6 mt-6 flex gap-6 text-gray-700">
+          <FiSearch size={22} />
+          <FiUser size={22} />
+          <FiShoppingCart size={22} />
         </div>
       </div>
     </header>
