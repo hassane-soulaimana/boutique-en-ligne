@@ -1,11 +1,11 @@
-import Hero from "../components/heroSection/Hero";
+import Hero from "../components/HeroSection/Hero";
+import NewProducts from "../components/products/NewProducts";
 
 export default function Home() {
   return (
     <>
       <Hero />
-
-      {/* Plus tard tu ajouteras : catégories, best sellers, etc. */}
+      <NewProducts />
     </>
   );
 }

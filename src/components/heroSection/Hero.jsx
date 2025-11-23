@@ -29,7 +29,7 @@ export default function Hero() {
 
     <div className="flex items-center justify-center gap-4 mt-8">
       <Link
-        to="/collections" // vérifier avec hanababa pour le lien exact//
+        to="/collections"
         className="bg-white text-black px-5 py-2 rounded-full font-semibold hover:bg-gray-200 transition"
       >
         Découvrez nos collections
