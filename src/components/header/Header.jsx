@@ -6,9 +6,11 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+
+
       {/* NAVBAR DESKTOP */}
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 py-1 flex items-center justify-between">
 
         {/* LEFT - LOGO */}
         <Link to="/" className="text-xl font-semibold tracking-wide">
@@ -20,7 +22,7 @@ export default function Header() {
         </Link>
 
         {/* CENTER - NAV LINKS (desktop) */}
-        <nav className="hidden md:flex items-center gap-8 text-gray-700">
+        <nav className="hidden md:flex items-center gap-8 text-black-900 font-medium">
 
          {/* Collections - hover dropdown */}
 <div className="relative group">
@@ -78,10 +80,11 @@ export default function Header() {
 
       {/* MOBILE SIDEBAR */}
       <div
-        className={`fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
+  className={`md:hidden fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${
+    menuOpen ? "translate-x-0" : "translate-x-full"
+  }`}
+>
+
         {/* Close button */}
         <div className="p-4 flex justify-end">
           <FiX size={26} className="cursor-pointer" onClick={() => setMenuOpen(false)} />
