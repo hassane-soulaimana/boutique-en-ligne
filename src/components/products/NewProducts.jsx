@@ -3,7 +3,8 @@ import { FiShoppingCart } from "react-icons/fi";
 
 export default function NewProducts() {
   return (
-    <section className="w-full py-20">
+    <section className="w-full pb-8 pt-16">
+
       <div className="max-w-7xl mx-auto px-6 text-center">
 
         {/* Titre */}
@@ -15,20 +16,17 @@ export default function NewProducts() {
         </p>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 mt-12">
-
-          {/* Placeholder produits (4 produits fictifs pour la maquette) */}
-          {/* Les vraies images arriveront du backend */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 mt-16"> 
+          
           {[1, 2, 3, 4].map((n) => (
             <Link 
               to="/collections" 
               key={n}
               className="group flex flex-col text-left cursor-pointer"
             >
+
               {/* IMAGE */}
               <div className="w-full h-48 bg-gray-200 rounded-xl shadow-sm overflow-hidden relative group-hover:shadow-md transition">
-                {/* Ici le backend insérera l'image réelle */}
-                {/* <img src={product.image} alt={product.title} ... /> */}
                 <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
                   Image à venir
                 </div>
