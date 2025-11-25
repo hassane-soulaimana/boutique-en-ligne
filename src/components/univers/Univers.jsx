@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 
 export default function Univers() {
   return (
-    <section className="w-full py-13"> 
+    <section className="w-full pt-12 pb-12"> 
 
     
-<div className="w-full my-12 flex flex-col items-center text-center"> 
+<div className="w-full my-10 flex flex-col items-center text-center"> 
   
 
   <div className="h-px w-24 bg-gray-300 mb-4"></div>
