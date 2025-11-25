@@ -32,7 +32,7 @@ export default function Hero() {
         to="/collections"
         className="bg-white text-black px-5 py-2 rounded-full font-semibold hover:bg-gray-200 transition"
       >
-        Découvrez nos collections
+        Nos échiquiers
       </Link>
 
       <Link
