@@ -50,7 +50,7 @@ export default function Footer() {
 
       {/* COPYRIGHT */}
       <div className="border-t py-6 text-center text-sm text-gray-500">
-        © 2025 HNS. Tous droits réservés.
+        © 2025 Saniha. Tous droits réservés.
       </div>
     </footer>
   );

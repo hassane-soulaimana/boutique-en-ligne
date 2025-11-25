@@ -5,7 +5,7 @@ export default function Why() {
     <section className="w-full bg-black text-white py-24">
       <div className="max-w-6xl mx-auto px-6 text-center">
         
-        <h2 className="text-4xl font-semibold mb-16">Pourquoi Chess Anime ?</h2>
+        <h2 className="text-4xl font-semibold mb-16">Pourquoi Shaniha Anime ?</h2>
 
         {/* 3 Colonnes */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
