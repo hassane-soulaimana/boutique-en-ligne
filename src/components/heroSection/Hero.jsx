@@ -8,7 +8,7 @@ export default function Hero() {
   style={{
     backgroundImage: `url(${heroImage})`,
     backgroundSize: "cover",
-    backgroundPosition: "center",
+    backgroundPosition: "center bottom -25px",
   }}
 >
   <div className="absolute inset-0 bg-black/20"></div>
