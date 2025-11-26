@@ -1,16 +1,24 @@
 // Composant bouton réutilisable
 // On peut l'utiliser partout dans l'application pour garder un style cohérent
 
-function Button({ children, onClick, variant = 'primary' }) {
+function Button({ 
+  children, 
+  onClick, 
+  variant = 'primary',
+  type = 'button',      // Type du bouton (button, submit)
+  disabled = false,     // Bouton désactivé ou non
+  style = {}           // Styles personnalisés supplémentaires
+}) {
   // Style de base pour tous les boutons
   const baseStyle = {
     padding: '0.75rem 1.5rem',
     border: 'none',
     borderRadius: '4px',
     fontSize: '1rem',
-    cursor: 'pointer',
+    cursor: disabled ? 'not-allowed' : 'pointer',
     fontWeight: '500',
-    transition: 'all 0.2s'
+    transition: 'all 0.2s',
+    opacity: disabled ? 0.6 : 1
   };
 
   // Styles différents selon le type de bouton (primary, secondary, outline)
@@ -35,8 +43,10 @@ function Button({ children, onClick, variant = 'primary' }) {
 
   return (
     <button 
-      style={variants[variant]} 
+      type={type}
+      style={{ ...variants[variant], ...style }}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>
