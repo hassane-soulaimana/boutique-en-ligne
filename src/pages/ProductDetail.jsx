@@ -1,133 +1,141 @@
-// Page de détail d'un produit
-// useParams permet de récupérer les paramètres de l'URL
-// Exemple : si l'URL est /produit/ech-001, useParams() retourne { id: 'ech-001' }
 import { useParams, useNavigate } from 'react-router-dom';
-import Container from '../components/ui/Container';
-import Button from '../components/ui/Button';
-import Badge from '../components/ui/Badge';
-import products from '../data/products';
+import { useState } from 'react';
 
-function ProductDetail() {
-  // On récupère le paramètre 'id' depuis l'URL
+export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [quantity, setQuantity] = useState(1);
 
-  // On trouve le produit correspondant à l'id
-  const product = products.find(p => p.id === id);
-
-  // Si le produit n'existe pas, on affiche un message
-  if (!product) {
-    return (
-      <Container>
-        <div style={{ padding: '4rem 2rem', textAlign: 'center' }}>
-          <h1>Produit non trouvé</h1>
-          <p style={{ marginTop: '1rem', color: '#666' }}>
-            Le produit que vous recherchez n'existe pas.
-          </p>
-          <Button onClick={() => navigate('/')} style={{ marginTop: '2rem' }}>
-            Retour à l'accueil
-          </Button>
-        </div>
-      </Container>
-    );
-  }
-
-  const imageStyle = {
-    width: '100%',
-    maxWidth: '500px',
-    height: 'auto',
-    borderRadius: '8px',
-    backgroundColor: '#f5f5f5'
+  const produit = {
+    id: id,
+    nom: 'Échiquier Premium Naruto',
+    prix: 149.99,
+    image: '🎮',
+    description: 'Un magnifique échiquier avec le design de Naruto, parfait pour les fans et les joueurs d\'échecs.',
+    stock: 15,
+    collection: 'Naruto',
+    couleur: '#FF6B35'
   };
 
-  const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '3rem',
-    padding: '2rem 0'
+  const handleAddToCart = () => {
+    console.log(`Ajouté ${quantity} x ${produit.nom} au panier`);
+    alert(`${quantity} x ${produit.nom} ajouté au panier !`);
   };
 
   return (
-    <Container>
-      <div style={{ padding: '2rem 0' }}>
+    <div className="min-h-screen bg-gray-50 py-12 px-4">
+      <div className="max-w-7xl mx-auto">
         {/* Bouton retour */}
-        <Button variant="outline" onClick={() => navigate(-1)}>
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 text-orange-600 hover:text-orange-700 font-semibold"
+        >
           ← Retour
-        </Button>
+        </button>
 
-        {/* Grille produit : image à gauche, détails à droite */}
-        <div style={gridStyle}>
-          {/* Image du produit */}
-          <div>
-            <img 
-              src={product.images[0]} 
-              alt={product.imageAlt}
-              style={imageStyle}
-              onError={(e) => {
-                e.target.src = 'https://via.placeholder.com/500x500?text=Image+produit';
-              }}
-            />
-          </div>
-
-          {/* Détails du produit */}
-          <div>
-            {/* Badges */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              <Badge>{product.univers}</Badge>
-              <Badge color="#666">{product.categorie}</Badge>
-              {product.nouveaute && <Badge color="#2A9D8F">Nouveau</Badge>}
-              {product.promotion && <Badge color="#E63946">-{product.promotion}%</Badge>}
+        {/* Produit */}
+        <div className="bg-white rounded-lg shadow p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {/* Image */}
+            <div>
+              <div
+                className="h-96 rounded-lg flex items-center justify-center text-9xl mb-6"
+                style={{ backgroundColor: produit.couleur + '20' }}
+              >
+                {produit.image}
+              </div>
+              <p className="text-center text-gray-600">
+                {produit.stock} en stock
+              </p>
             </div>
 
-            {/* Nom */}
-            <h1 style={{ fontSize: '2rem', margin: '1rem 0' }}>{product.nom}</h1>
+            {/* Détails */}
+            <div>
+              <div className="mb-6">
+                <p className="text-orange-600 font-semibold mb-2">
+                  Collection {produit.collection}
+                </p>
+                <h1 className="text-4xl font-bold text-gray-800 mb-4">
+                  {produit.nom}
+                </h1>
+                <p className="text-gray-600 text-lg mb-6">
+                  {produit.description}
+                </p>
+              </div>
 
-            {/* Prix */}
-            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: '#FF6B35', margin: '1rem 0' }}>
-              {product.prix.toFixed(2)} €
-            </p>
+              {/* Prix */}
+              <div className="mb-8 pb-8 border-b">
+                <p className="text-5xl font-bold text-orange-600">
+                  {produit.prix.toFixed(2)} €
+                </p>
+              </div>
 
-            {/* Stock */}
-            <p style={{ 
-              fontSize: '1rem', 
-              fontWeight: '500',
-              color: product.enStock ? '#2A9D8F' : '#E63946',
-              margin: '1rem 0'
-            }}>
-              {product.enStock ? '✓ En stock' : '✗ Rupture de stock'}
-            </p>
+              {/* Quantité */}
+              <div className="mb-8">
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Quantité
+                </label>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    value={quantity}
+                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-16 px-3 py-2 border border-gray-300 rounded text-center"
+                  />
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
 
-            {/* Description */}
-            <div style={{ margin: '2rem 0' }}>
-              <h3 style={{ marginBottom: '0.5rem' }}>Description</h3>
-              <p style={{ color: '#666', lineHeight: '1.6' }}>{product.description}</p>
-            </div>
+              {/* Boutons */}
+              <div className="flex gap-4">
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-6 rounded-lg transition text-lg"
+                >
+                  Ajouter au panier
+                </button>
+                <button className="px-6 py-4 border-2 border-orange-600 text-orange-600 hover:bg-orange-50 font-bold rounded-lg transition">
+                  ♥ Favoris
+                </button>
+              </div>
 
-            {/* Caractéristiques */}
-            <div style={{ margin: '2rem 0' }}>
-              <h3 style={{ marginBottom: '0.5rem' }}>Caractéristiques</h3>
-              <ul style={{ color: '#666', lineHeight: '1.8' }}>
-                {Object.entries(product.caracteristiques).map(([key, value]) => (
-                  <li key={key}>
-                    <strong>{key.charAt(0).toUpperCase() + key.slice(1)} :</strong> {value}
+              {/* Caractéristiques */}
+              <div className="mt-12 pt-8 border-t">
+                <h3 className="font-bold text-lg text-gray-800 mb-4">Caractéristiques</h3>
+                <ul className="space-y-3 text-gray-600">
+                  <li className="flex justify-between">
+                    <span>Design:</span>
+                    <span className="font-semibold">Exclusif Manga</span>
                   </li>
-                ))}
-              </ul>
+                  <li className="flex justify-between">
+                    <span>Matériel:</span>
+                    <span className="font-semibold">Bois premium</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Dimensions:</span>
+                    <span className="font-semibold">40x40 cm</span>
+                  </li>
+                  <li className="flex justify-between">
+                    <span>Livraison:</span>
+                    <span className="font-semibold">Gratuite ( 50€)</span>
+                  </li>
+                </ul>
+              </div>
             </div>
-
-            {/* Bouton d'achat */}
-            <Button 
-              onClick={() => alert('Fonctionnalité panier à venir !')}
-              style={{ width: '100%', marginTop: '2rem' }}
-              disabled={!product.enStock}
-            >
-              {product.enStock ? 'Ajouter au panier' : 'Produit indisponible'}
-            </Button>
           </div>
         </div>
       </div>
-    </Container>
+    </div>
   );
 }
-
-export default ProductDetail;

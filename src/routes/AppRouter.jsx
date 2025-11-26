@@ -2,7 +2,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // On importe le Layout (structure de base avec Header/Footer)
-import Layout from '../components/layout/Layout';
+import App from '../App';
 
 // On importe toutes nos pages
 import Home from '../pages/Home';
@@ -23,7 +23,7 @@ function AppRouter() {
     <BrowserRouter>
       <Routes>
         {/* Route parente avec le Layout */}
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<App />}>
           {/* Route d'accueil : / */}
           <Route index element={<Home />} />
           

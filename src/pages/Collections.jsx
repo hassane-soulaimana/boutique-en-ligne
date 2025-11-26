@@ -1,82 +1,63 @@
 // Page qui affiche tous les univers manga disponibles
-import Container from '../components/ui/Container';
 import { Link } from 'react-router-dom';
-import univers from '../data/univers';
 
-function Collections() {
-  const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-    gap: '1.5rem',
-    padding: '2rem 0'
-  };
-
-  const cardStyle = {
-    borderRadius: '8px',
-    overflow: 'hidden',
-    textDecoration: 'none',
-    transition: 'transform 0.2s',
-    cursor: 'pointer',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-  };
-
-  const imageStyle = {
-    width: '100%',
-    height: '200px',
-    objectFit: 'cover'
-  };
-
-  const contentStyle = {
-    padding: '1rem',
-    backgroundColor: 'white'
-  };
+export default function Collections() {
+  const univers = [
+    { id: 'naruto', nom: 'Naruto', description: 'Collection exclusive Naruto avec designs authentiques', couleur: '#FF6B35' },
+    { id: 'ghibli', nom: 'Studio Ghibli', description: 'Les plus beaux films du studio Ghibli', couleur: '#6B5B95' },
+    { id: 'hxh', nom: 'Hunter x Hunter', description: 'L\'aventure et l\'action avec Hunter x Hunter', couleur: '#F8B500' },
+    { id: 'demonslayer', nom: 'Demon Slayer', description: 'Les samouraïs et démons de Demon Slayer', couleur: '#D92E3D' },
+    { id: 'onepiece', nom: 'One Piece', description: 'L\'univers pirate de One Piece', couleur: '#001F3F' },
+  ];
 
   return (
-    <Container>
-      <div style={{ padding: '2rem 0' }}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>🌟 Collections par Univers</h1>
-        <p style={{ color: '#666', marginBottom: '2rem' }}>
-          Explorez nos {univers.length} univers manga et découvrez leurs produits
-        </p>
+    <div className="min-h-screen bg-gray-50 py-12 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Titre */}
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            🌟 Collections par Univers
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Explorez nos {univers.length} univers manga et découvrez leurs produits exclusifs
+          </p>
+        </div>
 
-        <div style={gridStyle}>
+        {/* Grille de collections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* On boucle sur tous les univers */}
           {univers.map((univ) => (
             <Link 
               key={univ.id} 
               to={`/collections/${univ.id}`}
-              style={cardStyle}
+              className="bg-white rounded-lg shadow hover:shadow-xl transition overflow-hidden group cursor-pointer"
             >
-              <div>
-                {/* Image de l'univers */}
-                <div 
-                  style={{
-                    ...imageStyle,
-                    backgroundColor: univ.couleur,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '3rem',
-                    color: 'white'
-                  }}
-                >
-                  {univ.nom.charAt(0)}
-                </div>
-                
-                {/* Informations de l'univers */}
-                <div style={contentStyle}>
-                  <h3 style={{ margin: '0 0 0.5rem 0', color: '#333' }}>{univ.nom}</h3>
-                  <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>
-                    {univ.description}
-                  </p>
+              {/* Image de l'univers */}
+              <div 
+                className="h-48 flex items-center justify-center text-6xl font-bold text-white transition group-hover:scale-105"
+                style={{ backgroundColor: univ.couleur }}
+              >
+                {univ.nom.charAt(0)}
+              </div>
+              
+              {/* Informations de l'univers */}
+              <div className="p-6">
+                <h3 className="font-bold text-xl text-gray-800 mb-2 group-hover:text-orange-600 transition">
+                  {univ.nom}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {univ.description}
+                </p>
+                <div className="mt-4 pt-4 border-t">
+                  <button className="text-orange-600 hover:text-orange-700 font-semibold text-sm">
+                    Voir la collection →
+                  </button>
                 </div>
               </div>
             </Link>
           ))}
         </div>
       </div>
-    </Container>
+    </div>
   );
 }
-
-export default Collections;

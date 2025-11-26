@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
 import NarutoImg from "../../assets/naruto.png";
-import LuffyImg from "../../assets/onepiece.png";
-import GokuImg from "../../assets/dragonball.png";
+import LuffyImg from "../../assets/onePiece.png";
+import GokuImg from "../../assets/dragonBall.png";
 
 export default function Univers() {
   return (

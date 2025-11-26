@@ -67,7 +67,21 @@ export default function Header() {
         {/* RIGHT ICONS (desktop) */}
         <div className="hidden md:flex items-center gap-6 text-gray-700">
           <MagnifyingGlassIcon className="w-6 h-6 cursor-pointer hover:text-black" />
-          <UserIcon className="w-6 h-6 cursor-pointer hover:text-black" />
+          <div className="relative group">
+            <UserIcon className="w-6 h-6 cursor-pointer hover:text-black group-hover:text-black" />
+            <div
+              className="
+                absolute right-0 top-full mt-0 w-48 bg-white border border-gray-200 shadow-lg rounded-md py-1
+                opacity-0 pointer-events-none invisible -translate-y-2
+                group-hover:opacity-100 group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0
+                transition-all duration-200
+              "
+            >
+              <Link className="block px-4 py-3 hover:bg-orange-50 text-gray-700 hover:text-orange-600 transition" to="/connexion">Connexion</Link>
+              <Link className="block px-4 py-3 hover:bg-orange-50 text-gray-700 hover:text-orange-600 transition" to="/inscription">Inscription</Link>
+              <Link className="block px-4 py-3 hover:bg-orange-50 text-gray-700 hover:text-orange-600 transition border-t" to="/profil">Mon Profil</Link>
+            </div>
+          </div>
           <ShoppingCartIcon className="w-6 h-6 cursor-pointer hover:text-black" />
         </div>
 
@@ -114,8 +128,17 @@ export default function Header() {
           </details>
 
           <Link className="border-b pb-2" to="/echiquiers">Échiquiers</Link>
-          <Link to="/pieces">Pièces d'échecs</Link>
-          <Link to="/accessoires">Accessoires</Link>
+          <Link className="border-b pb-2" to="/pieces">Pièces d'échecs</Link>
+          <Link className="border-b pb-2" to="/accessoires">Accessoires</Link>
+          
+          <details className="border-b pb-2">
+            <summary className="cursor-pointer hover:text-black">Utilisateur</summary>
+            <div className="pl-4 flex flex-col gap-2 mt-2">
+              <Link to="/connexion">Connexion</Link>
+              <Link to="/inscription">Inscription</Link>
+              <Link to="/profil">Mon Profil</Link>
+            </div>
+          </details>
         </nav>
 
         {/* MOBILE ICONS */}
