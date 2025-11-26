@@ -1,103 +1,119 @@
 import { Link } from "react-router-dom";
 
+import NarutoImg from "../../assets/naruto.png";
+import LuffyImg from "../../assets/onepiece.png";
+import GokuImg from "../../assets/dragonball.png";
+
 export default function Univers() {
   return (
-    <section className="w-full pt-12 pb-12"> 
+    <section className="w-full mt-20">
 
-    
-<div className="w-full my-10 flex flex-col items-center text-center"> 
-  
+      {/* TITRE CENTRÉ */}
+      <div className="max-w-6xl mx-auto px-6 text-center mb-10">
+        <h2 className="text-5xl font-semibold text-gray-900">
+          Nos univers
+        </h2>
+        <p className="text-gray-500 mt-1 text-sm">
+          Explorez les mondes qui inspirent nos collections.
+        </p>
+      </div>
 
-  <div className="h-px w-24 bg-gray-300 mb-4"></div>
+      {/* ------------------------ NARUTO ------------------------ */}
+      <div className="w-full bg-[#D7E8FF] py-10">
+        <div className="max-w-5xl mx-auto px-6 grid md:grid-cols-2 items-center gap-8">
 
-  <span className="italic text-2xl text-gray-700 tracking-tight">
-    « Citation de Nordine »
-  </span>
-
-  <div className="h-px w-24 bg-gray-300 mt-4"></div>
-</div>
-
-
-      {/* WRAPPER DES BLOCS */}
-      <div className="max-w-7xl mx-auto px-6 flex flex-col gap-16">
-
-        {/* ====== UNIVERS 1 — Naruto (texte → image) ====== */}
-        <div className="grid md:grid-cols-2 gap-10 items-center bg-neutral-100 rounded-2xl p-10 shadow-sm">
-
-          {/* TEXTE */}
+          {/* Texte */}
           <div>
-            <h3 className="text-3xl font-semibold text-gray-900">Naruto</h3>
-            <p className="text-gray-600 mt-3">
-              Plongez dans l’univers de Konoha avec notre collection exclusive Naruto.
-              Chaque pièce représente vos ninjas préférés.
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              Naruto
+            </h3>
+            <p className="text-gray-600 text-base leading-relaxed">
+              Plongez dans l’univers de Konoha avec une collection exclusive façonnée pour les vrais fans.
             </p>
 
             <Link
               to="/collections/naruto"
-              className="inline-flex items-center gap-2 mt-6 bg-black text-white px-5 py-2 rounded-full text-sm hover:bg-gray-800 transition"
+              className="mt-5 inline-block bg-black text-white text-sm px-5 py-2 rounded-full hover:bg-gray-800 transition"
             >
               Voir la collection →
             </Link>
           </div>
 
-          {/* IMAGE */}
-          <div className="w-full h-56 rounded-xl bg-gray-200 flex items-center justify-center text-gray-500">
-            {/* Backend injectera l'image Naruto */}
-            Image Naruto
+          {/* Image carrée compacte */}
+          <div className="w-full aspect-square max-w-xs mx-auto bg-white rounded-xl overflow-hidden shadow-md">
+            <img
+              src={NarutoImg}
+              alt="Naruto"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
+      </div>
 
-        {/* ====== UNIVERS 2 — One Piece (image → texte) ====== */}
-        <div className="grid md:grid-cols-2 gap-10 items-center bg-neutral-100 rounded-2xl p-10 shadow-sm">
+      {/* ------------------------ ONE PIECE ------------------------ */}
+      <div className="w-full bg-[#FFF1C8] py-10">
+        <div className="max-w-5xl mx-auto px-6 grid md:grid-cols-2 items-center gap-8">
 
-          {/* IMAGE */}
-          <div className="w-full h-56 rounded-xl bg-gray-200 flex items-center justify-center text-gray-500">
-            Image One Piece
+          {/* Image */}
+          <div className="w-full aspect-square max-w-xs mx-auto bg-white rounded-xl overflow-hidden shadow-md">
+            <img
+              src={LuffyImg}
+              alt="One Piece"
+              className="w-full h-full object-cover"
+            />
           </div>
 
-          {/* TEXTE */}
+          {/* Texte */}
           <div>
-            <h3 className="text-3xl font-semibold text-gray-900">One Piece</h3>
-            <p className="text-gray-600 mt-3">
-              Naviguez sur Grand Line avec nos sets d’échecs One Piece :
-              Pirates contre Marines dans une bataille stratégique épique.
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              One Piece
+            </h3>
+            <p className="text-gray-600 text-base leading-relaxed">
+              Embarquez sur Grand Line avec des pièces d’échecs inédites et iconiques.
             </p>
 
             <Link
               to="/collections/onepiece"
-              className="inline-flex items-center gap-2 mt-6 bg-black text-white px-5 py-2 rounded-full text-sm hover:bg-gray-800 transition"
+              className="mt-5 inline-block bg-black text-white text-sm px-5 py-2 rounded-full hover:bg-gray-800 transition"
             >
               Voir la collection →
             </Link>
           </div>
         </div>
+      </div>
 
-        {/* ====== UNIVERS 3 — Dragon Ball (texte → image) ====== */}
-        <div className="grid md:grid-cols-2 gap-10 items-center bg-neutral-100 rounded-2xl p-10 shadow-sm">
+      {/* ------------------------ DRAGON BALL ------------------------ */}
+      <div className="w-full bg-[#E4FFD1] py-10">
+        <div className="max-w-5xl mx-auto px-6 grid md:grid-cols-2 items-center gap-8">
 
-          {/* TEXTE */}
+          {/* Texte */}
           <div>
-            <h3 className="text-3xl font-semibold text-gray-900">Dragon Ball</h3>
-            <p className="text-gray-600 mt-3">
-              Des pièces légendaires pour des affrontements épiques.
-              Goku, Vegeta et les guerriers Z prêts pour la stratégie.
+            <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+              Dragon Ball
+            </h3>
+            <p className="text-gray-600 text-base leading-relaxed">
+              Une collection puissante inspirée de Goku, Vegeta et des guerriers Z.
             </p>
 
             <Link
               to="/collections/dragonball"
-              className="inline-flex items-center gap-2 mt-6 bg-black text-white px-5 py-2 rounded-full text-sm hover:bg-gray-800 transition"
+              className="mt-5 inline-block bg-black text-white text-sm px-5 py-2 rounded-full hover:bg-gray-800 transition"
             >
               Voir la collection →
             </Link>
           </div>
 
-          {/* IMAGE */}
-          <div className="w-full h-56 rounded-xl bg-gray-200 flex items-center justify-center text-gray-500">
-            Image Dragon Ball
+          {/* Image */}
+          <div className="w-full aspect-square max-w-xs mx-auto bg-white rounded-xl overflow-hidden shadow-md">
+            <img
+              src={GokuImg}
+              alt="Dragon Ball"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
-
       </div>
+
     </section>
   );
 }

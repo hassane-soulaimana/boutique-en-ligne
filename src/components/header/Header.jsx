@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FiSearch, FiUser, FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
+
+// Heroicons (solid = bold)
+import {
+  MagnifyingGlassIcon,
+  UserIcon,
+  ShoppingCartIcon,
+} from "@heroicons/react/24/solid";
+
+// Feather Icons (pour menu burger uniquement)
+import { FiMenu, FiX } from "react-icons/fi";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
-
 
       {/* NAVBAR DESKTOP */}
       <div className="max-w-7xl mx-auto px-6 py-1 flex items-center justify-between">
@@ -21,34 +29,33 @@ export default function Header() {
           />
         </Link>
 
-        {/* CENTER - NAV LINKS (desktop) */}
-        <nav className="hidden md:flex items-center gap-8 text-black-900 font-medium">
+        {/* CENTER NAV (desktop) */}
+        <nav className="hidden md:flex items-center gap-8 text-black font-medium">
 
-         {/* Collections - hover dropdown */}
-<div className="relative group">
-  <button className="flex items-center gap-1 hover:text-black">
-    Collections
-    <span className="transition-transform duration-200 group-hover:rotate-180">
-      ▼
-    </span>
-  </button>
+          {/* Collections Dropdown */}
+          <div className="relative group">
+            <button className="flex items-center gap-1 hover:text-black">
+              Collections
+              <span className="transition-transform duration-200 group-hover:rotate-180">
+                ▼
+              </span>
+            </button>
 
-  <div
-    className="
-      absolute left-0 top-full mt-0 w-40 bg-white border border-gray-200 shadow-md rounded-md py-2
-      opacity-0 pointer-events-none translate-y-1
-      group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0
-      transition-all duration-200
-    "
-  >
-    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/naruto">Naruto</Link>
-    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/ghibli">Studio Ghibli</Link>
-    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/hxh">Hunter x Hunter</Link>
-    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/demonslayer">Demon Slayer</Link>
-    <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/onepiece">One Piece</Link>
-  </div>
-</div>
-
+            <div
+              className="
+                absolute left-0 top-full mt-0 w-40 bg-white border border-gray-200 shadow-md rounded-md py-2
+                opacity-0 pointer-events-none translate-y-1
+                group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0
+                transition-all duration-200
+              "
+            >
+              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/naruto">Naruto</Link>
+              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/ghibli">Studio Ghibli</Link>
+              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/hxh">Hunter x Hunter</Link>
+              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/demonslayer">Demon Slayer</Link>
+              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/onepiece">One Piece</Link>
+            </div>
+          </div>
 
           <span className="w-px h-6 bg-gray-300"></span>
 
@@ -57,11 +64,11 @@ export default function Header() {
           <Link className="hover:text-black" to="/accessoires">Accessoires</Link>
         </nav>
 
-        {/* RIGHT - ICONS (desktop) */}
+        {/* RIGHT ICONS (desktop) */}
         <div className="hidden md:flex items-center gap-6 text-gray-700">
-          <FiSearch size={20} className="cursor-pointer hover:text-black" />
-          <FiUser size={20} className="cursor-pointer hover:text-black" />
-          <FiShoppingCart size={20} className="cursor-pointer hover:text-black" />
+          <MagnifyingGlassIcon className="w-6 h-6 cursor-pointer hover:text-black" />
+          <UserIcon className="w-6 h-6 cursor-pointer hover:text-black" />
+          <ShoppingCartIcon className="w-6 h-6 cursor-pointer hover:text-black" />
         </div>
 
         {/* BURGER (mobile) */}
@@ -73,24 +80,26 @@ export default function Header() {
         </button>
       </div>
 
-      {/* MOBILE MENU OVERLAY */}
+      {/* MOBILE BACKDROP */}
       {menuOpen && (
-        <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setMenuOpen(false)}></div>
+        <div
+          className="fixed inset-0 bg-black/40 z-40"
+          onClick={() => setMenuOpen(false)}
+        ></div>
       )}
 
       {/* MOBILE SIDEBAR */}
       <div
-  className={`md:hidden fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${
-    menuOpen ? "translate-x-0" : "translate-x-full"
-  }`}
->
-
-        {/* Close button */}
+        className={`md:hidden fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${
+          menuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* CLOSE BTN */}
         <div className="p-4 flex justify-end">
           <FiX size={26} className="cursor-pointer" onClick={() => setMenuOpen(false)} />
         </div>
 
-        {/* Mobile links */}
+        {/* MOBILE NAV */}
         <nav className="flex flex-col gap-4 px-6 text-gray-700">
 
           <details className="border-b pb-2">
@@ -105,15 +114,15 @@ export default function Header() {
           </details>
 
           <Link className="border-b pb-2" to="/echiquiers">Échiquiers</Link>
-          <Link className="" to="/pieces">Pièces d'échecs</Link>
-          <Link className="" to="/accessoires">Accessoires</Link>
+          <Link to="/pieces">Pièces d'échecs</Link>
+          <Link to="/accessoires">Accessoires</Link>
         </nav>
 
-        {/* Icons at bottom */}
+        {/* MOBILE ICONS */}
         <div className="px-6 mt-6 flex gap-6 text-gray-700">
-          <FiSearch size={22} />
-          <FiUser size={22} />
-          <FiShoppingCart size={22} />
+          <MagnifyingGlassIcon className="w-6 h-6" />
+          <UserIcon className="w-6 h-6" />
+          <ShoppingCartIcon className="w-6 h-6" />
         </div>
       </div>
     </header>

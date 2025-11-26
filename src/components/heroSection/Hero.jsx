@@ -8,12 +8,12 @@ export default function Hero() {
   style={{
     backgroundImage: `url(${heroImage})`,
     backgroundSize: "cover",
-    backgroundPosition: "center",
+    backgroundPosition: "center bottom -25px",
   }}
 >
   <div className="absolute inset-0 bg-black/20"></div>
 
-  <div className="relative max-w-4xl mx-auto px-6 text-white text-left">
+  <div className="relative max-w-4xl mx-auto px- text-white text-left">
 
     <h1 className="text-6xl md:text-8xl font-semibold leading-tight drop-shadow-xl md:text-left">
       De héros... <br /> à pièces maîtresses
