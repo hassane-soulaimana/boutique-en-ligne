@@ -6,6 +6,7 @@ import App from '../App';
 
 // On importe toutes nos pages
 import Home from '../pages/Home';
+import About from '../pages/about';
 import Echiquiers from '../pages/Echiquiers';
 import Pieces from '../pages/Pieces';
 import Accessoires from '../pages/Accessoires';
@@ -26,6 +27,9 @@ function AppRouter() {
         <Route path="/" element={<App />}>
           {/* Route d'accueil : / */}
           <Route index element={<Home />} />
+          
+          {/* Route à propos */}
+          <Route path="about" element={<About />} />
           
           {/* Routes des catégories */}
           <Route path="echiquiers" element={<Echiquiers />} />
