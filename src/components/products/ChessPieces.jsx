@@ -1,20 +1,28 @@
 import { useRef } from "react";
-import { Link } from "react-router-dom";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { Link, useNavigate } from "react-router-dom";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { useCart } from "../../context/CartContext";
 
 export default function ChessPieces() {
   const sliderRef = useRef(null);
+  const navigate = useNavigate();
+  const { addItem } = useCart();
 
   const scroll = (distance) => {
     sliderRef.current.scrollBy({ left: distance, behavior: "smooth" });
   };
 
   const pieces = [
-    { id: 1, title: "Roi – Naruto", desc: "Version bois premium", img: null },
-    { id: 2, title: "Reine – Totoro", desc: "Pièce collector", img: null },
-    { id: 3, title: "Tour – Vegeta", desc: "Sculpture détaillée", img: null },
-    { id: 4, title: "Fou – Goku", desc: "Édition spéciale", img: null },
+    { id: 101, nom: "Roi – Naruto", prix: 29.99, collection: "Naruto", desc: "Version bois premium", image: "♔" },
+    { id: 102, nom: "Reine – Totoro", prix: 34.99, collection: "Studio Ghibli", desc: "Pièce collector", image: "♕" },
+    { id: 103, nom: "Tour – Vegeta", prix: 24.99, collection: "Dragon Ball", desc: "Sculpture détaillée", image: "♖" },
+    { id: 104, nom: "Fou – Goku", prix: 27.99, collection: "Dragon Ball", desc: "Édition spéciale", image: "♗" },
   ];
+
+  const handleAddToCart = (piece) => {
+    addItem(piece);
+    alert(`${piece.nom} ajouté au panier !`);
+  };
 
   return (
     <section className="w-full py-20 bg-gray-50">
@@ -41,7 +49,7 @@ export default function ChessPieces() {
               hover:bg-gray-100 transition z-10
             "
           >
-            <FiChevronLeft size={22} />
+            <ChevronLeftIcon className="w-6 h-6" />
           </button>
 
           {/* SLIDER */}
@@ -60,20 +68,21 @@ export default function ChessPieces() {
               >
                 {/* IMAGE RECTANGLE */}
                 <div className="w-full md:w-1/2 h-[180px] bg-gray-200 relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
-                    Image à venir
+                  <div className="absolute inset-0 flex items-center justify-center text-4xl">
+                    {p.image}
                   </div>
                 </div>
 
                 {/* TEXT */}
                 <div className="p-5 flex flex-col justify-center md:w-1/2">
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {p.title}
+                    {p.nom}
                   </h3>
                   <p className="text-gray-500 text-sm mt-1">{p.desc}</p>
+                  <p className="text-black font-bold mt-2">{p.prix.toFixed(2)}€</p>
 
-                  <Link
-                    to="/collections"
+                  <button
+                    onClick={() => handleAddToCart(p)}
                     className="
                       mt-4 inline-block px-4 py-2 rounded-full 
                       bg-black text-white text-sm font-medium
@@ -81,8 +90,8 @@ export default function ChessPieces() {
                       w-fit
                     "
                   >
-                    Voir la pièce
-                  </Link>
+                    Ajouter au panier
+                  </button>
                 </div>
               </div>
             ))}
@@ -96,7 +105,7 @@ export default function ChessPieces() {
               hover:bg-gray-100 transition z-10
             "
           >
-            <FiChevronRight size={22} />
+            <ChevronRightIcon className="w-6 h-6" />
           </button>
 
         </div>

@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 
 // Heroicons (solid = bold)
 import {
   MagnifyingGlassIcon,
   UserIcon,
   ShoppingCartIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from "@heroicons/react/24/solid";
-
-// Feather Icons (pour menu burger uniquement)
-import { FiMenu, FiX } from "react-icons/fi";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { getTotalItems } = useCart();
+  const cartCount = getTotalItems();
 
   return (
     <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
@@ -82,7 +84,14 @@ export default function Header() {
               <Link className="block px-4 py-3 hover:bg-orange-50 text-gray-700 hover:text-orange-600 transition border-t" to="/profil">Mon Profil</Link>
             </div>
           </div>
-          <ShoppingCartIcon className="w-6 h-6 cursor-pointer hover:text-black" />
+          <Link to="/panier" className="relative block hover:text-black transition">
+            <ShoppingCartIcon className="w-6 h-6 cursor-pointer hover:text-black" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Link>
         </div>
 
         {/* BURGER (mobile) */}
@@ -90,7 +99,7 @@ export default function Header() {
           className="md:hidden text-gray-700"
           onClick={() => setMenuOpen(true)}
         >
-          <FiMenu size={28} />
+          <Bars3Icon className="w-7 h-7" />
         </button>
       </div>
 
@@ -110,7 +119,7 @@ export default function Header() {
       >
         {/* CLOSE BTN */}
         <div className="p-4 flex justify-end">
-          <FiX size={26} className="cursor-pointer" onClick={() => setMenuOpen(false)} />
+          <XMarkIcon className="w-6 h-6 cursor-pointer" onClick={() => setMenuOpen(false)} />
         </div>
 
         {/* MOBILE NAV */}
@@ -145,7 +154,14 @@ export default function Header() {
         <div className="px-6 mt-6 flex gap-6 text-gray-700">
           <MagnifyingGlassIcon className="w-6 h-6" />
           <UserIcon className="w-6 h-6" />
-          <ShoppingCartIcon className="w-6 h-6" />
+          <Link to="/panier" className="relative block hover:text-black transition" onClick={() => setMenuOpen(false)}>
+            <ShoppingCartIcon className="w-6 h-6" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Link>
         </div>
       </div>
     </header>
