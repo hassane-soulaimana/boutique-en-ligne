@@ -7,6 +7,7 @@ import App from '../App';
 // On importe toutes nos pages
 import Home from '../pages/Home';
 import About from '../pages/about';
+import Contact from '../pages/contact';
 import Echiquiers from '../pages/Echiquiers';
 import Pieces from '../pages/Pieces';
 import Accessoires from '../pages/Accessoires';
@@ -30,6 +31,9 @@ function AppRouter() {
           
           {/* Route à propos */}
           <Route path="about" element={<About />} />
+          
+          {/* Route contact */}
+          <Route path="contact" element={<Contact />} />
           
           {/* Routes des catégories */}
           <Route path="echiquiers" element={<Echiquiers />} />

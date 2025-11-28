@@ -62,6 +62,8 @@ export default function Header() {
           <Link className="hover:text-black" to="/echiquiers">Échiquiers</Link>
           <Link className="hover:text-black" to="/pieces">Pièces d'échecs</Link>
           <Link className="hover:text-black" to="/accessoires">Accessoires</Link>
+          <Link className="hover:text-black" to="/about">À propos</Link>
+          <Link className="hover:text-black" to="/contact">Contact</Link>
         </nav>
 
         {/* RIGHT ICONS (desktop) */}
@@ -130,6 +132,8 @@ export default function Header() {
           <Link className="border-b pb-2" to="/echiquiers">Échiquiers</Link>
           <Link className="border-b pb-2" to="/pieces">Pièces d'échecs</Link>
           <Link className="border-b pb-2" to="/accessoires">Accessoires</Link>
+          <Link className="border-b pb-2" to="/about">À propos</Link>
+          <Link className="border-b pb-2" to="/contact">Contact</Link>
           
           <details className="border-b pb-2">
             <summary className="cursor-pointer hover:text-black">Utilisateur</summary>
