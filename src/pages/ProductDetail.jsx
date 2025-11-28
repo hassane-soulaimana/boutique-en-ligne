@@ -1,9 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useCart } from '../context/CartContext';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
 
   const produit = {
@@ -18,7 +20,14 @@ export default function ProductDetail() {
   };
 
   const handleAddToCart = () => {
-    console.log(`Ajouté ${quantity} x ${produit.nom} au panier`);
+    addItem({
+      id: produit.id,
+      nom: produit.nom,
+      prix: produit.prix,
+      image: produit.image,
+      collection: produit.collection,
+      quantity: quantity
+    });
     alert(`${quantity} x ${produit.nom} ajouté au panier !`);
   };
 

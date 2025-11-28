@@ -1,24 +1,31 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { FiChevronLeft, FiChevronRight, FiShoppingCart } from "react-icons/fi";
+import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon } from "@heroicons/react/24/solid";
+import { useCart } from "../../context/CartContext";
 
 export default function NewProducts() {
   const sliderRef = useRef(null);
+  const { addItem } = useCart();
 
   const scroll = (distance) => {
     sliderRef.current.scrollBy({ left: distance, behavior: "smooth" });
   };
 
   const products = [
-    { id: 1, title: "Plateau One Piece", price: "18.99€" },
-    { id: 2, title: "Plateau Naruto", price: "18.99€" },
-    { id: 3, title: "Plateau Dragon Ball", price: "18.99€" },
-    { id: 4, title: "Plateau Jujutsu Kaisen", price: "18.99€" },
-    { id: 5, title: "Plateau One Piece", price: "18.99€" },
-    { id: 6, title: "Plateau Naruto", price: "18.99€" },
-    { id: 7, title: "Plateau Dragon Ball", price: "18.99€" },
-    { id: 8, title: "Plateau Jujutsu Kaisen", price: "18.99€" },
+    { id: 1, nom: "Plateau One Piece", prix: 18.99, image: "🌊", collection: "One Piece" },
+    { id: 2, nom: "Plateau Naruto", prix: 18.99, image: "🍜", collection: "Naruto" },
+    { id: 3, nom: "Plateau Dragon Ball", prix: 18.99, image: "⭐", collection: "Dragon Ball" },
+    { id: 4, nom: "Plateau Jujutsu Kaisen", prix: 18.99, image: "🔮", collection: "Jujutsu Kaisen" },
+    { id: 5, nom: "Plateau One Piece", prix: 18.99, image: "🌊", collection: "One Piece" },
+    { id: 6, nom: "Plateau Naruto", prix: 18.99, image: "🍜", collection: "Naruto" },
+    { id: 7, nom: "Plateau Dragon Ball", prix: 18.99, image: "⭐", collection: "Dragon Ball" },
+    { id: 8, nom: "Plateau Jujutsu Kaisen", prix: 18.99, image: "🔮", collection: "Jujutsu Kaisen" },
   ];
+
+  const handleAddToCart = (product) => {
+    addItem(product);
+    alert(`${product.nom} ajouté au panier !`);
+  };
 
   return (
     <section className="w-full py-20 bg-white relative">
@@ -40,7 +47,7 @@ export default function NewProducts() {
             onClick={() => scroll(-300)}
             className="hidden md:flex p-3 rounded-full bg-white shadow-md border hover:bg-gray-100 transition z-10"
           >
-            <FiChevronLeft size={22} />
+            <ChevronLeftIcon className="w-6 h-6" />
           </button>
 
           {/* SLIDER */}
@@ -49,9 +56,8 @@ export default function NewProducts() {
             className="flex gap-8 overflow-x-auto scroll-smooth no-scrollbar w-full"
           >
             {products.map((p) => (
-              <Link
+              <div
                 key={p.id}
-                to="/collections"
                 className="
                   min-w-[260px] max-w-[260px]
                   bg-white rounded-2xl shadow-md hover:shadow-xl
@@ -60,19 +66,20 @@ export default function NewProducts() {
               >
                 {/* IMAGE */}
                 <div className="w-full aspect-square bg-gray-200 rounded-t-2xl relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
-                    Image à venir
+                  <div className="absolute inset-0 flex items-center justify-center text-4xl">
+                    {p.image}
                   </div>
                 </div>
 
                 {/* CONTENT */}
                 <div className="p-4">
                   <h3 className="text-gray-900 font-semibold text-lg mb-1">
-                    {p.title}
+                    {p.nom}
                   </h3>
-                  <p className="text-gray-500 text-sm">{p.price}</p>
+                  <p className="text-gray-500 text-sm">{p.prix.toFixed(2)}€</p>
 
                   <button
+                    onClick={() => handleAddToCart(p)}
                     className="
                       mt-4 w-full py-2 rounded-xl border border-gray-300
                       flex items-center justify-center gap-2
@@ -81,11 +88,11 @@ export default function NewProducts() {
                       transition
                     "
                   >
-                    <FiShoppingCart size={18} />
+                    <ShoppingCartIcon className="w-5 h-5" />
                     Ajouter au panier
                   </button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
 
@@ -94,7 +101,7 @@ export default function NewProducts() {
             onClick={() => scroll(300)}
             className="hidden md:flex p-3 rounded-full bg-white shadow-md border hover:bg-gray-100 transition z-10"
           >
-            <FiChevronRight size={22} />
+            <ChevronRightIcon className="w-6 h-6" />
           </button>
 
         </div>
