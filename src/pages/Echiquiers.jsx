@@ -15,7 +15,7 @@ export default function Echiquiers() {
         {/* Titre */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            ♟️ Échiquiers
+            Échiquiers
           </h1>
           <p className="text-gray-600 text-lg">
             {echiquiers.length} échiquier{echiquiers.length > 1 ? 's' : ''} disponible{echiquiers.length > 1 ? 's' : ''} avec des designs exclusifs manga
