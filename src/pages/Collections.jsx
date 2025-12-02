@@ -16,7 +16,7 @@ export default function Collections() {
         {/* Titre */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            🌟 Collections par Univers
+            Collections par Univers
           </h1>
           <p className="text-gray-600 text-lg">
             Explorez nos {univers.length} univers manga et découvrez leurs produits exclusifs
