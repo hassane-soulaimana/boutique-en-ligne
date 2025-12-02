@@ -21,6 +21,7 @@ import Connexion from '../pages/Connexion';
 import Inscription from '../pages/Inscription';
 import Profil from '../pages/Profil';
 import Panier from '../pages/Panier';
+import Admin from '../pages/Admin';
 import NotFound from '../pages/NotFound';
 
 // Composant qui gère toutes les routes de notre application
@@ -60,6 +61,9 @@ function AppRouter() {
             <Route path="connexion" element={<Connexion />} />
             <Route path="inscription" element={<Inscription />} />
             <Route path="profil" element={<Profil />} />
+            
+            {/* Route admin */}
+            <Route path="admin" element={<Admin />} />
             
             {/* Route 404 : toutes les autres URLs */}
             <Route path="*" element={<NotFound />} />

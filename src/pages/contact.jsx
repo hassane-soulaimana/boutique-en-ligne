@@ -60,170 +60,217 @@ export default function Contact() {
   };
 
   return (
-    <main className="min-h-screen bg-white text-slate-800">
-      <section className="bg-gradient-to-br from-amber-50 to-amber-100 py-20">
-        <div className="container mx-auto px-6 lg:px-20 text-center max-w-3xl">
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-4xl lg:text-5xl font-extrabold"
-          >
-            Nous contacter
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="mt-4 text-lg text-slate-700"
-          >
-            Une question, un projet spécial ou une demande concernant nos collections ? Notre équipe vous répond.
-          </motion.p>
-        </div>
-      </section>
-
-      <section className="py-16">
-        <div className="container mx-auto px-6 lg:px-20 grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl">
-          {/* Formulaire */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white p-8 rounded-2xl shadow border border-amber-100"
-          >
-            <h2 className="text-2xl font-semibold mb-4">Envoyer un message</h2>
-
-            <form
-              className="space-y-5"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const formData = {
-                  name: e.target.name.value,
-                  email: e.target.email.value,
-                  message: e.target.message.value,
-                };
-
-                try {
-                  await fetch("/api/contact", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData),
-                  });
-                  alert("Message envoyé avec succès !");
-                  e.target.reset();
-                } catch (err) {
-                  alert("Erreur lors de l'envoi du message");
-                }
-              }}
-            >
-              <div>
-                <label className="block text-sm font-medium">Nom complet</label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Votre nom"
-                  required
-                  className="mt-1 w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Adresse email</label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="email@example.com"
-                  required
-                  className="mt-1 w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Message</label>
-                <textarea
-                  name="message"
-                  placeholder="Votre message..."
-                  rows="5"
-                  required
-                  className="mt-1 w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
-                ></textarea>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-amber-600 text-white font-medium py-3 rounded-xl hover:bg-amber-700 transition"
-              >
-                Envoyer
-              </button>
-            </form>
-          </motion.div>
-
-          {/* Coordonnées */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-8"
-          >
-            <div className="bg-white p-8 rounded-2xl shadow border border-amber-100">
-              <h2 className="text-2xl font-semibold mb-4">Nous contacter directement</h2>
-
-              <ul className="space-y-4 text-slate-700">
-                <li>
-                  <strong>Email :</strong> contact@boutique-en-ligne.com
-                </li>
-                <li>
-                  <strong>Téléphone :</strong> +33 6 00 00 00 00
-                </li>
-                <li>
-                  <strong>Adresse atelier :</strong>
-                  <br /> 12 rue des Artisans, 75000 Paris, France
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-white p-8 rounded-2xl shadow border border-amber-100">
-              <h3 className="text-xl font-semibold mb-2">Horaires</h3>
-              <p className="text-slate-700 text-sm leading-relaxed">
-                Lundi – Vendredi : 9h00 – 18h00<br />
-                Samedi : 10h00 – 16h00<br />
-                Dimanche : fermé
-              </p>
-            </div>
-
-            <div className="bg-white p-8 rounded-2xl shadow border border-amber-100">
-              <h3 className="text-xl font-semibold mb-2">Réseaux sociaux</h3>
-              <ul className="text-slate-700 space-y-1 text-sm">
-                <li>Instagram : @boutique-en-ligne</li>
-                <li>Facebook : Boutique en ligne</li>
-                <li>TikTok : @boutique.crea</li>
-              </ul>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Carte interactive */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-6 lg:px-20 max-w-5xl">
+    <main className="min-h-screen bg-white">
+      {/* Hero Section - Minimaliste avec typographie claire */}
+      <section className="relative bg-gradient-to-b from-gray-900 to-gray-800 text-white py-32">
+        <div className="container mx-auto px-6 lg:px-20 text-center max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-8"
           >
-            <h2 className="text-2xl font-semibold mb-6 text-center">Nous trouver</h2>
+            <h1 className="text-6xl lg:text-7xl font-light tracking-tight leading-tight">
+              Contactez-nous
+            </h1>
+            <p className="text-xl lg:text-2xl font-light text-gray-300 max-w-2xl mx-auto">
+              Une question sur nos échiquiers animés ? Notre équipe est à votre écoute.
+            </p>
+            
+            {/* CTA subtil */}
+            <div className="pt-4">
+              <a
+                href="#formulaire"
+                className="inline-block px-8 py-4 bg-white text-gray-900 font-medium rounded-sm hover:bg-gray-100 transition-colors duration-300"
+              >
+                Nous écrire
+              </a>
+            </div>
+          </motion.div>
+        </div>
+        
+        {/* Accent visuel minimaliste */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-blue-500 to-yellow-500"></div>
+      </section>
+
+      {/* Section principale - Espace blanc ample */}
+      <section id="formulaire" className="py-24 bg-white">
+        <div className="container mx-auto px-6 lg:px-20 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            
+            {/* Formulaire - Design épuré */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-8"
+            >
+              <div className="space-y-4">
+                <h2 className="text-4xl font-light text-gray-900">Envoyer un message</h2>
+                <p className="text-gray-600 text-lg font-light">
+                  Partagez votre projet ou posez vos questions sur nos collections d'échiquiers inspirées des univers animés.
+                </p>
+              </div>
+
+              <form
+                className="space-y-6"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const formData = {
+                    name: e.target.name.value,
+                    email: e.target.email.value,
+                    message: e.target.message.value,
+                  };
+
+                  try {
+                    await fetch("/api/contact", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(formData),
+                    });
+                    alert("Message envoyé avec succès !");
+                    e.target.reset();
+                  } catch (err) {
+                    alert("Erreur lors de l'envoi du message");
+                  }
+                }}
+              >
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 uppercase tracking-wide">
+                    Nom complet
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Votre nom"
+                    required
+                    className="w-full border-b-2 border-gray-300 bg-transparent py-3 focus:outline-none focus:border-gray-900 transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 uppercase tracking-wide">
+                    Adresse email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="email@example.com"
+                    required
+                    className="w-full border-b-2 border-gray-300 bg-transparent py-3 focus:outline-none focus:border-gray-900 transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 uppercase tracking-wide">
+                    Message
+                  </label>
+                  <textarea
+                    name="message"
+                    placeholder="Votre message..."
+                    rows="5"
+                    required
+                    className="w-full border-b-2 border-gray-300 bg-transparent py-3 focus:outline-none focus:border-gray-900 transition-colors resize-none"
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-gray-900 text-white font-medium py-4 hover:bg-gray-800 transition-colors duration-300"
+                >
+                  Envoyer le message
+                </button>
+              </form>
+            </motion.div>
+
+            {/* Informations - Layout professionnel */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="space-y-12"
+            >
+              <div className="space-y-8">
+                <h3 className="text-3xl font-light text-gray-900">Informations</h3>
+                
+                <div className="space-y-6 text-gray-700">
+                  <div className="border-l-2 border-gray-900 pl-6 py-2">
+                    <p className="text-sm uppercase tracking-wide text-gray-500 mb-1">Email</p>
+                    <p className="text-lg font-light">contact@boutique-en-ligne.com</p>
+                  </div>
+                  
+                  <div className="border-l-2 border-gray-900 pl-6 py-2">
+                    <p className="text-sm uppercase tracking-wide text-gray-500 mb-1">Téléphone</p>
+                    <p className="text-lg font-light">+33 6 00 00 00 00</p>
+                  </div>
+                  
+                  <div className="border-l-2 border-gray-900 pl-6 py-2">
+                    <p className="text-sm uppercase tracking-wide text-gray-500 mb-1">Adresse</p>
+                    <p className="text-lg font-light">12 rue des Artisans<br />75000 Paris, France</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <h3 className="text-2xl font-light text-gray-900">Horaires d'ouverture</h3>
+                <div className="space-y-3 text-gray-700">
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="font-light">Lundi – Vendredi</span>
+                    <span className="font-medium">9h00 – 18h00</span>
+                  </div>
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="font-light">Samedi</span>
+                    <span className="font-medium">10h00 – 16h00</span>
+                  </div>
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="font-light">Dimanche</span>
+                    <span className="font-medium text-gray-400">Fermé</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-2xl font-light text-gray-900">Suivez-nous</h3>
+                <div className="flex gap-6">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    <span className="text-sm uppercase tracking-wide">Instagram</span>
+                  </a>
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    <span className="text-sm uppercase tracking-wide">Facebook</span>
+                  </a>
+                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                    <span className="text-sm uppercase tracking-wide">TikTok</span>
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Carte - Section showcase */}
+      <section className="py-24 bg-gray-50">
+        <div className="container mx-auto px-6 lg:px-20 max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-8"
+          >
+            <div className="text-center space-y-4">
+              <h2 className="text-4xl lg:text-5xl font-light text-gray-900">Notre atelier</h2>
+              <p className="text-gray-600 text-lg font-light max-w-2xl mx-auto">
+                Venez découvrir nos créations d'échiquiers animés dans notre showroom parisien
+              </p>
+            </div>
+            
             <div
               ref={mapContainer}
-              className="w-full h-96 rounded-2xl shadow border border-amber-100 overflow-hidden"
+              className="w-full h-[500px] shadow-2xl overflow-hidden"
             ></div>
           </motion.div>
         </div>
       </section>
-
-      <footer className="border-t bg-white py-8 text-center text-sm text-slate-600">
-        © {new Date().getFullYear()} Boutique en ligne — Tous droits réservés
-      </footer>
     </main>
   );
 }
