@@ -22,6 +22,7 @@ import Connexion from '../pages/Connexion';
 import Inscription from '../pages/Inscription';
 import Profil from '../pages/Profil';
 import Panier from '../pages/Panier';
+import Checkout from '../pages/Checkout';
 import Admin from '../pages/Admin';
 import NotFound from '../pages/NotFound';
 
@@ -69,6 +70,8 @@ function AppRouter() {
             
             {/* Route du panier */}
             <Route path="panier" element={<Panier />} />
+            <Route path="checkout" element={<Checkout />} />
+
             
             {/* Routes utilisateur */}
             <Route path="connexion" element={<Connexion />} />

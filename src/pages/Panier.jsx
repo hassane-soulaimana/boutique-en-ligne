@@ -203,12 +203,13 @@ export default function Panier() {
               </div>
 
               {/* BOUTONS */}
-              <button
-                disabled={items.length === 0}
-                className="w-full bg-stone-900 text-white py-3 rounded-sm font-medium hover:bg-amber-700 transition disabled:opacity-40"
-              >
-                Procéder au paiement
-              </button>
+              <Link
+  to="/checkout"
+  className="block w-full text-center bg-stone-900 text-white font-medium py-3 rounded-sm hover:bg-amber-700 transition"
+>
+  Procéder au paiement
+</Link>
+
 
               <Link
                 to="/collections"
