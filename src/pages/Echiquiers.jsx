@@ -257,9 +257,10 @@ export default function Echiquiers() {
                       </div>
                       
                       <div className="flex items-center justify-between pt-2 border-t border-stone-100">
-                        <p className="text-2xl font-semibold text-amber-700">
-                          {produit.prix.toFixed(2)} €
-                        </p>
+                        <p className="text-base font-normal text-amber-700">
+  {produit.prix.toFixed(2)} €
+</p>
+
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
