@@ -23,6 +23,7 @@ import Inscription from '../pages/Inscription';
 import Profil from '../pages/Profil';
 import Panier from '../pages/Panier';
 import Checkout from '../pages/Checkout';
+import ConfirmationCommande from "../pages/ConfirmationCommande";
 import Admin from '../pages/Admin';
 import NotFound from '../pages/NotFound';
 
@@ -71,6 +72,7 @@ function AppRouter() {
             {/* Route du panier */}
             <Route path="panier" element={<Panier />} />
             <Route path="checkout" element={<Checkout />} />
+            <Route path="confirmation-commande" element={<ConfirmationCommande />} />
 
             
             {/* Routes utilisateur */}

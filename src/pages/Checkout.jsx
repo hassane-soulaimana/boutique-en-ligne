@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import {
   ArrowLeftIcon,
-  TagIcon
+  TagIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Checkout() {
   const { items, getSubtotal } = useCart();
   const subtotal = getSubtotal();
-  const [shipping, setShipping] = useState("standard"); // standard / express
+  const navigate = useNavigate();
 
+  const [shipping, setShipping] = useState("standard"); // standard / express
   const shippingCost = shipping === "express" ? 10 : 0;
   const total = subtotal + shippingCost;
 
@@ -30,12 +31,21 @@ export default function Checkout() {
   };
 
   // --------------------------------------------
-  // NOTE BACKEND
-  // Cette fonction sera remplacée par ton futur appel API
-  // pour créer une commande + lancer Stripe Checkout
+  // 🔒 NOTE BACKEND / STRIPE
+  // Cette fonction sera remplacée par :
+  // 1. Création de commande dans ta base
+  // 2. Création session Stripe Checkout
+  // 3. Redirection vers STRIPE
+  //
+  // Pour l’instant → redirection interne (mock)
   // --------------------------------------------
   const handlePayment = () => {
+    // ⚠️ à supprimer plus tard
+    console.log("Checkout form values:", form);
     alert("Paiement non connecté (Stripe API à venir).");
+
+    // ➜ Redirection vers la confirmation interne
+    navigate("/confirmation-commande");
   };
 
   return (
@@ -183,7 +193,7 @@ export default function Checkout() {
               <div key={item.id} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
 
-                  {/* ===== IMAGE FIXÉE ===== */}
+                  {/* IMAGE */}
                   <div className="w-14 h-14 bg-stone-100 rounded-sm overflow-hidden flex items-center justify-center">
                     {String(item.image).startsWith("http") ? (
                       <img
