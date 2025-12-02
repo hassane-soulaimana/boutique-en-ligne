@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <footer className="bg-white border-t mt-20">
@@ -7,11 +9,11 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold text-gray-900 mb-4">Collections</h4>
           <ul className="space-y-2">
-            <li>Naruto</li>
-            <li>Studio Ghibli</li>
-            <li>Hunter x Hunter</li>
-            <li>Demon Slayer</li>
-            <li>One Piece</li>
+            <li><Link to="/collections/naruto" className="hover:text-orange-600 transition">Naruto</Link></li>
+            <li><Link to="/collections/ghibli" className="hover:text-orange-600 transition">Studio Ghibli</Link></li>
+            <li><Link to="/collections/hxh" className="hover:text-orange-600 transition">Hunter x Hunter</Link></li>
+            <li><Link to="/collections/demonslayer" className="hover:text-orange-600 transition">Demon Slayer</Link></li>
+            <li><Link to="/collections/onepiece" className="hover:text-orange-600 transition">One Piece</Link></li>
           </ul>
         </div>
 
@@ -19,9 +21,9 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold text-gray-900 mb-4">Boutique</h4>
           <ul className="space-y-2">
-            <li>Échiquiers</li>
-            <li>Pièces d'échecs</li>
-            <li>Accessoires</li>
+            <li><Link to="/echiquiers" className="hover:text-orange-600 transition">Échiquiers</Link></li>
+            <li><Link to="/pieces" className="hover:text-orange-600 transition">Pièces d'échecs</Link></li>
+            <li><Link to="/accessoires" className="hover:text-orange-600 transition">Accessoires</Link></li>
           </ul>
         </div>
 
@@ -29,21 +31,21 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
           <ul className="space-y-2">
-            <li>Contact</li>
-            <li>Livraison</li>
-            <li>Retours</li>
-            <li>FAQ</li>
+            <li><Link to="/contact" className="hover:text-orange-600 transition">Contact</Link></li>
+            <li><span className="cursor-pointer hover:text-orange-600 transition">Livraison</span></li>
+            <li><span className="cursor-pointer hover:text-orange-600 transition">Retours</span></li>
+            <li><span className="cursor-pointer hover:text-orange-600 transition">FAQ</span></li>
           </ul>
         </div>
 
-        {/* === A PROPOS === */}
+        {/* === À PROPOS === */}
         <div>
           <h4 className="font-semibold text-gray-900 mb-4">À propos</h4>
           <ul className="space-y-2">
-            <li>Notre histoire</li>
-            <li>Licences</li>
-            <li>Artistes</li>
-            <li>Carrières</li>
+            <li><Link to="/about" className="hover:text-orange-600 transition">Notre histoire</Link></li>
+            <li><span className="cursor-pointer hover:text-orange-600 transition">Licences</span></li>
+            <li><span className="cursor-pointer hover:text-orange-600 transition">Artistes</span></li>
+            <li><span className="cursor-pointer hover:text-orange-600 transition">Carrières</span></li>
           </ul>
         </div>
       </div>
