@@ -10,12 +10,13 @@ export default function Connexion() {
     email: "",
     password: "",
   });
+
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const handleChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-    if (errors[field]) setErrors({ ...errors, [field]: "" });
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const validateForm = () => {
@@ -38,7 +39,6 @@ export default function Connexion() {
     if (!validateForm()) return;
 
     setLoading(true);
-
     setTimeout(() => {
       navigate("/profil");
       setLoading(false);
@@ -47,11 +47,9 @@ export default function Connexion() {
 
   return (
     <main className="min-h-screen bg-[#faf7f2]">
-
-      {/* LAYOUT 2 COLONNES */}
       <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
 
-        {/* COLONNE GAUCHE – IMAGE */}
+        {/* COLONNE GAUCHE — IMAGE */}
         <div className="relative hidden lg:block">
           <img
             src={connexionImg}
@@ -59,20 +57,16 @@ export default function Connexion() {
             className="w-full h-full object-cover"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-b from-stone-850/60 to-stone-900/30"></div>
-
-          <div className="absolute bottom-10 left-10 text-white space-y-3 drop-shadow-lg">
-        
-          </div>
+          {/* Overlay propre, luminosité préservée */}
+          <div className="absolute inset-0 bg-black/20"></div>
         </div>
 
-        {/* COLONNE DROITE – FORMULAIRE SANS ENCADREMENT */}
+        {/* COLONNE DROITE — FORMULAIRE */}
         <div className="flex items-center justify-center py-20 px-10">
-
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
             className="w-full max-w-md"
           >
             {/* TITRE */}
@@ -84,61 +78,58 @@ export default function Connexion() {
               Heureux de vous revoir.
             </p>
 
-            {/* FORM */}
+            {/* FORMULAIRE */}
             <form onSubmit={handleSubmit} className="space-y-8">
 
-             {/* Email */}
-<div className="space-y-2">
-  <label className="block text-sm font-semibold text-stone-700">
-    Email
-  </label>
-  <input
-    type="email"
-    value={formData.email}
-    onChange={(e) => handleChange("email", e.target.value)}
-    placeholder="vous@example.com"
-    className={`
-      w-full px-4 py-3 border rounded-sm bg-white 
-      focus:border-amber-600 focus:ring-1 focus:ring-amber-600 
-      placeholder:text-stone-400
-      transition text-stone-800
-      ${errors.email ? "border-red-500" : "border-stone-300"}
-    `}
-  />
-  {errors.email && (
-    <p className="text-red-500 text-sm">{errors.email}</p>
-  )}
-</div>
+              {/* Email */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-stone-700">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  placeholder="vous@example.com"
+                  className={`
+                    w-full px-4 py-3 border rounded-sm bg-white
+                    placeholder:text-stone-400 text-stone-800
+                    focus:border-amber-600 focus:ring-1 focus:ring-amber-600
+                    transition
+                    ${errors.email ? "border-red-500" : "border-stone-300"}
+                  `}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email}</p>
+                )}
+              </div>
 
-{/* Password */}
-<div className="space-y-2">
-  <label className="block text-sm font-semibold text-stone-700">
-    Mot de passe
-  </label>
-  <input
-    type="password"
-    value={formData.password}
-    onChange={(e) => handleChange("password", e.target.value)}
-    placeholder="••••••••"
-    className={`
-      w-full px-4 py-3 border rounded-sm bg-white 
-      focus:border-amber-600 focus:ring-1 focus:ring-amber-600 
-      placeholder:text-stone-400
-      transition text-stone-800
-      ${errors.password ? "border-red-500" : "border-stone-300"}
-    `}
-  />
-  {errors.password && (
-    <p className="text-red-500 text-sm">{errors.password}</p>
-  )}
-</div>
-
+              {/* Mot de passe */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-stone-700">
+                  Mot de passe
+                </label>
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleChange("password", e.target.value)}
+                  placeholder="••••••••"
+                  className={`
+                    w-full px-4 py-3 border rounded-sm bg-white
+                    placeholder:text-stone-400 text-stone-800
+                    focus:border-amber-600 focus:ring-1 focus:ring-amber-600
+                    transition
+                    ${errors.password ? "border-red-500" : "border-stone-300"}
+                  `}
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm">{errors.password}</p>
+                )}
+              </div>
 
               {/* Mot de passe oublié */}
               <div className="flex justify-end">
-                <Link
-                  className="text-sm text-amber-600 hover:text-amber-700 font-medium"
-                >
+                <Link className="text-sm text-amber-600 hover:text-amber-700 font-medium">
                   Mot de passe oublié ?
                 </Link>
               </div>
@@ -167,7 +158,7 @@ export default function Connexion() {
               </div>
             </div>
 
-            {/* Inscription */}
+            {/* Lien inscription */}
             <p className="text-center text-stone-700">
               Pas encore de compte ?{" "}
               <Link
@@ -179,6 +170,7 @@ export default function Connexion() {
             </p>
           </motion.div>
         </div>
+
       </div>
     </main>
   );
