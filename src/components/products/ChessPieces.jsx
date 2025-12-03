@@ -103,8 +103,7 @@ export default function ChessPieces() {
       </div>
     );
   }
-
-  return (
+else {return (
     <section className="py-20 bg-gradient-to-b from-amber-50 to-white">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl font-bold text-center mb-12">
@@ -183,5 +182,5 @@ export default function ChessPieces() {
         </div>
       </div>
     </section>
-  );
+  );}
 }
