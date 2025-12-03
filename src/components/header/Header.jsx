@@ -2,171 +2,233 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 
-// Heroicons (solid = bold)
 import {
   MagnifyingGlassIcon,
   UserIcon,
   ShoppingCartIcon,
   Bars3Icon,
   XMarkIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/24/solid";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [collectionsOpen, setCollectionsOpen] = useState(false);
+
   const { getTotalItems } = useCart();
   const cartCount = getTotalItems();
 
   return (
-    <header className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+    <header className="bg-white/90 backdrop-blur-lg border-b border-stone-200 sticky top-0 z-50">
 
-      {/* NAVBAR DESKTOP */}
-      <div className="max-w-7xl mx-auto px-6 py-1 flex items-center justify-between">
+      {/* ========================= */}
+      {/* DESKTOP NAVIGATION */}
+      {/* ========================= */}
+      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
 
-        {/* LEFT - LOGO */}
-        <Link to="/" className="text-xl font-semibold tracking-wide">
+        {/* LOGO */}
+        <Link to="/" className="flex items-center group">
           <img
             src="/logo.png"
-            alt="Logo"
-            className="h-10 w-auto"
+            alt="logo"
+            className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
           />
         </Link>
 
-        {/* CENTER NAV (desktop) */}
-        <nav className="hidden md:flex items-center gap-8 text-black font-medium">
+        {/* DESKTOP NAV LINKS */}
+        <nav className="hidden md:flex items-center gap-8 font-medium text-stone-800">
 
-          {/* Collections Dropdown */}
-          <div className="relative group">
-            <button className="flex items-center gap-1 hover:text-black">
+          <Link to="/" className="hover:text-black transition">Accueil</Link>
+
+          {/* COLLECTIONS DROPDOWN STABLE */}
+          <div
+            className="relative"
+            onMouseEnter={() => setCollectionsOpen(true)}
+            onMouseLeave={() => setCollectionsOpen(false)}
+          >
+            <button className="flex items-center gap-1 hover:text-black transition">
               Collections
-              <span className="transition-transform duration-200 group-hover:rotate-180">
-                ▼
-              </span>
+              <ChevronDownIcon
+                className={`w-4 h-4 transition-transform ${
+                  collectionsOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
 
             <div
-              className="
-                absolute left-0 top-full mt-0 w-40 bg-white border border-gray-200 shadow-md rounded-md py-2
-                opacity-0 pointer-events-none translate-y-1
-                group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0
-                transition-all duration-200
-              "
+              className={`
+                absolute left-0 mt-2 w-52 bg-white border border-stone-200 shadow-xl rounded-sm py-2
+                transition-all duration-150 origin-top 
+                ${
+                  collectionsOpen
+                    ? "opacity-100 scale-100 pointer-events-auto"
+                    : "opacity-0 scale-95 pointer-events-none"
+                }
+              `}
             >
-              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/naruto">Naruto</Link>
-              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/ghibli">Studio Ghibli</Link>
-              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/hxh">Hunter x Hunter</Link>
-              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/demonslayer">Demon Slayer</Link>
-              <Link className="block px-4 py-2 hover:bg-gray-100" to="/collections/onepiece">One Piece</Link>
+              {[
+                { name: "Naruto", link: "/collections/naruto" },
+                { name: "Studio Ghibli", link: "/collections/ghibli" },
+                { name: "Hunter x Hunter", link: "/collections/hxh" },
+                { name: "Demon Slayer", link: "/collections/demonslayer" },
+                { name: "One Piece", link: "/collections/onepiece" },
+              ].map((u) => (
+                <Link
+                  key={u.name}
+                  to={u.link}
+                  className="block px-4 py-2 text-sm hover:bg-stone-100 hover:text-black transition"
+                >
+                  {u.name}
+                </Link>
+              ))}
             </div>
           </div>
 
-          <span className="w-px h-6 bg-gray-300"></span>
+          <Link to="/echiquiers" className="hover:text-black transition">
+            Échiquiers
+          </Link>
 
-          <Link className="hover:text-black" to="/echiquiers">Échiquiers</Link>
-          <Link className="hover:text-black" to="/pieces">Pièces d'échecs</Link>
-          <Link className="hover:text-black" to="/accessoires">Accessoires</Link>
-          <Link className="hover:text-black" to="/about">À propos</Link>
-          <Link className="hover:text-black" to="/contact">Contact</Link>
+          <Link to="/pieces" className="hover:text-black transition">
+            Pièces d'échecs
+          </Link>
+
+          <Link to="/accessoires" className="hover:text-black transition">
+            Accessoires
+          </Link>
         </nav>
 
-        {/* RIGHT ICONS (desktop) */}
-        <div className="hidden md:flex items-center gap-6 text-gray-700">
-          <MagnifyingGlassIcon className="w-6 h-6 cursor-pointer hover:text-black" />
+        {/* RIGHT ICONS */}
+        <div className="hidden md:flex items-center gap-6 text-stone-700">
+
+          <MagnifyingGlassIcon className="w-6 h-6 cursor-pointer hover:text-black transition" />
+
+          {/* USER DROPDOWN */}
           <div className="relative group">
-            <UserIcon className="w-6 h-6 cursor-pointer hover:text-black group-hover:text-black" />
+            <UserIcon className="w-6 h-6 cursor-pointer hover:text-black transition" />
+
             <div
               className="
-                absolute right-0 top-full mt-0 w-48 bg-white border border-gray-200 shadow-lg rounded-md py-1
-                opacity-0 pointer-events-none invisible -translate-y-2
-                group-hover:opacity-100 group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0
-                transition-all duration-200
+                absolute right-0 top-full mt-2 w-48 bg-white border border-stone-200 shadow-lg rounded-sm py-2
+                opacity-0 scale-95 pointer-events-none
+                group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto
+                transition-all duration-150 origin-top-right
               "
             >
-              <Link className="block px-4 py-3 hover:bg-orange-50 text-gray-700 hover:text-orange-600 transition" to="/connexion">Connexion</Link>
-              <Link className="block px-4 py-3 hover:bg-orange-50 text-gray-700 hover:text-orange-600 transition" to="/inscription">Inscription</Link>
-              <Link className="block px-4 py-3 hover:bg-orange-50 text-gray-700 hover:text-orange-600 transition border-t" to="/profil">Mon Profil</Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-orange-50" to="/connexion">
+                Connexion
+              </Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-orange-50" to="/inscription">
+                Inscription
+              </Link>
+              <Link className="block px-4 py-2 text-sm border-t hover:bg-orange-50" to="/profil">
+                Mon Profil
+              </Link>
             </div>
           </div>
+
+          {/* PANIER */}
           <Link to="/panier" className="relative block hover:text-black transition">
-            <ShoppingCartIcon className="w-6 h-6 cursor-pointer hover:text-black" />
+            <ShoppingCartIcon className="w-6 h-6" />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center">
                 {cartCount}
               </span>
             )}
           </Link>
         </div>
 
-        {/* BURGER (mobile) */}
+        {/* BURGER — MOBILE */}
         <button
-          className="md:hidden text-gray-700"
+          className="md:hidden text-stone-700"
           onClick={() => setMenuOpen(true)}
         >
           <Bars3Icon className="w-7 h-7" />
         </button>
       </div>
 
-      {/* MOBILE BACKDROP */}
+      {/* ========================= */}
+      {/* MOBILE OVERLAY */}
+      {/* ========================= */}
       {menuOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-40"
           onClick={() => setMenuOpen(false)}
+          className="fixed inset-0 bg-black/40 z-40"
         ></div>
       )}
 
+      {/* ========================= */}
       {/* MOBILE SIDEBAR */}
+      {/* ========================= */}
       <div
-        className={`md:hidden fixed top-0 right-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`
+          md:hidden fixed top-0 right-0 w-72 h-full bg-white shadow-2xl z-50 p-6
+          transition-transform duration-300
+          ${menuOpen ? "translate-x-0" : "translate-x-full"}
+        `}
       >
-        {/* CLOSE BTN */}
-        <div className="p-4 flex justify-end">
-          <XMarkIcon className="w-6 h-6 cursor-pointer" onClick={() => setMenuOpen(false)} />
+        <div className="flex justify-end mb-6">
+          <XMarkIcon
+            className="w-6 h-6 cursor-pointer hover:text-black"
+            onClick={() => setMenuOpen(false)}
+          />
         </div>
 
-        {/* MOBILE NAV */}
-        <nav className="flex flex-col gap-4 px-6 text-gray-700">
+        {/* MOBILE MENU */}
+        <nav className="flex flex-col gap-6 text-stone-700 text-lg">
 
-          <details className="border-b pb-2">
-            <summary className="cursor-pointer hover:text-black">Collections</summary>
-            <div className="pl-4 flex flex-col gap-2 mt-2">
-              <Link to="/collections/naruto">Naruto</Link>
-              <Link to="/collections/ghibli">Studio Ghibli</Link>
-              <Link to="/collections/hxh">Hunter x Hunter</Link>
-              <Link to="/collections/demonslayer">Demon Slayer</Link>
-              <Link to="/collections/onepiece">One Piece</Link>
+          <Link to="/" onClick={() => setMenuOpen(false)} className="border-b pb-3">
+            Accueil
+          </Link>
+
+          {/* Collections */}
+          <details className="border-b pb-3">
+            <summary className="cursor-pointer text-lg">Collections</summary>
+            <div className="pl-4 flex flex-col gap-3 mt-3 text-base">
+              <Link to="/collections/naruto" onClick={() => setMenuOpen(false)}>Naruto</Link>
+              <Link to="/collections/ghibli" onClick={() => setMenuOpen(false)}>Studio Ghibli</Link>
+              <Link to="/collections/hxh" onClick={() => setMenuOpen(false)}>Hunter x Hunter</Link>
+              <Link to="/collections/demonslayer" onClick={() => setMenuOpen(false)}>Demon Slayer</Link>
+              <Link to="/collections/onepiece" onClick={() => setMenuOpen(false)}>One Piece</Link>
             </div>
           </details>
 
-          <Link className="border-b pb-2" to="/echiquiers">Échiquiers</Link>
-          <Link className="border-b pb-2" to="/pieces">Pièces d'échecs</Link>
-          <Link className="border-b pb-2" to="/accessoires">Accessoires</Link>
-          <Link className="border-b pb-2" to="/about">À propos</Link>
-          <Link className="border-b pb-2" to="/contact">Contact</Link>
-          
-          <details className="border-b pb-2">
-            <summary className="cursor-pointer hover:text-black">Utilisateur</summary>
-            <div className="pl-4 flex flex-col gap-2 mt-2">
-              <Link to="/connexion">Connexion</Link>
-              <Link to="/inscription">Inscription</Link>
-              <Link to="/profil">Mon Profil</Link>
+          <Link to="/echiquiers" onClick={() => setMenuOpen(false)} className="border-b pb-3">
+            Échiquiers
+          </Link>
+
+          <Link to="/pieces" onClick={() => setMenuOpen(false)} className="border-b pb-3">
+            Pièces d'échecs
+          </Link>
+
+          <Link to="/accessoires" onClick={() => setMenuOpen(false)} className="border-b pb-3">
+            Accessoires
+          </Link>
+
+          {/* UTILISATEUR */}
+          <details className="border-b pb-3">
+            <summary className="cursor-pointer">Utilisateur</summary>
+            <div className="pl-4 flex flex-col gap-3 mt-3 text-base">
+              <Link to="/connexion" onClick={() => setMenuOpen(false)}>Connexion</Link>
+              <Link to="/inscription" onClick={() => setMenuOpen(false)}>Inscription</Link>
+              <Link to="/profil" onClick={() => setMenuOpen(false)}>Mon Profil</Link>
             </div>
           </details>
-        </nav>
 
-        {/* MOBILE ICONS */}
-        <div className="px-6 mt-6 flex gap-6 text-gray-700">
-          <MagnifyingGlassIcon className="w-6 h-6" />
-          <UserIcon className="w-6 h-6" />
-          <Link to="/panier" className="relative block hover:text-black transition" onClick={() => setMenuOpen(false)}>
+          {/* PANIER */}
+          <Link
+            to="/panier"
+            className="flex items-center gap-3 mt-6"
+            onClick={() => setMenuOpen(false)}
+          >
             <ShoppingCartIcon className="w-6 h-6" />
+            Panier
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="ml-auto bg-orange-600 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center">
                 {cartCount}
               </span>
             )}
           </Link>
-        </div>
+        </nav>
       </div>
     </header>
   );

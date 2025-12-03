@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 
 export default function ProductDetail() {
@@ -8,98 +8,147 @@ export default function ProductDetail() {
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
 
-  const produit = {
-    id: id,
-    nom: 'Échiquier Premium Naruto',
-    prix: 149.99,
-    image: '🎮',
-    description: 'Un magnifique échiquier avec le design de Naruto, parfait pour les fans et les joueurs d\'échecs.',
-    stock: 15,
-    collection: 'Naruto',
-    couleur: '#FF6B35'
-  };
+  // -------------------------------------------------------------
+  // 🔌 PRODUCT STATE (TOUJOURS UTILISÉ)
+  // -------------------------------------------------------------
+  const [produit, setProduit] = useState(null);
+
+  // -------------------------------------------------------------
+  // 🟠 MOCK TEMPORAIRE (À SUPPRIMER LORSQUE L'API ARRIVE)
+  // -------------------------------------------------------------
+  useEffect(() => {
+    // ❗ À EFFACER plus tard lorsque l'API est connectée
+    setProduit({
+      id: id,
+      nom: 'Échiquier Premium Naruto',
+      prix: 149.99,
+      image: 'https://placehold.co/600x600?text=Image+Produit',
+      description:
+        "Un magnifique échiquier inspiré de l'univers Naruto, réalisé avec un bois premium.",
+      stock: 12,
+      collection: 'Naruto',
+      couleur: '#FF6B35',
+    });
+  }, [id]);
+
+  // -------------------------------------------------------------
+  // 🔌 VERSION API (À ACTIVER PLUS TARD)
+  // -------------------------------------------------------------
+  /*
+  useEffect(() => {
+    async function fetchProduit() {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/products/${id}` // <-- URL API
+        );
+        const data = await response.json();
+        setProduit(data);
+      } catch (err) {
+        console.error("Erreur API produit :", err);
+      }
+    }
+
+    fetchProduit();
+  }, [id]);
+  */
+
+  // -------------------------------------------------------------
+  // LOADER TEMPORAIRE
+  // -------------------------------------------------------------
+  if (!produit) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-stone-500">
+        Chargement du produit...
+      </div>
+    );
+  }
 
   const handleAddToCart = () => {
     addItem({
-      id: produit.id,
-      nom: produit.nom,
-      prix: produit.prix,
-      image: produit.image,
-      collection: produit.collection,
-      quantity: quantity
+      ...produit,
+      quantity: quantity,
     });
     alert(`${quantity} x ${produit.nom} ajouté au panier !`);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <main className="min-h-screen bg-gradient-to-b from-stone-50 to-white py-12 px-4">
       <div className="max-w-7xl mx-auto">
+
         {/* Bouton retour */}
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 text-orange-600 hover:text-orange-700 font-semibold"
+          className="mb-8 text-amber-700 hover:text-amber-800 font-medium"
         >
           ← Retour
         </button>
 
-        {/* Produit */}
-        <div className="bg-white rounded-lg shadow p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {/* Image */}
+        <div className="bg-white border border-stone-200 rounded-sm shadow-sm p-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-14">
+
+            {/* IMAGE PRODUIT */}
             <div>
-              <div
-                className="h-96 rounded-lg flex items-center justify-center text-9xl mb-6"
-                style={{ backgroundColor: produit.couleur + '20' }}
-              >
-                {produit.image}
+              <div className="overflow-hidden rounded-sm border border-stone-200 shadow-sm">
+                <img
+                  src={produit.image}
+                  alt={produit.nom}
+                  className="w-full h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+                />
               </div>
-              <p className="text-center text-gray-600">
+
+              <p className="text-center text-stone-500 text-sm mt-3">
                 {produit.stock} en stock
               </p>
             </div>
 
-            {/* Détails */}
+            {/* DÉTAILS PRODUIT */}
             <div>
-              <div className="mb-6">
-                <p className="text-orange-600 font-semibold mb-2">
+              <div className="mb-8">
+                <p className="text-amber-700 uppercase text-xs tracking-wide font-medium mb-2">
                   Collection {produit.collection}
                 </p>
-                <h1 className="text-4xl font-bold text-gray-800 mb-4">
+
+                <h1 className="text-4xl font-semibold text-stone-900 mb-4 leading-tight">
                   {produit.nom}
                 </h1>
-                <p className="text-gray-600 text-lg mb-6">
+
+                <p className="text-stone-600 leading-relaxed text-lg">
                   {produit.description}
                 </p>
               </div>
 
               {/* Prix */}
-              <div className="mb-8 pb-8 border-b">
-                <p className="text-5xl font-bold text-orange-600">
+              <div className="mb-10 pb-8 border-b border-stone-200">
+                <p className="text-4xl font-normal text-amber-700">
                   {produit.prix.toFixed(2)} €
                 </p>
               </div>
 
               {/* Quantité */}
-              <div className="mb-8">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
+              <div className="mb-10">
+                <label className="block text-sm font-medium text-stone-700 mb-3">
                   Quantité
                 </label>
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                    className="px-4 py-2 border border-stone-300 rounded-sm hover:bg-stone-100"
                   >
                     -
                   </button>
+
                   <input
                     type="number"
                     value={quantity}
-                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-16 px-3 py-2 border border-gray-300 rounded text-center"
+                    onChange={(e) =>
+                      setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+                    }
+                    className="w-20 px-3 py-2 border border-stone-300 rounded-sm text-center"
                   />
+
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                    className="px-4 py-2 border border-stone-300 rounded-sm hover:bg-stone-100"
                   >
                     +
                   </button>
@@ -110,41 +159,45 @@ export default function ProductDetail() {
               <div className="flex gap-4">
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 px-6 rounded-lg transition text-lg"
+                  className="flex-1 bg-stone-900 hover:bg-amber-700 text-white font-medium py-4 rounded-sm transition"
                 >
                   Ajouter au panier
                 </button>
-                <button className="px-6 py-4 border-2 border-orange-600 text-orange-600 hover:bg-orange-50 font-bold rounded-lg transition">
+
+                <button className="px-6 py-4 border border-amber-600 text-amber-700 hover:bg-amber-50 font-medium rounded-sm transition">
                   ♥ Favoris
                 </button>
               </div>
 
               {/* Caractéristiques */}
-              <div className="mt-12 pt-8 border-t">
-                <h3 className="font-bold text-lg text-gray-800 mb-4">Caractéristiques</h3>
-                <ul className="space-y-3 text-gray-600">
+              <div className="mt-12 pt-8 border-t border-stone-200">
+                <h3 className="font-medium text-lg text-stone-900 mb-4">
+                  Caractéristiques
+                </h3>
+                <ul className="space-y-3 text-stone-600 text-sm">
                   <li className="flex justify-between">
-                    <span>Design:</span>
-                    <span className="font-semibold">Exclusif Manga</span>
+                    <span>Design :</span>
+                    <span className="font-medium">Exclusif Manga</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Matériel:</span>
-                    <span className="font-semibold">Bois premium</span>
+                    <span>Matériel :</span>
+                    <span className="font-medium">Bois premium</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Dimensions:</span>
-                    <span className="font-semibold">40x40 cm</span>
+                    <span>Dimensions :</span>
+                    <span className="font-medium">40×40 cm</span>
                   </li>
                   <li className="flex justify-between">
-                    <span>Livraison:</span>
-                    <span className="font-semibold">Gratuite ( 50€)</span>
+                    <span>Livraison :</span>
+                    <span className="font-medium">Gratuite dès 50€</span>
                   </li>
                 </ul>
               </div>
+
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

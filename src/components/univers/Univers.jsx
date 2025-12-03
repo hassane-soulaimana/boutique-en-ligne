@@ -6,7 +6,7 @@ import GokuImg from "../../assets/dragonBall.png";
 
 export default function Univers() {
   return (
-    <section className="w-full mt-20">
+    <section className="w-full">
 
       {/* TITRE */}
       <div className="max-w-6xl mx-auto px-6 text-center mb-16">

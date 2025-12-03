@@ -1,5 +1,6 @@
 // On importe React Router pour gérer la navigation
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 // On importe le CartProvider
 import { CartProvider } from '../context/CartContext';
@@ -21,14 +22,28 @@ import Connexion from '../pages/Connexion';
 import Inscription from '../pages/Inscription';
 import Profil from '../pages/Profil';
 import Panier from '../pages/Panier';
+import Checkout from '../pages/Checkout';
+import ConfirmationCommande from "../pages/ConfirmationCommande";
 import Admin from '../pages/Admin';
 import NotFound from '../pages/NotFound';
+
+// Composant qui scroll vers le haut à chaque changement de page
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
+  return null;
+}
 
 // Composant qui gère toutes les routes de notre application
 function AppRouter() {
   return (
     <CartProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           {/* Route parente avec le Layout */}
           <Route path="/" element={<App />}>
@@ -56,6 +71,9 @@ function AppRouter() {
             
             {/* Route du panier */}
             <Route path="panier" element={<Panier />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="confirmation-commande" element={<ConfirmationCommande />} />
+
             
             {/* Routes utilisateur */}
             <Route path="connexion" element={<Connexion />} />
