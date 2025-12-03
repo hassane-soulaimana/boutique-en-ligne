@@ -13,17 +13,13 @@ import {
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [collectionsOpen, setCollectionsOpen] = useState(false);
-
   const { getTotalItems } = useCart();
   const cartCount = getTotalItems();
 
   return (
     <header className="bg-white/90 backdrop-blur-lg border-b border-stone-200 sticky top-0 z-50">
 
-      {/* ========================= */}
-      {/* DESKTOP NAVIGATION */}
-      {/* ========================= */}
+      {/* DESKTOP NAV */}
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
 
         {/* LOGO */}
@@ -35,66 +31,37 @@ export default function Header() {
           />
         </Link>
 
-        {/* DESKTOP NAV LINKS */}
+        {/* DESKTOP LINKS */}
         <nav className="hidden md:flex items-center gap-8 font-medium text-stone-800">
 
           <Link to="/" className="hover:text-black transition">Accueil</Link>
 
-          {/* COLLECTIONS DROPDOWN STABLE */}
-          <div
-            className="relative"
-            onMouseEnter={() => setCollectionsOpen(true)}
-            onMouseLeave={() => setCollectionsOpen(false)}
-          >
+          {/* COLLECTIONS — CSS ONLY DROPDOWN */}
+          <div className="relative group">
             <button className="flex items-center gap-1 hover:text-black transition">
               Collections
-              <ChevronDownIcon
-                className={`w-4 h-4 transition-transform ${
-                  collectionsOpen ? "rotate-180" : ""
-                }`}
-              />
+              <ChevronDownIcon className="w-4 h-4 transition-transform group-hover:rotate-180" />
             </button>
 
             <div
-              className={`
-                absolute left-0 mt-2 w-52 bg-white border border-stone-200 shadow-xl rounded-sm py-2
-                transition-all duration-150 origin-top 
-                ${
-                  collectionsOpen
-                    ? "opacity-100 scale-100 pointer-events-auto"
-                    : "opacity-0 scale-95 pointer-events-none"
-                }
-              `}
+              className="
+                absolute left-0 top-full z-50 w-52 bg-white border border-stone-200 shadow-xl rounded-sm py-2
+                opacity-0 scale-95 pointer-events-none
+                group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto
+                transition-all duration-150 origin-top
+              "
             >
-              {[
-                { name: "Naruto", link: "/collections/naruto" },
-                { name: "Studio Ghibli", link: "/collections/ghibli" },
-                { name: "Hunter x Hunter", link: "/collections/hxh" },
-                { name: "Demon Slayer", link: "/collections/demonslayer" },
-                { name: "One Piece", link: "/collections/onepiece" },
-              ].map((u) => (
-                <Link
-                  key={u.name}
-                  to={u.link}
-                  className="block px-4 py-2 text-sm hover:bg-stone-100 hover:text-black transition"
-                >
-                  {u.name}
-                </Link>
-              ))}
+              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/naruto">Naruto</Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/ghibli">Studio Ghibli</Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/hxh">Hunter x Hunter</Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/demonslayer">Demon Slayer</Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/onepiece">One Piece</Link>
             </div>
           </div>
 
-          <Link to="/echiquiers" className="hover:text-black transition">
-            Échiquiers
-          </Link>
-
-          <Link to="/pieces" className="hover:text-black transition">
-            Pièces d'échecs
-          </Link>
-
-          <Link to="/accessoires" className="hover:text-black transition">
-            Accessoires
-          </Link>
+          <Link to="/echiquiers" className="hover:text-black transition">Échiquiers</Link>
+          <Link to="/pieces" className="hover:text-black transition">Pièces d'échecs</Link>
+          <Link to="/accessoires" className="hover:text-black transition">Accessoires</Link>
         </nav>
 
         {/* RIGHT ICONS */}
@@ -102,27 +69,21 @@ export default function Header() {
 
           <MagnifyingGlassIcon className="w-6 h-6 cursor-pointer hover:text-black transition" />
 
-          {/* USER DROPDOWN */}
+          {/* USER — CSS ONLY DROPDOWN */}
           <div className="relative group">
             <UserIcon className="w-6 h-6 cursor-pointer hover:text-black transition" />
 
             <div
               className="
-                absolute right-0 top-full mt-2 w-48 bg-white border border-stone-200 shadow-lg rounded-sm py-2
+                absolute right-0 top-full z-50 w-48 bg-white border border-stone-200 shadow-lg rounded-sm py-2
                 opacity-0 scale-95 pointer-events-none
                 group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto
                 transition-all duration-150 origin-top-right
               "
             >
-              <Link className="block px-4 py-2 text-sm hover:bg-orange-50" to="/connexion">
-                Connexion
-              </Link>
-              <Link className="block px-4 py-2 text-sm hover:bg-orange-50" to="/inscription">
-                Inscription
-              </Link>
-              <Link className="block px-4 py-2 text-sm border-t hover:bg-orange-50" to="/profil">
-                Mon Profil
-              </Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-orange-50" to="/connexion">Connexion</Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-orange-50" to="/inscription">Inscription</Link>
+              <Link className="block px-4 py-2 text-sm border-t hover:bg-orange-50" to="/profil">Mon Profil</Link>
             </div>
           </div>
 
@@ -137,18 +98,13 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* BURGER — MOBILE */}
-        <button
-          className="md:hidden text-stone-700"
-          onClick={() => setMenuOpen(true)}
-        >
+        {/* BURGER MENU */}
+        <button className="md:hidden text-stone-700" onClick={() => setMenuOpen(true)}>
           <Bars3Icon className="w-7 h-7" />
         </button>
       </div>
 
-      {/* ========================= */}
       {/* MOBILE OVERLAY */}
-      {/* ========================= */}
       {menuOpen && (
         <div
           onClick={() => setMenuOpen(false)}
@@ -156,9 +112,7 @@ export default function Header() {
         ></div>
       )}
 
-      {/* ========================= */}
       {/* MOBILE SIDEBAR */}
-      {/* ========================= */}
       <div
         className={`
           md:hidden fixed top-0 right-0 w-72 h-full bg-white shadow-2xl z-50 p-6
@@ -180,7 +134,6 @@ export default function Header() {
             Accueil
           </Link>
 
-          {/* Collections */}
           <details className="border-b pb-3">
             <summary className="cursor-pointer text-lg">Collections</summary>
             <div className="pl-4 flex flex-col gap-3 mt-3 text-base">
@@ -204,7 +157,6 @@ export default function Header() {
             Accessoires
           </Link>
 
-          {/* UTILISATEUR */}
           <details className="border-b pb-3">
             <summary className="cursor-pointer">Utilisateur</summary>
             <div className="pl-4 flex flex-col gap-3 mt-3 text-base">
@@ -214,7 +166,6 @@ export default function Header() {
             </div>
           </details>
 
-          {/* PANIER */}
           <Link
             to="/panier"
             className="flex items-center gap-3 mt-6"
