@@ -4,17 +4,26 @@ import { motion } from "framer-motion";
 import inscriptionImg from "../assets/inscription.png";
 import { animeApi } from "../services/animeApi";
 
+const API_URL = "https://apianime.alwaysdata.net";
+
+const register = async (nom, prenom, email, password, confirmPassword) => {
+  const res = await fetch(`${API_URL}/api/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nom, prenom, email, password, confirmPassword }),
+  });
+  return res.json();
+};
+
 export default function Inscription() {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
-    prenom: "",
     nom: "",
+    prenom: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -75,38 +84,30 @@ export default function Inscription() {
 
     setLoading(true);
 
-    /* ---------------------------------------------------------
-       ▶ ICI : APPEL API BACKEND
-       ---------------------------------------------------------
-       Exemple POST:
-          const res = await fetch("https://ton-back.com/api/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              prenom,
-              nom,
-              email,
-              password,
-            }),
-          });
+    try {
+      const data = await register(
+        formData.nom,
+        formData.prenom,
+        formData.email,
+        formData.password,
+        formData.confirmPassword
+      );
 
-          const data = await res.json();
-
-          if (res.ok) {
-            // success → login auto ou redirect
-          } else {
-            // data.error → message retour serveur (email déjà utilisé, etc.)
-          }
-    ---------------------------------------------------------- */
-
-    setTimeout(() => {
-      navigate("/profil");
+      if (data.success || data.message) {
+        // Inscription réussie
+        setTimeout(() => {
+          navigate("/profil");
+        }, 800);
+      } else {
+        // Erreur du serveur
+        setErrors({ general: data.error || "Erreur lors de l'inscription" });
+      }
     } catch (error) {
       console.error("❌ Erreur inscription:", error);
       setErrors({ general: error.message || "Erreur lors de l'inscription" });
     } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
   return (
