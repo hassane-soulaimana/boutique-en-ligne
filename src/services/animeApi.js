@@ -1,5 +1,6 @@
 // Service pour l'API Anime
-const API_BASE_URL = "https://apianime.alwaysdata.net";
+// alwaysdata.net
+const API_BASE_URL = "http://localhost:3000/api";
 
 export const animeApi = {
   // Récupérer tous les univers
