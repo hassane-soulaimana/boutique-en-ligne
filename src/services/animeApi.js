@@ -1,5 +1,5 @@
 // Service pour l'API Anime
-const API_BASE_URL = '/api';
+const API_BASE_URL = "http://localhost:5000/api";
 
 export const animeApi = {
   // Récupérer tous les univers
