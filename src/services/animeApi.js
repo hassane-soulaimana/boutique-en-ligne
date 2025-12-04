@@ -1,6 +1,7 @@
 // Service pour l'API Anime
 const API_BASE_URL = '/api';
 
+
 export const animeApi = {
   // Récupérer tous les univers
   async getUniverses() {

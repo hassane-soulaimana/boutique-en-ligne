@@ -105,17 +105,16 @@ export default function ChessPieces() {
               {products.map((product) => (
                 <div key={product._id} className="min-w-full p-8 bg-white">
                   <img
-                    src={
-                      product.image ||
-                      product.imageUrl ||
-                      "https://via.placeholder.com/400"
-                    }
-                    alt={product.nom || product.name}
+                    src={`https://apianime.alwaysdata.net${product.image}`}
+                    alt={product.name}
                     className="w-full h-96 object-cover rounded-lg mb-6"
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/400?text=Image+non+disponible";
+                    }}
                   />
 
                   <h3 className="text-2xl font-bold mb-2">
-                    {product.nom || product.name}
+                    {product.name}
                   </h3>
 
                   <p className="text-gray-600 mb-4">
@@ -124,7 +123,7 @@ export default function ChessPieces() {
 
                   <div className="flex justify-between items-center">
                     <span className="text-3xl font-bold text-amber-600">
-                      {product.prix || product.price} €
+                      {product.price} €
                     </span>
 
                     <button
