@@ -18,7 +18,7 @@ export default function Profil() {
       const userData = await animeApi.getMe();
       setUser(userData);
     } catch (error) {
-      console.error('❌ Erreur chargement profil:', error);
+      console.error("❌ Erreur chargement profil:", error);
       // Si non connecté, rediriger vers connexion
       navigate("/connexion");
     } finally {
@@ -42,9 +42,7 @@ export default function Profil() {
       date: "2025-11-25",
       statut: "En cours",
       total: 75.5,
-      produits: [
-        { nom: "Accessoires échecs manga", quantite: 2, prix: 37.75 },
-      ],
+      produits: [{ nom: "Accessoires échecs manga", quantite: 2, prix: 37.75 }],
     },
   ];
 
@@ -70,7 +68,6 @@ export default function Profil() {
 
   return (
     <main className="min-h-screen bg-[#faf7f2] py-16 px-6 lg:px-20">
-      
       {/* HEADER */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -118,7 +115,6 @@ export default function Profil() {
 
       {/* CONTENU DES TABS */}
       <div className="max-w-5xl mx-auto">
-
         {/* INFOS */}
         {activeTab === "infos" && (
           <motion.div
@@ -145,7 +141,9 @@ export default function Profil() {
               </div>
               <div className="flex justify-between border-b border-stone-200 pb-3">
                 <span className="font-medium text-stone-700">Rôle</span>
-                <span className="text-stone-600">{user.role === 'admin' ? 'Administrateur' : 'Utilisateur'}</span>
+                <span className="text-stone-600">
+                  {user.role === "admin" ? "Administrateur" : "Utilisateur"}
+                </span>
               </div>
             </div>
 
@@ -203,7 +201,9 @@ export default function Profil() {
                       key={i}
                       className="grid grid-cols-2 text-stone-700 text-center"
                     >
-                      <span>{p.nom} x{p.quantite}</span>
+                      <span>
+                        {p.nom} x{p.quantite}
+                      </span>
                       <span className="font-semibold">
                         {p.prix.toFixed(2)} €
                       </span>
@@ -214,7 +214,9 @@ export default function Profil() {
                 {/* TOTAL CENTRÉ */}
                 <div className="text-center mt-6 text-lg font-semibold">
                   Total :{" "}
-                  <span className="text-amber-700">{order.total.toFixed(2)} €</span>
+                  <span className="text-amber-700">
+                    {order.total.toFixed(2)} €
+                  </span>
                 </div>
               </div>
             ))}

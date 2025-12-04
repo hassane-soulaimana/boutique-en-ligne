@@ -58,16 +58,16 @@ export default function Inscription() {
       // Appel API avec confirmPassword
       const result = await animeApi.register({
         ...formData,
-        confirmPassword: formData.password // Le backend vérifie que les 2 mots de passe correspondent
+        confirmPassword: formData.password, // Le backend vérifie que les 2 mots de passe correspondent
       });
-      
-      console.log('✅ Inscription réussie:', result);
-      
+
+      console.log("✅ Inscription réussie:", result);
+
       // Redirection vers le profil
       navigate("/profil");
     } catch (error) {
-      console.error('❌ Erreur inscription:', error);
-      setErrors({ general: error.message || 'Erreur lors de l\'inscription' });
+      console.error("❌ Erreur inscription:", error);
+      setErrors({ general: error.message || "Erreur lors de l'inscription" });
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,6 @@ export default function Inscription() {
 
   return (
     <main className="min-h-screen bg-[#faf7f2]">
-
       {/* HERO IMAGE */}
       <div className="relative h-64 w-full">
         <img
@@ -100,7 +99,6 @@ export default function Inscription() {
           className="max-w-xl mx-auto space-y-12"
         >
           <form onSubmit={handleSubmit} className="space-y-8">
-
             {/* ERREUR GÉNÉRALE */}
             {errors.general && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
@@ -120,7 +118,9 @@ export default function Inscription() {
                 className={inputClass("prenom")}
                 placeholder="Prénom"
               />
-              {errors.prenom && <p className="text-red-500 text-sm">{errors.prenom}</p>}
+              {errors.prenom && (
+                <p className="text-red-500 text-sm">{errors.prenom}</p>
+              )}
             </div>
 
             {/* NOM */}
@@ -135,7 +135,9 @@ export default function Inscription() {
                 className={inputClass("nom")}
                 placeholder="Nom"
               />
-              {errors.nom && <p className="text-red-500 text-sm">{errors.nom}</p>}
+              {errors.nom && (
+                <p className="text-red-500 text-sm">{errors.nom}</p>
+              )}
             </div>
 
             {/* EMAIL */}
@@ -150,7 +152,9 @@ export default function Inscription() {
                 className={inputClass("email")}
                 placeholder="email@example.com"
               />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
             </div>
 
             {/* MOT DE PASSE */}
