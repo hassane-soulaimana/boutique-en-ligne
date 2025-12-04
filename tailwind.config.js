@@ -1,9 +1,13 @@
 export default {
-  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "index.html",
+    "src/**/*.{js,jsx,ts,tsx}",
+    "!**/node_modules/**",
+  ],
   theme: {
     extend: {
       fontFamily: {
-        kanit: ['Kanit', 'sans-serif'],
+        sans: ['Inter Tight', 'Inter', 'sans-serif'],
       },
     },
   },

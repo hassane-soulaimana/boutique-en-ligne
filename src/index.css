@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+@import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
 
 @tailwind base;
 @tailwind components;
@@ -11,8 +11,9 @@ body {
   color: black;
   margin: 0;
   padding: 0;
-  font-family: 'Kanit', sans-serif;
+  font-family: 'Inter Tight', 'Inter', sans-serif; 
 }
+
 
 /* Hide scrollbar for sliders */
 .no-scrollbar::-webkit-scrollbar {
@@ -21,4 +22,20 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Animation for notifications */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
 }

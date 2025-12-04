@@ -6,13 +6,13 @@ import GokuImg from "../../assets/dragonBall.png";
 
 export default function Univers() {
   return (
-    <section className="w-full mt-20">
+    <section className="w-full">
 
       {/* TITRE */}
       <div className="max-w-6xl mx-auto px-6 text-center mb-16">
         <h2 className="text-5xl font-semibold text-gray-900">Nos univers</h2>
         <p className="text-gray-600 mt-2 text-base">
-          Plongez dans les mondes légendaires qui inspirent nos collections d’échecs.
+          Plongez dans les mondes légendaires qui inspirent nos collections d'échecs.
         </p>
       </div>
 
@@ -24,9 +24,9 @@ export default function Univers() {
           <div>
             <h3 className="text-3xl font-semibold text-gray-900 mb-4">Naruto</h3>
             <p className="text-gray-700 text-lg leading-relaxed">
-              L’univers ninja prend vie dans une collection façonnée pour les passionnés.
+              L'univers ninja prend vie dans une collection façonnée pour les passionnés.
               Chaque pièce rend hommage aux symboles iconiques du monde de Konoha,
-              sculptée avec précision pour capturer la force et l’énergie des héros.
+              sculptée avec précision pour capturer la force et l'énergie des héros.
             </p>
 
             <Link
@@ -60,7 +60,7 @@ export default function Univers() {
             <p className="text-gray-700 text-lg leading-relaxed">
               Embarquez pour Grand Line à travers une collection inspirée du voyage de Luffy.
               Des pièces pleines de caractère, une esthétique marine et un vrai hommage
-              à l’esprit pirate.
+              à l'esprit pirate.
             </p>
 
             <Link
@@ -82,7 +82,7 @@ export default function Univers() {
           <div>
             <h3 className="text-3xl font-semibold text-gray-900 mb-4">Dragon Ball</h3>
             <p className="text-gray-700 text-lg leading-relaxed">
-              Une collection explosive inspirée de l’univers des guerriers Z.
+              Une collection explosive inspirée de l'univers des guerriers Z.
               Couleurs énergiques, design puissant et sculptures iconiques qui capturent
               toute la puissance de Dragon Ball.
             </p>
