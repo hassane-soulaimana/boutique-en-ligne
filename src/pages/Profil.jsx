@@ -1,19 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { animeApi } from "../services/animeApi";
 
 export default function Profil() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("infos");
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const user = {
-    prenom: "Naruto",
-    nom: "Uzumaki",
-    email: "naruto@example.com",
-    telephone: "06 12 34 56 78",
-    adresse: "12 rue de Konoha",
-    ville: "Paris",
-    codePostal: "75001",
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  const loadUserProfile = async () => {
+    try {
+      const userData = await animeApi.getMe();
+      setUser(userData);
+    } catch (error) {
+      console.error('❌ Erreur chargement profil:', error);
+      // Si non connecté, rediriger vers connexion
+      navigate("/connexion");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const orders = [
@@ -39,9 +49,24 @@ export default function Profil() {
   ];
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    animeApi.logout();
     navigate("/connexion");
   };
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-[#faf7f2] flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
+          <p className="text-xl text-gray-600">Chargement du profil...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <main className="min-h-screen bg-[#faf7f2] py-16 px-6 lg:px-20">
@@ -106,17 +131,22 @@ export default function Profil() {
             </h2>
 
             <div className="space-y-4">
-              {Object.entries(user).map(([key, value], i) => (
-                <div
-                  key={i}
-                  className="flex justify-between border-b border-stone-200 pb-3"
-                >
-                  <span className="font-medium text-stone-700 capitalize">
-                    {key.replace(/([A-Z])/g, " $1")}
-                  </span>
-                  <span className="text-stone-600">{value}</span>
-                </div>
-              ))}
+              <div className="flex justify-between border-b border-stone-200 pb-3">
+                <span className="font-medium text-stone-700">Prénom</span>
+                <span className="text-stone-600">{user.prenom}</span>
+              </div>
+              <div className="flex justify-between border-b border-stone-200 pb-3">
+                <span className="font-medium text-stone-700">Nom</span>
+                <span className="text-stone-600">{user.nom}</span>
+              </div>
+              <div className="flex justify-between border-b border-stone-200 pb-3">
+                <span className="font-medium text-stone-700">Email</span>
+                <span className="text-stone-600">{user.email}</span>
+              </div>
+              <div className="flex justify-between border-b border-stone-200 pb-3">
+                <span className="font-medium text-stone-700">Rôle</span>
+                <span className="text-stone-600">{user.role === 'admin' ? 'Administrateur' : 'Utilisateur'}</span>
+              </div>
             </div>
 
             <button className="mt-10 px-8 py-3 font-semibold bg-stone-900 text-white rounded-sm hover:bg-amber-700 transition">

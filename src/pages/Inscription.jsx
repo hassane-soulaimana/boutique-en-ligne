@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import inscriptionImg from "../assets/inscription.png";
+import { animeApi } from "../services/animeApi";
 
 export default function Inscription() {
   const navigate = useNavigate();
@@ -48,15 +49,28 @@ export default function Inscription() {
     ${errors[field] ? "border-red-500" : "border-stone-300"}
   `;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
-    setTimeout(() => {
+    try {
+      // Appel API avec confirmPassword
+      const result = await animeApi.register({
+        ...formData,
+        confirmPassword: formData.password // Le backend vérifie que les 2 mots de passe correspondent
+      });
+      
+      console.log('✅ Inscription réussie:', result);
+      
+      // Redirection vers le profil
       navigate("/profil");
+    } catch (error) {
+      console.error('❌ Erreur inscription:', error);
+      setErrors({ general: error.message || 'Erreur lors de l\'inscription' });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -86,6 +100,13 @@ export default function Inscription() {
           className="max-w-xl mx-auto space-y-12"
         >
           <form onSubmit={handleSubmit} className="space-y-8">
+
+            {/* ERREUR GÉNÉRALE */}
+            {errors.general && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                {errors.general}
+              </div>
+            )}
 
             {/* PRÉNOM */}
             <div className="space-y-2">

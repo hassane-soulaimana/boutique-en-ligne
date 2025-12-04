@@ -1,5 +1,5 @@
 // Service pour l'API Anime
-const API_BASE_URL = 'https://apianime.alwaysdata.net/api';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 export const animeApi = {
   // Récupérer tous les univers
@@ -165,6 +165,102 @@ export const animeApi = {
       console.error('Erreur API:', error);
       throw error;
     }
+  },
+
+  // === AUTHENTIFICATION ===
+
+  // Inscription
+  async register(userData) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de l\'inscription');
+      }
+      
+      // Sauvegarder le token
+      if (data.data && data.data.token) {
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Erreur inscription:', error);
+      throw error;
+    }
+  },
+
+  // Connexion
+  async login(credentials) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la connexion');
+      }
+      
+      // Sauvegarder le token
+      if (data.data && data.data.token) {
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Erreur connexion:', error);
+      throw error;
+    }
+  },
+
+  // Récupérer le profil de l'utilisateur connecté
+  async getMe() {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('Non authentifié');
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Erreur lors de la récupération du profil');
+      }
+      
+      return data.data;
+    } catch (error) {
+      console.error('Erreur getMe:', error);
+      throw error;
+    }
+  },
+
+  // Déconnexion
+  logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 };
 
