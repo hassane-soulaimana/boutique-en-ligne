@@ -1,11 +1,11 @@
 // Page Echiquiers avec filtres par fourchettes + pagination
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useCart } from '../context/CartContext';
+import { ThemeContext } from '../context/ThemeContext.jsx';
 
 export default function Echiquiers() {
-  const { addItem } = useCart();
+  const { addItem } = useContext(ThemeContext);
   
   const echiquiers = [
     { id: 1, nom: 'Échiquier Naruto Premium', prix: 149.99, image: '🎮', collection: 'naruto' },

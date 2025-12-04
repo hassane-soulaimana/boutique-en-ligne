@@ -12,10 +12,20 @@ export default function Inscription() {
     nom: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  /* -----------------------------------------------------------
+     🔒 Vérification simple mais sécurisée du mot de passe
+     ----------------------------------------------------------- */
+  const passwordStrengthCheck = (password) => {
+    // min 6 chars, 1 maj, 1 min, 1 chiffre
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+    return regex.test(password);
+  };
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -24,6 +34,9 @@ export default function Inscription() {
     }
   };
 
+  /* -----------------------------------------------------------
+     VALIDATIONS FRONTEND SIMPLES
+     ----------------------------------------------------------- */
   const validateForm = () => {
     const newErrors = {};
 
@@ -34,8 +47,12 @@ export default function Inscription() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
       newErrors.email = "Email invalide";
 
-    if (!formData.password || formData.password.length < 6)
-      newErrors.password = "6 caractères minimum";
+    if (!passwordStrengthCheck(formData.password))
+      newErrors.password =
+        "6 caractères min, avec majuscule, minuscule et chiffre";
+
+    if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Les mots de passe ne correspondent pas";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -49,40 +66,58 @@ export default function Inscription() {
     ${errors[field] ? "border-red-500" : "border-stone-300"}
   `;
 
+  /* -----------------------------------------------------------
+     📌 SUBMIT — emplacement où connecter le BACKEND
+     ----------------------------------------------------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
-    try {
-      // Appel API avec confirmPassword
-      const result = await animeApi.register({
-        ...formData,
-        confirmPassword: formData.password, // Le backend vérifie que les 2 mots de passe correspondent
-      });
 
-      console.log("✅ Inscription réussie:", result);
+    /* ---------------------------------------------------------
+       ▶ ICI : APPEL API BACKEND
+       ---------------------------------------------------------
+       Exemple POST:
+          const res = await fetch("https://ton-back.com/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prenom,
+              nom,
+              email,
+              password,
+            }),
+          });
 
-      // Redirection vers le profil
+          const data = await res.json();
+
+          if (res.ok) {
+            // success → login auto ou redirect
+          } else {
+            // data.error → message retour serveur (email déjà utilisé, etc.)
+          }
+    ---------------------------------------------------------- */
+
+    setTimeout(() => {
       navigate("/profil");
     } catch (error) {
       console.error("❌ Erreur inscription:", error);
       setErrors({ general: error.message || "Erreur lors de l'inscription" });
     } finally {
       setLoading(false);
-    }
+    }, 800);
   };
 
   return (
     <main className="min-h-screen bg-[#faf7f2]">
-      {/* HERO IMAGE */}
       <div className="relative h-64 w-full">
         <img
           src={inscriptionImg}
           alt="Inscription"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 flex items-center justify-center">
           <h1 className="text-4xl lg:text-5xl font-semibold text-white drop-shadow-lg">
             Créer votre compte
@@ -90,115 +125,78 @@ export default function Inscription() {
         </div>
       </div>
 
-      {/* FORMULAIRE */}
       <section className="container mx-auto px-6 lg:px-20 py-16">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-xl mx-auto space-y-12"
+          className="max-w-xl mx-auto"
         >
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* ERREUR GÉNÉRALE */}
-            {errors.general && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                {errors.general}
-              </div>
-            )}
-
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-8 p-10 bg-white border border-stone-200 shadow-sm rounded-md"
+          >
             {/* PRÉNOM */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700">
-                Prénom *
-              </label>
-              <input
-                type="text"
-                value={formData.prenom}
-                onChange={(e) => handleChange("prenom", e.target.value)}
-                className={inputClass("prenom")}
-                placeholder="Prénom"
-              />
-              {errors.prenom && (
-                <p className="text-red-500 text-sm">{errors.prenom}</p>
-              )}
-            </div>
+            <Field
+              label="Prénom *"
+              type="text"
+              value={formData.prenom}
+              onChange={(v) => handleChange("prenom", v)}
+              error={errors.prenom}
+              inputClass={inputClass("prenom")}
+            />
 
             {/* NOM */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700">
-                Nom *
-              </label>
-              <input
-                type="text"
-                value={formData.nom}
-                onChange={(e) => handleChange("nom", e.target.value)}
-                className={inputClass("nom")}
-                placeholder="Nom"
-              />
-              {errors.nom && (
-                <p className="text-red-500 text-sm">{errors.nom}</p>
-              )}
-            </div>
+            <Field
+              label="Nom *"
+              type="text"
+              value={formData.nom}
+              onChange={(v) => handleChange("nom", v)}
+              error={errors.nom}
+              inputClass={inputClass("nom")}
+            />
 
             {/* EMAIL */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700">
-                Email *
-              </label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                className={inputClass("email")}
-                placeholder="email@example.com"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
-              )}
-            </div>
+            <Field
+              label="Email *"
+              type="email"
+              value={formData.email}
+              onChange={(v) => handleChange("email", v)}
+              error={errors.email}
+              inputClass={inputClass("email")}
+            />
 
             {/* MOT DE PASSE */}
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700">
-                Mot de passe *
-              </label>
-              <input
-                type="password"
-                value={formData.password}
-                onChange={(e) => handleChange("password", e.target.value)}
-                className={inputClass("password")}
-                placeholder="••••••••"
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password}</p>
-              )}
-            </div>
+            <Field
+              label="Mot de passe *"
+              type="password"
+              value={formData.password}
+              onChange={(v) => handleChange("password", v)}
+              error={errors.password}
+              inputClass={inputClass("password")}
+            />
 
-            {/* BOUTON */}
+            {/* CONFIRMATION */}
+            <Field
+              label="Confirmer le mot de passe *"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={(v) => handleChange("confirmPassword", v)}
+              error={errors.confirmPassword}
+              inputClass={inputClass("confirmPassword")}
+            />
+
             <button
               type="submit"
               disabled={loading}
-              className="
-                w-full py-3 bg-stone-900 text-white font-semibold rounded-sm
-                hover:bg-amber-700 transition duration-300
-                disabled:bg-stone-400
-              "
+              className="w-full py-3 bg-stone-900 text-white font-semibold rounded-sm hover:bg-amber-700 transition disabled:bg-stone-400"
             >
               {loading ? "Inscription..." : "S'inscrire"}
             </button>
           </form>
 
-          {/* DIVIDER */}
-          <div className="relative my-10">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-stone-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-[#faf7f2] text-stone-500">ou</span>
-            </div>
-          </div>
+          <Divider />
 
-          {/* REDIRECTION */}
           <p className="text-center text-stone-700">
             Déjà un compte ?{" "}
             <Link
@@ -211,5 +209,35 @@ export default function Inscription() {
         </motion.div>
       </section>
     </main>
+  );
+}
+
+
+
+function Field({ label, type, value, onChange, error, inputClass }) {
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-semibold text-stone-700">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={inputClass}
+      />
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+    </div>
+  );
+}
+
+function Divider() {
+  return (
+    <div className="relative my-10">
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full border-t border-stone-300" />
+      </div>
+      <div className="relative flex justify-center text-sm">
+        <span className="px-2 bg-[#faf7f2] text-stone-500">ou</span>
+      </div>
+    </div>
   );
 }

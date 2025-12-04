@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { useCart } from "../../context/CartContext";
+import { ThemeContext } from "../../context/ThemeContext.jsx";
 
 import {
   MagnifyingGlassIcon,
@@ -13,7 +13,9 @@ import {
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { getTotalItems } = useCart();
+  const [collectionsOpen, setCollectionsOpen] = useState(false);
+  
+const { getTotalItems } = useContext(ThemeContext);
   const cartCount = getTotalItems();
 
   return (

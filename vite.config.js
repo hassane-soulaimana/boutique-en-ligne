@@ -12,11 +12,12 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      "/api": {
-        target: "http://localhost:3000", // Remplacez par le port de votre backend
+      '/api': {
+        target: 'https://apianime.alwaysdata.net',
         changeOrigin: true,
         secure: false,
-      },
-    },
-  },
-});
+        rewrite: (path) => path,
+      }
+    }
+  }
+})
