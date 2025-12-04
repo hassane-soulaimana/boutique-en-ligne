@@ -195,10 +195,15 @@ export const animeApi = {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Erreur lors de l'inscription");
+        // Retourner l'erreur au lieu de la lancer
+        return {
+          success: false,
+          message: data.message || "Erreur lors de l'inscription",
+          data: data,
+        };
       }
 
-      // Sauvegarder le token
+      // Sauvegarder le token en cas de succès
       if (data.data && data.data.token) {
         localStorage.setItem("token", data.data.token);
         localStorage.setItem("user", JSON.stringify(data.data.user));
@@ -207,7 +212,10 @@ export const animeApi = {
       return data;
     } catch (error) {
       console.error("Erreur inscription:", error);
-      throw error;
+      return {
+        success: false,
+        message: error.message || "Erreur de connexion au serveur",
+      };
     }
   },
 
