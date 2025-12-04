@@ -3,6 +3,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import connexionImg from "../assets/connexion.png";
 
+const API_URL = "https://apianime.alwaysdata.net";
+
+const login = async (email, password) => {
+  const res = await fetch(`${API_URL}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    throw new Error(`Erreur ${res.status}: ${res.statusText}`);
+  }
+  return res.json();
+};
+
 export default function Connexion() {
   const navigate = useNavigate();
 
@@ -34,15 +48,41 @@ export default function Connexion() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
-    setTimeout(() => {
-      navigate("/profil");
+
+    try {
+      const data = await login(formData.email, formData.password);
+
+      console.log("Réponse login:", data);
+
+      //
+      const token = data.token || data.data?.token || data.accessToken;
+      const success = data.success || data.token || data.accessToken;
+
+      if (success && token) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("authToken", token); // Pour compatibilité
+        if (data.data?.user) {
+          localStorage.setItem("user", JSON.stringify(data.data.user));
+        }
+        setTimeout(() => {
+          navigate("/profil");
+        }, 500);
+      } else {
+        // Erreur du serveur
+        const errorMsg = data.error || data.message || "Erreur lors de la connexion";
+        setErrors({ general: errorMsg });
+      }
+    } catch (error) {
+      console.error(" Erreur connexion:", error);
+      setErrors({ general: error.message || "Erreur lors de la connexion" });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -78,8 +118,15 @@ export default function Connexion() {
               Heureux de vous revoir.
             </p>
 
-            {/* FORMULAIRE */}
+            {/* Formulaire */}
             <form onSubmit={handleSubmit} className="space-y-8">
+
+              {/* Erreur générale */}
+              {errors.general && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-sm">
+                  <p className="text-red-600 text-sm">{errors.general}</p>
+                </div>
+              )}
 
               {/* Email */}
               <div className="space-y-2">
