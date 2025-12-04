@@ -16,12 +16,12 @@ export default function Inscription() {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
 
   /* -----------------------------------------------------------
-     🔒 Vérification simple mais sécurisée du mot de passe
-     ----------------------------------------------------------- */
+     Vérification simple du mot de passe
+  ----------------------------------------------------------- */
   const passwordStrengthCheck = (password) => {
-    // min 6 chars, 1 maj, 1 min, 1 chiffre
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
     return regex.test(password);
   };
@@ -31,11 +31,12 @@ export default function Inscription() {
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
+    setServerError("");
   };
 
   /* -----------------------------------------------------------
-     VALIDATIONS FRONTEND SIMPLES
-     ----------------------------------------------------------- */
+     VALIDATION FRONTEND
+  ----------------------------------------------------------- */
   const validateForm = () => {
     const newErrors = {};
 
@@ -47,8 +48,7 @@ export default function Inscription() {
       newErrors.email = "Email invalide";
 
     if (!passwordStrengthCheck(formData.password))
-      newErrors.password =
-        "6 caractères min, avec majuscule, minuscule et chiffre";
+      newErrors.password = "6 caractères min, avec majuscule, minuscule et chiffre";
 
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Les mots de passe ne correspondent pas";
@@ -66,42 +66,46 @@ export default function Inscription() {
   `;
 
   /* -----------------------------------------------------------
-     📌 SUBMIT — emplacement où connecter le BACKEND
-     ----------------------------------------------------------- */
+     APPEL BACKEND + AUTO‑CONNEXION
+  ----------------------------------------------------------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
+    setServerError("");
 
-    /* ---------------------------------------------------------
-       ▶ ICI : APPEL API BACKEND
-       ---------------------------------------------------------
-       Exemple POST:
-          const res = await fetch("https://ton-back.com/api/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              prenom,
-              nom,
-              email,
-              password,
-            }),
-          });
+    try {
+      const res = await fetch("https://apianime.alwaysdata.net/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prenom: formData.prenom,
+          nom: formData.nom,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-          const data = await res.json();
+      const data = await res.json();
 
-          if (res.ok) {
-            // success → login auto ou redirect
-          } else {
-            // data.error → message retour serveur (email déjà utilisé, etc.)
-          }
-    ---------------------------------------------------------- */
+      if (!res.ok) {
+        setServerError(data.error || "Erreur inconnue");
+        setLoading(false);
+        return;
+      }
 
-    setTimeout(() => {
+      // AUTO-CONNEXION
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       navigate("/profil");
-      setLoading(false);
-    }, 800);
+
+    } catch (error) {
+      setServerError("Erreur réseau. Réessayez.");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -131,50 +135,42 @@ export default function Inscription() {
             onSubmit={handleSubmit}
             className="space-y-8 p-10 bg-white border border-stone-200 shadow-sm rounded-md"
           >
-            {/* PRÉNOM */}
-            <Field
-              label="Prénom *"
-              type="text"
+
+            {serverError && (
+              <p className="text-red-600 text-center font-semibold">
+                {serverError}
+              </p>
+            )}
+
+            <Field label="Prénom *" type="text"
               value={formData.prenom}
               onChange={(v) => handleChange("prenom", v)}
               error={errors.prenom}
               inputClass={inputClass("prenom")}
             />
 
-            {/* NOM */}
-            <Field
-              label="Nom *"
-              type="text"
+            <Field label="Nom *" type="text"
               value={formData.nom}
               onChange={(v) => handleChange("nom", v)}
               error={errors.nom}
               inputClass={inputClass("nom")}
             />
 
-            {/* EMAIL */}
-            <Field
-              label="Email *"
-              type="email"
+            <Field label="Email *" type="email"
               value={formData.email}
               onChange={(v) => handleChange("email", v)}
               error={errors.email}
               inputClass={inputClass("email")}
             />
 
-            {/* MOT DE PASSE */}
-            <Field
-              label="Mot de passe *"
-              type="password"
+            <Field label="Mot de passe *" type="password"
               value={formData.password}
               onChange={(v) => handleChange("password", v)}
               error={errors.password}
               inputClass={inputClass("password")}
             />
 
-            {/* CONFIRMATION */}
-            <Field
-              label="Confirmer le mot de passe *"
-              type="password"
+            <Field label="Confirmer le mot de passe *" type="password"
               value={formData.confirmPassword}
               onChange={(v) => handleChange("confirmPassword", v)}
               error={errors.confirmPassword}
@@ -206,8 +202,6 @@ export default function Inscription() {
     </main>
   );
 }
-
-
 
 function Field({ label, type, value, onChange, error, inputClass }) {
   return (
