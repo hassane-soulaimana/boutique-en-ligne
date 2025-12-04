@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
+import { ThemeContext } from "../context/ThemeContext.jsx";
 import {
   ArrowLeftIcon,
   TagIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Checkout() {
-  const { items, getSubtotal } = useCart();
+  const { cart: items, getSubtotal } = useContext(ThemeContext);
   const subtotal = getSubtotal();
   const navigate = useNavigate();
 

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
-import { useCart } from "../../context/CartContext";
+import { ThemeContext } from "../../context/ThemeContext.jsx";
 import { animeApi } from "../../services/animeApi";
 
 export default function ChessPieces() {
@@ -8,7 +8,7 @@ export default function ChessPieces() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { addItem } = useCart();
+  const { addItem } = useContext(ThemeContext);
 
   useEffect(() => {
     loadProducts();
@@ -19,7 +19,6 @@ export default function ChessPieces() {
     setError(null);
     try {
       const data = await animeApi.getProducts();
-      console.log('✅ Produits chargés (ChessPieces):', data);
       setProducts(data);
     } catch (err) {
       console.error('❌ Erreur chargement produits:', err);
@@ -40,13 +39,15 @@ export default function ChessPieces() {
 
   const handleAddToCart = (product) => {
     try {
-      addItem({
+      const productToAdd = {
         id: product._id || product.id,
         nom: product.nom || product.name,
         prix: product.prix || product.price,
         image: product.image || product.imageUrl,
         collection: product.collection || 'Anime'
-      });
+      };
+      
+      addItem(productToAdd);
       
       // Notification améliorée
       const notification = document.createElement('div');

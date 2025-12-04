@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { useCart } from '../context/CartContext';
+import { useState, useEffect, useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext.jsx';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addItem } = useCart();
+  const { addItem } = useContext(ThemeContext);
   const [quantity, setQuantity] = useState(1);
 
   // -------------------------------------------------------------

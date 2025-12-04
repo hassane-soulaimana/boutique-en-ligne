@@ -1,11 +1,11 @@
 // Page Accessoires avec filtres + pagination - Style Premium
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useCart } from '../context/CartContext';
+import { ThemeContext } from '../context/ThemeContext.jsx';
 
 export default function Accessoires() {
-  const { addItem } = useCart();
+  const { addItem } = useContext(ThemeContext);
 
   const accessoires = [
     { id: 1, nom: 'Étui de rangement Naruto', prix: 29.99, image: '📦', collection: 'naruto' },

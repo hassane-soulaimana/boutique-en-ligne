@@ -1,11 +1,11 @@
 // Page Pièces d'échecs avec filtres + pagination - Style Premium
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useCart } from '../context/CartContext';
+import { ThemeContext } from '../context/ThemeContext.jsx';
 
 export default function Pieces() {
-  const { addItem } = useCart();
+  const { addItem } = useContext(ThemeContext);
 
   const pieces = [
     { id: 1, nom: 'Pièces Naruto Premium', prix: 45.99, image: '♟️', collection: 'naruto' },

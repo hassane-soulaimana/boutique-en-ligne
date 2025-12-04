@@ -1,12 +1,12 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon } from "@heroicons/react/24/solid";
-import { useCart } from "../../context/CartContext";
+import { ThemeContext } from "../../context/ThemeContext.jsx";
 import { animeApi } from "../../services/animeApi";
 
 export default function NewProducts() {
   const sliderRef = useRef(null);
-  const { addItem } = useCart();
+  const { addItem } = useContext(ThemeContext);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,7 +22,6 @@ export default function NewProducts() {
     try {
       // Charger les univers au lieu des produits
       const data = await animeApi.getUniverses();
-      console.log('✅ Univers chargés depuis l\'API:', data);
       
       if (data && data.length > 0) {
         // Transformer les univers en format produit pour l'affichage
