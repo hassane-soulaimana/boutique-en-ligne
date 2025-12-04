@@ -14,8 +14,8 @@ import {
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [collectionsOpen, setCollectionsOpen] = useState(false);
-
-  const { getTotalItems } = useCart();
+  
+const { getTotalItems } = useContext(ThemeContext);
   const cartCount = getTotalItems();
 
   return (
