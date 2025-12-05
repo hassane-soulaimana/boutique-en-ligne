@@ -20,27 +20,18 @@ export default function NewProducts() {
     setLoading(true);
     setError(null);
     try {
-      // Charger les univers au lieu des produits
-      const data = await animeApi.getUniverses();
+      // Charger les produits depuis l'API
+      const data = await animeApi.getProducts();
       
       if (data && data.length > 0) {
-        // Transformer les univers en format produit pour l'affichage
-        const universesAsProducts = data.map(universe => ({
-          _id: universe._id,
-          nom: universe.name,
-          description: universe.description,
-          prix: 18.99, // Prix par défaut pour les univers
-          image: `https://apianime.alwaysdata.net${universe.image}`,
-          categorie: 'Univers'
-        }));
-        setProducts(universesAsProducts);
+        setProducts(data);
       } else {
-        console.warn('⚠️ API vide, aucun univers disponible');
+        console.warn('⚠️ API vide, aucun produit disponible');
         setProducts([]);
       }
     } catch (error) {
-      console.error('❌ Erreur lors du chargement des univers:', error);
-      setError('Impossible de charger les univers. Veuillez réessayer plus tard.');
+      console.error('❌ Erreur lors du chargement des produits:', error);
+      setError('Impossible de charger les produits. Veuillez réessayer plus tard.');
       setProducts([]);
     } finally {
       setLoading(false);
@@ -53,11 +44,16 @@ export default function NewProducts() {
 
   const handleAddToCart = (product) => {
     try {
-      addItem(product);
+      addItem({
+        id: product._id || product.id,
+        nom: product.nom || product.name,
+        prix: product.prix || product.price,
+        image: product.image || product.imageUrl,
+      });
       // Notification améliorée au lieu d'alert
       const notification = document.createElement('div');
       notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
-      notification.innerHTML = `<strong>✓</strong> ${product.nom} ajouté au panier !`;
+      notification.innerHTML = `<strong>✓</strong> ${product.nom || product.name} ajouté au panier !`;
       document.body.appendChild(notification);
       
       setTimeout(() => {
@@ -155,8 +151,8 @@ export default function NewProducts() {
                 {/* IMAGE */}
                 <div className="w-full aspect-square bg-gray-200 rounded-t-2xl overflow-hidden">
                   <img 
-                    src={p.image} 
-                    alt={p.nom}
+                    src={p.image || p.imageUrl} 
+                    alt={p.nom || p.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
@@ -168,9 +164,9 @@ export default function NewProducts() {
                 {/* CONTENT */}
                 <div className="p-4">
                   <h3 className="text-gray-900 font-semibold text-lg mb-1">
-                    {p.nom}
+                    {p.nom || p.name}
                   </h3>
-                  <p className="text-gray-500 text-sm">{p.prix.toFixed(2)}€</p>
+                  <p className="text-gray-500 text-sm">{(p.prix || p.price)?.toFixed(2)}€</p>
 
                   <button
                     onClick={() => handleAddToCart(p)}

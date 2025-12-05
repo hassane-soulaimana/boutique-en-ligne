@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { ThemeContext } from '../context/ThemeContext.jsx';
 
 export default function Pieces() {
-  const { addItem } = useContext(ThemeContext);
+  const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
 
   const pieces = [
     { id: 1, nom: 'Pièces Naruto Premium', prix: 45.99, image: '♟️', collection: 'naruto' },
@@ -257,17 +257,37 @@ export default function Pieces() {
                       </div>
                       
                       <div className="flex items-center justify-between pt-2 border-t border-stone-100">
-                       <p className="text-base font-normal text-amber-700">
-  {produit.prix.toFixed(2)} €
-</p>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleAddToCart(produit)}
-                          className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-sm hover:bg-amber-700 transition-colors duration-300"
-                        >
-                          Ajouter
-                        </motion.button>
+                        <p className="text-base font-normal text-amber-700">
+                          {produit.prix.toFixed(2)} €
+                        </p>
+                        <div className="flex gap-2">
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => toggleFavorite({
+                              id: produit.id,
+                              nom: produit.nom,
+                              prix: produit.prix,
+                              image: produit.image,
+                              collection: produit.collection,
+                            })}
+                            className={`px-3 py-2 text-lg rounded-sm transition-colors duration-300 ${
+                              isFavorite(produit.id)
+                                ? 'text-red-500 hover:text-red-600'
+                                : 'text-stone-400 hover:text-red-500'
+                            }`}
+                          >
+                            {isFavorite(produit.id) ? '❤️' : '♡'}
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleAddToCart(produit)}
+                            className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-sm hover:bg-amber-700 transition-colors duration-300"
+                          >
+                            Ajouter
+                          </motion.button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>

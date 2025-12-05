@@ -9,7 +9,7 @@ export default function ChessPieces() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { addItem } = useContext(ThemeContext);
+  const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
 
   useEffect(() => {
     fetchProducts();
@@ -37,7 +37,7 @@ export default function ChessPieces() {
   const prevSlide = () =>
     setCurrentIndex((prev) => (prev - 1 + products.length) % products.length);
 
-  // 📌 Ajout au panier simplifié
+  // Ajout au panier
   const handleAddToCart = (product) => {
     addItem({
       id: product._id || product.id,
@@ -46,7 +46,7 @@ export default function ChessPieces() {
       image: product.image || product.imageUrl,
     });
 
-    // Petite notification simple
+    // Petite notification 
     const notif = document.createElement("div");
     notif.className =
       "fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg";
@@ -55,9 +55,7 @@ export default function ChessPieces() {
     setTimeout(() => notif.remove(), 2500);
   };
 
-  // ────────────────────────────────────────────────
-  //    GESTION DES ÉTATS (chargement / erreur / vide)
-  // ────────────────────────────────────────────────
+  // Chargement // Erreurs
 
   if (loading)
     return (
@@ -87,10 +85,7 @@ export default function ChessPieces() {
       </div>
     );
 
-  // ────────────────────────────────────────────────
-  //                    RENDU DU CAROUSEL
-  // ────────────────────────────────────────────────
-
+// Carrousel
   return (
     <section className="py-20 bg-gradient-to-b from-amber-50 to-white">
       <div className="container mx-auto px-6">
@@ -127,13 +122,30 @@ export default function ChessPieces() {
                       {product.prix || product.price} €
                     </span>
 
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      className="flex items-center gap-2 bg-amber-600 text-white px-6 py-3 rounded-lg"
-                    >
-                      <ShoppingCartIcon className="h-5 w-5" />
-                      Ajouter
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => toggleFavorite({
+                          id: product._id || product.id,
+                          nom: product.nom || product.name,
+                          prix: product.prix || product.price,
+                          image: product.image || product.imageUrl,
+                        })}
+                        className={`p-3 rounded-lg transition-colors ${
+                          isFavorite(product._id || product.id)
+                            ? 'bg-red-500 text-white hover:bg-red-600'
+                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                        }`}
+                      >
+                        {isFavorite(product._id || product.id) ? '❤️' : '♡'}
+                      </button>
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        className="flex items-center gap-2 bg-amber-600 text-white px-6 py-3 rounded-lg"
+                      >
+                        <ShoppingCartIcon className="h-5 w-5" />
+                        Ajouter
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

@@ -14,6 +14,7 @@ import Connexion from "./pages/Connexion";
 import Inscription from "./pages/Inscription";
 import Profil from "./pages/Profil";
 import Panier from "./pages/Panier";
+import Favoris from "./pages/Favoris";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/collections/:univers" element={<CollectionDetail />} />
           <Route path="/produit/:id" element={<ProductDetail />} />
           <Route path="/panier" element={<Panier />} />
+          <Route path="/favoris" element={<Favoris />} />
           <Route path="/connexion" element={<Connexion />} />
           <Route path="/inscription" element={<Inscription />} />
           <Route path="/profil" element={<Profil />} />

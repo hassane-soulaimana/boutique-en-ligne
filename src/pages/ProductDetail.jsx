@@ -5,7 +5,7 @@ import { ThemeContext } from '../context/ThemeContext.jsx';
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addItem } = useContext(ThemeContext);
+  const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
   const [quantity, setQuantity] = useState(1);
 
   // -------------------------------------------------------------
@@ -69,6 +69,16 @@ export default function ProductDetail() {
       quantity: quantity,
     });
     alert(`${quantity} x ${produit.nom} ajouté au panier !`);
+  };
+
+  const handleToggleFavorite = () => {
+    toggleFavorite({
+      id: produit.id,
+      nom: produit.nom,
+      prix: produit.prix,
+      image: produit.image,
+      collection: produit.collection,
+    });
   };
 
   return (
@@ -164,8 +174,15 @@ export default function ProductDetail() {
                   Ajouter au panier
                 </button>
 
-                <button className="px-6 py-4 border border-amber-600 text-amber-700 hover:bg-amber-50 font-medium rounded-sm transition">
-                  ♥ Favoris
+                <button 
+                  onClick={handleToggleFavorite}
+                  className={`px-6 py-4 border font-medium rounded-sm transition ${
+                    isFavorite(produit.id)
+                      ? 'bg-red-500 text-white border-red-500 hover:bg-red-600'
+                      : 'border-amber-600 text-amber-700 hover:bg-amber-50'
+                  }`}
+                >
+                  {isFavorite(produit.id) ? '❤️ Favori' : '♥ Favoris'}
                 </button>
               </div>
 
