@@ -85,100 +85,115 @@ export default function ChessPieces() {
       </div>
     );
 
-// Carrousel
+// Carrousel avec cartes plus petites
   return (
     <section className="py-20 bg-gradient-to-b from-amber-50 to-white">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl font-bold text-center mb-12">Nos Produits</h2>
 
-        <div className="relative max-w-4xl mx-auto">
-          <div className="overflow-hidden rounded-2xl shadow-2xl">
-            <div
-              className="flex transition-transform duration-500"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-            >
-              {products.map((product) => (
-                <div key={product._id} className="min-w-full p-8 bg-white">
-                  <img
-                    src={
-                      product.image ||
-                      product.imageUrl ||
-                      "https://via.placeholder.com/400"
-                    }
-                    alt={product.nom || product.name}
-                    className="w-full h-96 object-cover rounded-lg mb-6"
-                  />
+        <div className="relative w-full">
+          {/* Conteneur du carrousel avec marges */}
+          <div className="mx-auto px-12 py-4">
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 gap-6"
+                style={{ transform: `translateX(-${currentIndex * (100 / 3)}%)` }}
+              >
+                {products.map((product) => (
+                  <div 
+                    key={product._id} 
+                    className="min-w-[calc(33.333%-1rem)] bg-white border border-stone-200 rounded-lg shadow-md hover:shadow-xl transition-shadow p-4"
+                  >
+                    {/* Image */}
+                    <div className="relative h-40 bg-gradient-to-br from-stone-100 to-stone-50 rounded-lg mb-4 overflow-hidden">
+                      <img
+                        src={
+                          product.image ||
+                          product.imageUrl ||
+                          "https://via.placeholder.com/300"
+                        }
+                        alt={product.nom || product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
 
-                  <h3 className="text-2xl font-bold mb-2">
-                    {product.nom || product.name}
-                  </h3>
+                    {/* Contenu */}
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-semibold text-stone-900 line-clamp-2">
+                        {product.nom || product.name}
+                      </h3>
 
-                  <p className="text-gray-600 mb-4">
-                    {product.description || "Aucune description"}
-                  </p>
+                      <p className="text-amber-600 font-bold text-xl">
+                        {product.prix || product.price} €
+                      </p>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-3xl font-bold text-amber-600">
-                      {product.prix || product.price} €
-                    </span>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => toggleFavorite({
-                          id: product._id || product.id,
-                          nom: product.nom || product.name,
-                          prix: product.prix || product.price,
-                          image: product.image || product.imageUrl,
-                        })}
-                        className={`p-3 rounded-lg transition-colors ${
-                          isFavorite(product._id || product.id)
-                            ? 'bg-red-500 text-white hover:bg-red-600'
-                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                        }`}
-                      >
-                        {isFavorite(product._id || product.id) ? '❤️' : '♡'}
-                      </button>
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        className="flex items-center gap-2 bg-amber-600 text-white px-6 py-3 rounded-lg"
-                      >
-                        <ShoppingCartIcon className="h-5 w-5" />
-                        Ajouter
-                      </button>
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-2">
+                        <button
+                          onClick={() => toggleFavorite({
+                            id: product._id || product.id,
+                            nom: product.nom || product.name,
+                            prix: product.prix || product.price,
+                            image: product.image || product.imageUrl,
+                          })}
+                          className={`p-2 rounded-lg transition-colors ${
+                            isFavorite(product._id || product.id)
+                              ? 'text-red-500 hover:text-red-600'
+                              : 'text-stone-400 hover:text-red-500'
+                          }`}
+                        >
+                          {isFavorite(product._id || product.id) ? '❤️' : '♡'}
+                        </button>
+                        <button
+                          onClick={() => handleAddToCart(product)}
+                          className="flex-1 flex items-center justify-center gap-1 bg-amber-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 transition"
+                        >
+                          <ShoppingCartIcon className="h-4 w-4" />
+                          Ajouter
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Boutons navigation */}
-          <button
-            onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg"
-          >
-            <ChevronLeftIcon className="h-6 w-6" />
-          </button>
-
-          <button
-            onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-lg"
-          >
-            <ChevronRightIcon className="h-6 w-6" />
-          </button>
-
-          {/* Points */}
-          <div className="flex justify-center gap-2 mt-6">
-            {products.map((_, index) => (
+          {products.length > 3 && (
+            <>
               <button
-                key={index}
-                className={`h-3 w-3 rounded-full ${
-                  index === currentIndex ? "bg-amber-600 w-8" : "bg-gray-300"
-                }`}
-                onClick={() => setCurrentIndex(index)}
-              />
-            ))}
-          </div>
+                onClick={prevSlide}
+                className="absolute left-0 top-1/3 -translate-y-1/2 bg-white p-2 rounded-full shadow-lg hover:bg-stone-100 transition z-10"
+              >
+                <ChevronLeftIcon className="h-6 w-6 text-stone-900" />
+              </button>
+
+              <button
+                onClick={nextSlide}
+                className="absolute right-0 top-1/3 -translate-y-1/2 bg-white p-2 rounded-full shadow-lg hover:bg-stone-100 transition z-10"
+              >
+                <ChevronRightIcon className="h-6 w-6 text-stone-900" />
+              </button>
+            </>
+          )}
+
+          {/* Points indicateurs */}
+          {products.length > 3 && (
+            <div className="flex justify-center gap-2 mt-8">
+              {Array.from({ length: Math.ceil(products.length / 3) }).map((_, index) => (
+                <button
+                  key={index}
+                  className={`h-2 rounded-full transition-all ${
+                    index === Math.floor(currentIndex / 3) 
+                      ? "bg-amber-600 w-8" 
+                      : "bg-stone-300 w-2 hover:bg-stone-400"
+                  }`}
+                  onClick={() => setCurrentIndex(index * 3)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
