@@ -4,6 +4,7 @@ import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon } from "@heroicons/
 import { ThemeContext } from "../../context/ThemeContext.jsx";
 import { animeApi } from "../../services/animeApi";
 import API_URL from "../../services/api";
+import { getImageUrl, handleImageError } from "../../services/imageLoader";
 
 export default function NewProducts() {
   const sliderRef = useRef(null);
@@ -152,13 +153,10 @@ export default function NewProducts() {
                 {/* IMAGE */}
                 <div className="w-full aspect-square bg-gray-200 rounded-t-2xl overflow-hidden">
                   <img 
-                    src={p.image || "https://via.placeholder.com/300"}
+                    src={getImageUrl(p.image)}
                     alt={p.nom || p.name}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/260x260?text=Image+non+disponible';
-                    }}
+                    onError={handleImageError}
                   />
                 </div>
 

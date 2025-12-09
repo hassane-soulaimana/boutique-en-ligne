@@ -3,6 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon } from "@heroicons/
 import { ThemeContext } from "../../context/ThemeContext.jsx";
 import { animeApi } from "../../services/animeApi";
 import API_URL from "../../services/api";
+import { getImageUrl, handleImageError } from "../../services/imageLoader";
 
 export default function ChessPieces() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -108,9 +109,10 @@ export default function ChessPieces() {
                     {/* Image */}
                     <div className="relative h-40 bg-gradient-to-br from-stone-100 to-stone-50 rounded-lg mb-4 overflow-hidden">
                       <img
-                        src={product.image || product.imageUrl || "https://via.placeholder.com/300"}
+                        src={getImageUrl(product.image)}
                         alt={product.nom || product.name}
                         className="w-full h-full object-cover"
+                        onError={handleImageError}
                       />
                     </div>
 

@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext.jsx';
 import { animeApi } from '../services/animeApi';
+import { getImageUrl, handleImageError } from '../services/imageLoader';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -99,9 +100,10 @@ export default function ProductDetail() {
             <div>
               <div className="overflow-hidden rounded-sm border border-stone-200 shadow-sm">
                 <img
-                  src={produit.image || "https://via.placeholder.com/300"}
+                  src={getImageUrl(produit.image)}
                   alt={produit.nom}
                   className="w-full h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+                  onError={handleImageError}
                 />
               </div>
 

@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ThemeContext } from '../context/ThemeContext.jsx';
+import { getImageUrl, handleImageError } from '../services/imageLoader';
 
 export default function Favoris() {
   const { favorites, removeFavorite, addItem } = useContext(ThemeContext);
@@ -68,8 +69,8 @@ export default function Favoris() {
                   <div className="h-56 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center text-6xl relative overflow-hidden">
                     <div className="absolute inset-0 bg-amber-600/0 group-hover:bg-amber-600/5 transition-colors duration-300"></div>
                     {/* Afficher l'image ou l'emoji */}
-                    {produit.image && typeof produit.image === 'string' && produit.image.startsWith('http') ? (
-                      <img src={produit.image} alt={produit.nom} className="w-full h-full object-cover" />
+                    {produit.image && typeof produit.image === 'string' ? (
+                      <img src={getImageUrl(produit.image)} alt={produit.nom} className="w-full h-full object-cover" onError={handleImageError} />
                     ) : (
                       produit.image || '📦'
                     )}
