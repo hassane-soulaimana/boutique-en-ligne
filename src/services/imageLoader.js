@@ -3,7 +3,8 @@
  * Gère le chargement des images avec fallbacks et gestion d'URL complète
  */
 
-const API_BASE_URL = 'https://apianime.alwaysdata.net';
+import API_URL from './api';
+
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/300?text=Image+non+disponible';
 
 /**
@@ -24,11 +25,11 @@ export const getImageUrl = (imageUrl) => {
 
   // Si l'URL est relative avec slash, compléter avec l'API base URL
   if (imageUrl.startsWith('/')) {
-    return `${API_BASE_URL}${imageUrl}`;
+    return `${API_URL}${imageUrl}`;
   }
 
   // Sinon, compléter avec l'API base URL et slash
-  return `${API_BASE_URL}/${imageUrl}`;
+  return `${API_URL}/${imageUrl}`;
 };
 
 /**

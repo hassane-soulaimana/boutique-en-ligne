@@ -3,6 +3,18 @@
 import API_URL from "./api";
 const API_BASE_URL = `${API_URL}/api`;
 
+// Fonction utilitaire pour transformer les URLs d'images
+const normalizeImageUrl = (image) => {
+  if (!image) return null;
+  return image.startsWith('http') ? image : `${API_URL}${image}`;
+};
+
+// Fonction pour transformer un produit
+const transformProduct = (product) => ({
+  ...product,
+  image: normalizeImageUrl(product.image)
+});
+
 export const animeApi = {
   // Récupérer tous les univers
   async getUniverses() {
@@ -25,14 +37,23 @@ export const animeApi = {
   // Récupérer tous les produits
   async getProducts() {
     try {
-      const response = await fetch(`${API_BASE_URL}/products`);
+      const response = await fetch(`${API_BASE_URL}/products`, {
+        signal: AbortSignal.timeout(10000) // Timeout de 10 secondes
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
-
       console.log("API Response:", data); // Pour debug
 
-      if (data.success) {
-        return data.data; // Retourne le tableau de produits
+      if (data.success && data.data) {
+        // Transformer les images en URLs absolues
+        return data.data.map(transformProduct);
       }
+      
+      console.warn("API Response success false or no data:", data);
       return []; // Retourne un tableau vide si pas de succès
     } catch (error) {
       console.error("Erreur getProducts:", error);
