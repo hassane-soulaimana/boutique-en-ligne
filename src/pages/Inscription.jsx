@@ -4,15 +4,14 @@ import { motion } from "framer-motion";
 import inscriptionImg from "../assets/inscription.png";
 import { animeApi } from "../services/animeApi";
 
-const API_URL = "https://apianime.alwaysdata.net";
 
 const register = async (nom, prenom, email, password, confirmPassword) => {
-  const res = await fetch(`${API_URL}/api/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nom, prenom, email, password, confirmPassword }),
-  });
-  return res.json();
+  try {
+    const payload = await animeApi.register({ nom, prenom, email, password, confirmPassword });
+    return payload;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export default function Inscription() {

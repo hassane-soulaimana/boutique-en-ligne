@@ -1,5 +1,7 @@
+
 // Service pour l'API Anime
-const API_BASE_URL = "/api";
+import API_URL from "./api";
+const API_BASE_URL = `${API_URL}/api`;
 
 export const animeApi = {
   // Récupérer tous les univers

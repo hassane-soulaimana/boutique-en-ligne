@@ -3,31 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { animeApi } from "../services/animeApi";
 
-const API_URL = "https://apianime.alwaysdata.net";
+
 
 const getOrders = async (token) => {
-  const res = await fetch(`${API_URL}/api/orders`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error("Erreur chargement commandes");
-  return res.json();
+  return animeApi.getOrders(token);
 };
 
 const getFavorites = async (token) => {
-  const res = await fetch(`${API_URL}/api/favorites`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error("Erreur chargement favoris");
-  return res.json();
+  return animeApi.getFavorites(token);
 };
 
 const removeFavorite = async (token, productId) => {
-  const res = await fetch(`${API_URL}/api/favorites/${productId}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error("Erreur suppression favori");
-  return res.json();
+  return animeApi.removeFavorite(token, productId);
 };
 
 export default function Profil() {
@@ -316,7 +303,7 @@ export default function Profil() {
                   >
                     {fav.image && (
                       <img
-                        src={fav.image}
+                        src={fav.image.startsWith("http") ? fav.image : `https://apianime.alwaysdata.net${fav.image}`}
                         alt={fav.nom}
                         className="w-full h-40 object-cover rounded-sm mb-4"
                       />

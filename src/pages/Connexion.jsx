@@ -3,29 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import connexionImg from "../assets/connexion.png";
 
-const API_URL = "/api"; // utilise la proxy Vite en dev pour éviter CORS
+
+import { animeApi } from "../services/animeApi";
 
 const login = async (email, password) => {
-  const res = await fetch(`${API_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-
-  // Essayer de lire le JSON même en cas d'erreur pour récupérer le message
-  let payload = null;
   try {
-    payload = await res.json();
-  } catch (e) {
-    // réponse non-JSON
+    const payload = await animeApi.login(email, password);
+    return payload;
+  } catch (error) {
+    throw error;
   }
-
-  if (!res.ok) {
-    const msg = payload?.message || payload?.error || `${res.status} ${res.statusText}`;
-    throw new Error(msg);
-  }
-
-  return payload;
 };
 
 export default function Connexion() {

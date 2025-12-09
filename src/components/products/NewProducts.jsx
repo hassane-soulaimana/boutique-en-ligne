@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon } from "@heroicons/react/24/solid";
 import { ThemeContext } from "../../context/ThemeContext.jsx";
 import { animeApi } from "../../services/animeApi";
+import API_URL from "../../services/api";
 
 export default function NewProducts() {
   const sliderRef = useRef(null);
@@ -48,7 +49,7 @@ export default function NewProducts() {
         id: product._id || product.id,
         nom: product.nom || product.name,
         prix: product.prix || product.price,
-        image: product.image || product.imageUrl,
+        image: product.image,
       });
       // Notification améliorée au lieu d'alert
       const notification = document.createElement('div');
@@ -151,7 +152,7 @@ export default function NewProducts() {
                 {/* IMAGE */}
                 <div className="w-full aspect-square bg-gray-200 rounded-t-2xl overflow-hidden">
                   <img 
-                    src={p.image || p.imageUrl} 
+                    src={p.image || "https://via.placeholder.com/300"}
                     alt={p.nom || p.name}
                     className="w-full h-full object-cover"
                     onError={(e) => {

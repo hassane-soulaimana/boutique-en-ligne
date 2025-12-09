@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext.jsx';
+import { animeApi } from '../services/animeApi';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -13,22 +14,20 @@ export default function ProductDetail() {
   // -------------------------------------------------------------
   const [produit, setProduit] = useState(null);
 
+
   // -------------------------------------------------------------
-  // 🟠 MOCK TEMPORAIRE (À SUPPRIMER LORSQUE L'API ARRIVE)
+  // 🔌 VERSION API
   // -------------------------------------------------------------
   useEffect(() => {
-    // ❗ À EFFACER plus tard lorsque l'API est connectée
-    setProduit({
-      id: id,
-      nom: 'Échiquier Premium Naruto',
-      prix: 149.99,
-      image: 'https://placehold.co/600x600?text=Image+Produit',
-      description:
-        "Un magnifique échiquier inspiré de l'univers Naruto, réalisé avec un bois premium.",
-      stock: 12,
-      collection: 'Naruto',
-      couleur: '#FF6B35',
-    });
+    async function fetchProduit() {
+      try {
+        const data = await animeApi.getProductById(id);
+        setProduit(data);
+      } catch (err) {
+        console.error("Erreur API produit :", err);
+      }
+    }
+    fetchProduit();
   }, [id]);
 
   // -------------------------------------------------------------
@@ -100,7 +99,7 @@ export default function ProductDetail() {
             <div>
               <div className="overflow-hidden rounded-sm border border-stone-200 shadow-sm">
                 <img
-                  src={produit.image}
+                  src={produit.image || "https://via.placeholder.com/300"}
                   alt={produit.nom}
                   className="w-full h-[450px] object-cover hover:scale-105 transition-transform duration-700"
                 />

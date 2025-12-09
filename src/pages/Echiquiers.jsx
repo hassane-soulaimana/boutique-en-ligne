@@ -26,7 +26,7 @@ export default function Echiquiers() {
           id: p._id || p.id,
           nom: p.nom || p.name,
           prix: parseFloat(p.prix || p.price || 0),
-          image: p.image || p.imageUrl,
+          image: p.image,
           collection: (p.collection && p.collection.name) || (p.universe && p.universe.name) || 'Non classé',
         }));
         

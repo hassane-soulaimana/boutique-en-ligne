@@ -1,9 +1,9 @@
+
 import { createContext, useState, useEffect } from "react";
+import API_URL from "../services/api";
 
 export const ThemeContext = createContext();
 
-
-const API_URL = "/api";
 
 export const ThemeProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
@@ -22,7 +22,7 @@ export const ThemeProvider = ({ children }) => {
     const t = getToken();
     if (t) headers.Authorization = `Bearer ${t}`;
 
-    const res = await fetch(`${API_URL}${url}`, {
+    const res = await fetch(`${API_URL}/api${url}`, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
@@ -49,7 +49,7 @@ export const ThemeProvider = ({ children }) => {
       id: p.product._id,
       nom: p.product.name,
       prix: p.product.price,
-      image: `${API_URL}${p.product.image}`,
+      image: p.product.image,
       collection: p.product.collection,
     }));
 
@@ -115,7 +115,7 @@ export const ThemeProvider = ({ children }) => {
       nom: it.product.name,
       prix: it.product.price,
       stock: it.product.stock,
-      image: `${API_URL}${it.product.image}`,
+      image: it.product.image,
       quantity: it.quantity,
     }));
 

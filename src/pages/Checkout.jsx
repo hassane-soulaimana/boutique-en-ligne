@@ -195,15 +195,11 @@ export default function Checkout() {
 
                   {/* IMAGE */}
                   <div className="w-14 h-14 bg-stone-100 rounded-sm overflow-hidden flex items-center justify-center">
-                    {String(item.image).startsWith("http") ? (
-                      <img
-                        src={item.image}
-                        alt={item.nom}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-2xl">{item.image}</span>
-                    )}
+                    <img
+                      src={item.image}
+                      alt={item.nom}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
                   <div>
