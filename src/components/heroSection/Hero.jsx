@@ -3,48 +3,56 @@ import heroImage from "../../assets/background-hero.png";
 
 export default function Hero() {
   return (
-    <section
-  className="relative w-full h-[80vh] md:h-[90vh] flex items-center justify-center"
-  style={{
-    backgroundImage: `url(${heroImage})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center bottom -25px",
-  }}
->
-  <div className="absolute inset-0 bg-black/20"></div>
+    <section className="relative w-full min-h-[80vh] md:min-h-[90vh] flex items-center overflow-hidden bg-black">
+      {/* Layout en deux colonnes */}
+      <div className="w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center">
+        
+        {/* Colonne gauche - Texte */}
+        <div className="w-full md:w-1/2 text-white text-left py-12 md:py-0">
+          
+          {/* Badge "Nouvelle Collection" */}
+          <span className="text-orange-500 text-sm font-semibold tracking-widest uppercase mb-4 block">
+            Nouvelle Collection
+          </span>
 
-  <div className="relative max-w-4xl mx-auto px- text-white text-left">
+          {/* Titre principal en italique */}
+          <h1 className="text-5xl md:text-7xl font-normal leading-tight font-display italic">
+            De héros... <br /> à pièces maîtresses.
+          </h1>
 
-    <h1 className="text-6xl md:text-8xl font-semibold leading-tight drop-shadow-xl md:text-left">
-      De héros... <br /> à pièces maîtresses
-    </h1>
+          {/* Description */}
+          <p className="max-w-md mt-6 text-base md:text-lg font-light text-gray-300">
+            Découvrez nos échiquiers exclusifs inspirés de vos mangas et animes préférés.
+          </p>
 
-    <p className="max-w-2xl mt-6 text-lg md:text-1xl font-light italic drop-shadow-lg text-left">
+          {/* Boutons */}
+          <div className="flex items-center gap-4 mt-8">
+            <Link
+              to="/collections"
+              className="bg-white text-black px-6 py-3 rounded-full font-medium hover:bg-gray-200 transition"
+            >
+              Découvrir
+            </Link>
 
+            <Link
+              to="/about"
+              className="border border-white text-white px-6 py-3 rounded-full font-medium hover:bg-white hover:text-black transition"
+            >
+              Notre vision
+            </Link>
+          </div>
+        </div>
 
-      Nos échiquiers ne se contentent pas d’être joués, ils racontent des histoires.
-      Celles de vos héros, réinventés pièces par pièces, sculptés pour transformer
-      chaque ouverture en scène iconique.
-    </p>
+        {/* Colonne droite - Image */}
+        <div className="w-full md:w-1/2 flex justify-center md:justify-end">
+          <img 
+            src={heroImage} 
+            alt="Pièces d'échecs" 
+            className="max-h-[70vh] object-contain"
+          />
+        </div>
 
-    <div className="flex items-center justify-center gap-4 mt-8">
-      <Link
-        to="/collections"
-        className="bg-white text-black px-5 py-2 rounded-full font-semibold hover:bg-gray-200 transition"
-      >
-        Nos échiquiers
-      </Link>
-
-      <Link
-        to="/about" // check avec hanababa pour le lien exact//
-        className="bg-black text-white px-6 py-2 rounded-full font-semibold hover:bg-neutral-800 transition"
-
-      >
-        Notre vision
-      </Link>
-    </div>
-  </div>
-</section>
-
+      </div>
+    </section>
   );
 }
