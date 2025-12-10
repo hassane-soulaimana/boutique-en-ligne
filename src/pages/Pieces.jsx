@@ -10,6 +10,7 @@ export default function Pieces() {
   const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
 
   const [pieces, setPieces] = useState([]);
+  const [collectionsDisponibles, setCollectionsDisponibles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,21 +19,39 @@ export default function Pieces() {
     async function loadPieces() {
       try {
         setLoading(true);
-        console.log('🔄 Chargement des pièces...');
-        const data = await animeApi.getProductsByCategory('pieces');
-        console.log('📦 Données reçues:', data);
+        
+        // DEBUG: D'abord charger tous les produits pour voir les catégories
+        console.log('🔍 TEST: Chargement de TOUS les produits...');
+        const allProducts = await animeApi.getProducts();
+        console.log('📦 TOUS les produits:', allProducts);
+        console.log('📋 Catégories disponibles:', [...new Set(allProducts.map(p => p.category))]);
+        console.log('📋 Exemple de produit:', allProducts[0]);
+        
+        // Filtrer les pièces côté client pour le test
+        const piecesData = allProducts.filter(p => 
+          p.category && (
+            p.category.toLowerCase().includes('piece') ||
+            p.category.toLowerCase().includes('pièce')
+          )
+        );
+        console.log('🎯 Pièces filtrées:', piecesData);
         
         // Mapper les données API au format local
-        const mapped = data.map(p => ({
+        const mapped = piecesData.map(p => ({
           id: p._id || p.id,
-          nom: p.nom || p.name,
-          prix: parseFloat(p.prix || p.price || 0),
+          nom: p.name || p.nom,
+          prix: parseFloat(p.price || p.prix || 0),
           image: p.image,
-          collection: (p.collection && p.collection.name) || (p.universe && p.universe.name) || 'Non classé',
+          collection: p.universe || 'Non classé',
         }));
         
         console.log('✅ Pièces mappées:', mapped);
         
+        // Extraire les collections uniques
+        const collectionsUniques = [...new Set(mapped.map(p => p.collection))].filter(c => c !== 'Non classé');
+        console.log('📚 Collections disponibles:', collectionsUniques);
+        
+        setCollectionsDisponibles(collectionsUniques);
         setPieces(mapped);
         setError(null);
       } catch (err) {
@@ -212,10 +231,9 @@ export default function Pieces() {
                   className="w-full border border-stone-300 rounded-sm p-3 text-stone-700 focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition"
                 >
                   <option value="">Toutes les collections</option>
-                  <option value="naruto">Naruto</option>
-                  <option value="ghibli">Studio Ghibli</option>
-                  <option value="hxh">Hunter x Hunter</option>
-                  <option value="demonslayer">Demon Slayer</option>
+                  {collectionsDisponibles.map(col => (
+                    <option key={col} value={col}>{col}</option>
+                  ))}
                 </select>
               </div>
 

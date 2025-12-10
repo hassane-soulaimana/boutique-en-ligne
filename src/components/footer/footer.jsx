@@ -11,7 +11,7 @@ export default function Footer() {
           <ul className="space-y-2">
             <li><Link to="/collections/naruto" className="hover:text-orange-600 transition">Naruto</Link></li>
             <li><Link to="/collections/ghibli" className="hover:text-orange-600 transition">Studio Ghibli</Link></li>
-            <li><Link to="/collections/hxh" className="hover:text-orange-600 transition">Hunter x Hunter</Link></li>
+            <li><Link to="/collections/naruto" className="hover:text-orange-600 transition">Naruto</Link></li>
             <li><Link to="/collections/demonslayer" className="hover:text-orange-600 transition">Demon Slayer</Link></li>
             <li><Link to="/collections/onepiece" className="hover:text-orange-600 transition">One Piece</Link></li>
           </ul>

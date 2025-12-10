@@ -78,56 +78,74 @@ export const animeApi = {
     }
   },
 
-  // Récupérer les produits par collection/univers
+  // Récupérer les produits par collection/univers (nom de collection)
   async getProductsByCollection(collection) {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/products?collection=${collection}`
+        `${API_BASE_URL}/products?collection=${encodeURIComponent(collection)}`,
+        { signal: AbortSignal.timeout(10000) }
       );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
 
-      if (data.success) {
-        return data.data;
+      if (data.success && data.data) {
+        return data.data.map(transformProduct);
       }
       return [];
     } catch (error) {
-      console.error("Erreur API:", error);
+      console.error("Erreur getProductsByCollection:", error);
       return [];
     }
   },
 
-  // Récupérer les produits par univers (ID)
+  // Récupérer les produits par univers (ID ou nom)
   async getProductsByUniverse(universeId) {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/products?universe=${universeId}`
+        `${API_BASE_URL}/products?universe=${encodeURIComponent(universeId)}`,
+        { signal: AbortSignal.timeout(10000) }
       );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
 
-      if (data.success) {
-        return data.data;
+      if (data.success && data.data) {
+        return data.data.map(transformProduct);
       }
       return [];
     } catch (error) {
-      console.error("Erreur API:", error);
+      console.error("Erreur getProductsByUniverse:", error);
       return [];
     }
   },
 
-  // Récupérer les produits par catégorie
+  // Récupérer les produits par catégorie (Echiquier, Piece d'echecs, Accessoires)
   async getProductsByCategory(category) {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/products?categorie=${category}`
+        `${API_BASE_URL}/products?category=${encodeURIComponent(category)}`,
+        { signal: AbortSignal.timeout(10000) }
       );
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
 
-      if (data.success) {
-        return data.data;
+      if (data.success && data.data) {
+        return data.data.map(transformProduct);
       }
       return [];
     } catch (error) {
-      console.error("Erreur API:", error);
+      console.error("Erreur getProductsByCategory:", error);
       return [];
     }
   },

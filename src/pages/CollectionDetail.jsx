@@ -8,34 +8,80 @@ export default function CollectionDetail() {
   const { univers: universId } = useParams();
   const navigate = useNavigate();
 
-  const collections = {
-    naruto: { nom: 'Naruto', description: 'Collection exclusive Naruto', couleur: '#FF6B35' },
-    ghibli: { nom: 'Studio Ghibli', description: 'Films Studio Ghibli', couleur: '#6B5B95' },
-    demonslayer: { nom: 'Demon Slayer', description: 'Collection Demon Slayer', couleur: '#D92E3D' },
-    onepiece: { nom: 'One Piece', description: 'Collection One Piece', couleur: '#001F3F' },
+  // Données de fallback pour les collections
+  const defaultCollections = {
+    'dragon-ball': { nom: 'Dragon Ball', description: 'Collection exclusive Dragon Ball', couleur: '#F7A800' },
+    'naruto': { nom: 'Naruto', description: 'Collection exclusive Naruto avec designs authentiques', couleur: '#FF6B35' },
+    'demon-slayer': { nom: 'Demon Slayer', description: 'Les samouraïs et démons de Demon Slayer', couleur: '#D92E3D' },
+    'one-piece': { nom: 'One Piece', description: "L'univers pirate de One Piece", couleur: '#001F3F' },
+  };
+  
+  // Fonction pour obtenir le nom d'univers à partir du slug
+  const getUniversName = (slug) => {
+    const mapping = {
+      'dragon-ball': 'Dragon Ball',
+      'naruto': 'Naruto',
+      'demon-slayer': 'Demon Slayer',
+      'one-piece': 'One Piece',
+    };
+    return mapping[slug] || slug;
   };
 
-  const currentUnivers = collections[universId] || { nom: 'Inconnu', description: '', couleur: '#999' };
-
+  const [currentUnivers, setCurrentUnivers] = useState(
+    defaultCollections[universId] || { nom: getUniversName(universId), description: '', couleur: '#D4A574' }
+  );
   const [produits, setProduits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Charger les produits depuis l'API
+  // Charger les informations de l'univers et ses produits depuis l'API
   useEffect(() => {
-    async function loadProduits() {
+    async function loadData() {
       try {
         setLoading(true);
-        console.log(`🔄 Chargement des produits pour l'univers: ${universId}`);
-        const data = await animeApi.getProductsByUniverse(universId);
-        console.log('📦 Données reçues:', data);
+        console.log(`🔄 Chargement de l'univers et des produits pour: ${universId}`);
+        
+        // Charger les univers pour obtenir les détails
+        const universes = await animeApi.getUniverses();
+        const foundUnivers = universes.find(u => 
+          (u._id === universId) || 
+          (u.id === universId) || 
+          (u.slug === universId) ||
+          (u.nom && u.nom.toLowerCase() === universId.toLowerCase()) ||
+          (u.name && u.name.toLowerCase() === universId.toLowerCase())
+        );
+        
+        if (foundUnivers) {
+          setCurrentUnivers({
+            nom: foundUnivers.nom || foundUnivers.name || universId,
+            description: foundUnivers.description || `Collection ${foundUnivers.nom || foundUnivers.name}`,
+            couleur: foundUnivers.couleur || foundUnivers.color || '#D4A574'
+          });
+        } else if (defaultCollections[universId]) {
+          setCurrentUnivers(defaultCollections[universId]);
+        }
+        
+        // Charger tous les produits et filtrer par univers
+        const universName = getUniversName(universId);
+        console.log('🔄 Chargement des produits pour univers:', universId, '-> Nom:', universName);
+        const allProducts = await animeApi.getProducts();
+        
+        // Filtrer les produits de cet univers (en utilisant le nom ou le slug)
+        const universeProducts = allProducts.filter(p => {
+          if (!p.universe) return false;
+          const pUniverse = p.universe.toLowerCase();
+          const searchSlug = universId.toLowerCase().replace(/-/g, ' ');
+          const searchName = universName.toLowerCase();
+          return pUniverse.includes(searchSlug) || pUniverse.includes(searchName) || pUniverse === searchSlug;
+        });
+        console.log('📦 Produits de l\'univers:', universeProducts);
         
         // Mapper les données API au format local
-        const mapped = data.map(p => ({
+        const mapped = universeProducts.map(p => ({
           id: p._id || p.id,
-          type: (p.categorie && p.categorie.toLowerCase()) || 'produit',
-          nom: p.nom || p.name,
-          prix: parseFloat(p.prix || p.price || 0),
+          type: (p.category && p.category.toLowerCase()) || 'produit',
+          nom: p.name || p.nom,
+          prix: parseFloat(p.price || p.prix || 0),
           image: p.image,
         }));
         
@@ -50,7 +96,7 @@ export default function CollectionDetail() {
       }
     }
     
-    loadProduits();
+    loadData();
   }, [universId]);
 
   const [typeFiltre, setTypeFiltre] = useState('');
@@ -61,7 +107,7 @@ export default function CollectionDetail() {
   const produitsParPage = 6;
 
   let produitsFiltres = produits.filter((p) => {
-    const okType = typeFiltre ? p.type === typeFiltre : true;
+    const okType = typeFiltre ? p.type.includes(typeFiltre) : true;
 
     let okPrix = true;
     switch (prixRange) {
@@ -143,8 +189,8 @@ export default function CollectionDetail() {
                 className="w-full border border-stone-300 rounded-sm p-3 text-stone-700 focus:border-amber-600 focus:ring-1 focus:ring-amber-600"
               >
                 <option value="">Tous</option>
-                <option value="echiquier">Échiquiers</option>
-                <option value="pieces">Pièces</option>
+                <option value="échiquier">Échiquiers</option>
+                <option value="pièces d'échec">Pièces d'échecs</option>
                 <option value="accessoires">Accessoires</option>
               </select>
             </div>

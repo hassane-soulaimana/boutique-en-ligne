@@ -57,7 +57,7 @@ export default function Header() {
             >
               <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/naruto">Naruto</Link>
               <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/ghibli">Studio Ghibli</Link>
-              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/hxh">Hunter x Hunter</Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/naruto">Naruto</Link>
               <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/demonslayer">Demon Slayer</Link>
               <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/onepiece">One Piece</Link>
             </div>
@@ -153,7 +153,7 @@ export default function Header() {
             <div className="pl-4 flex flex-col gap-3 mt-3 text-base">
               <Link to="/collections/naruto" onClick={() => setMenuOpen(false)}>Naruto</Link>
               <Link to="/collections/ghibli" onClick={() => setMenuOpen(false)}>Studio Ghibli</Link>
-              <Link to="/collections/hxh" onClick={() => setMenuOpen(false)}>Hunter x Hunter</Link>
+              <Link to="/collections/naruto" onClick={() => setMenuOpen(false)}>Naruto</Link>
               <Link to="/collections/demonslayer" onClick={() => setMenuOpen(false)}>Demon Slayer</Link>
               <Link to="/collections/onepiece" onClick={() => setMenuOpen(false)}>One Piece</Link>
             </div>
