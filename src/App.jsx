@@ -4,6 +4,7 @@ import { ThemeProvider } from "./context/ThemeContext.jsx";
 import Home from "./pages/Home";
 import About from "./pages/about";
 import Contact from "./pages/contact";
+import CGV from "./pages/cgv";
 import Echiquiers from "./pages/Echiquiers";
 import Pieces from "./pages/Pieces";
 import Accessoires from "./pages/Accessoires";
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/cgv" element={<CGV />} />
           <Route path="/echiquiers" element={<Echiquiers />} />
           <Route path="/pieces" element={<Pieces />} />
           <Route path="/accessoires" element={<Accessoires />} />

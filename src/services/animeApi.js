@@ -67,8 +67,8 @@ export const animeApi = {
       const response = await fetch(`${API_BASE_URL}/products/${id}`);
       const data = await response.json();
 
-      if (data.success) {
-        return data.data;
+      if (data.success && data.data) {
+        return transformProduct(data.data);
       }
       return null;
     } catch (error) {

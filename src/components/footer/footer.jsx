@@ -43,6 +43,7 @@ export default function Footer() {
           <h4 className="font-semibold text-gray-900 mb-4">À propos</h4>
           <ul className="space-y-2">
             <li><Link to="/about" className="hover:text-orange-600 transition">Notre histoire</Link></li>
+            <li><Link to="/cgv" className="hover:text-orange-600 transition">CGV</Link></li>
             <li><span className="cursor-pointer hover:text-orange-600 transition">Licences</span></li>
             <li><span className="cursor-pointer hover:text-orange-600 transition">Artistes</span></li>
             <li><span className="cursor-pointer hover:text-orange-600 transition">Carrières</span></li>
