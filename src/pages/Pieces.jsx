@@ -1,22 +1,50 @@
 // Page Pièces d'échecs avec filtres + pagination - Style Premium
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ThemeContext } from '../context/ThemeContext.jsx';
+import { animeApi } from '../services/animeApi';
+import { getImageUrl, handleImageError } from '../services/imageLoader';
 
 export default function Pieces() {
-  const { addItem } = useContext(ThemeContext);
+  const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
 
-  const pieces = [
-    { id: 1, nom: 'Pièces Naruto Premium', prix: 45.99, image: '♟️', collection: 'naruto' },
-    { id: 2, nom: 'Pièces Studio Ghibli', prix: 55.99, image: '✨', collection: 'ghibli' },
-    { id: 3, nom: 'Pièces Hunter x Hunter', prix: 49.99, image: '⚔️', collection: 'hxh' },
-    { id: 4, nom: 'Pièces Demon Slayer', prix: 59.99, image: '🔥', collection: 'demonslayer' },
-    { id: 5, nom: 'Pièces Naruto Classiques', prix: 35.99, image: '🍥', collection: 'naruto' },
-    { id: 6, nom: 'Pièces Ghibli Noire', prix: 29.99, image: '🌿', collection: 'ghibli' },
-    { id: 7, nom: 'Pièces HXH Kurapika', prix: 39.99, image: '🔗', collection: 'hxh' },
-    { id: 8, nom: 'Pièces Demon Slayer Zenitsu', prix: 25.99, image: '⚡', collection: 'demonslayer' },
-  ];
+  const [pieces, setPieces] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Charger les pièces depuis l'API
+  useEffect(() => {
+    async function loadPieces() {
+      try {
+        setLoading(true);
+        console.log('🔄 Chargement des pièces...');
+        const data = await animeApi.getProductsByCategory('pieces');
+        console.log('📦 Données reçues:', data);
+        
+        // Mapper les données API au format local
+        const mapped = data.map(p => ({
+          id: p._id || p.id,
+          nom: p.nom || p.name,
+          prix: parseFloat(p.prix || p.price || 0),
+          image: p.image,
+          collection: (p.collection && p.collection.name) || (p.universe && p.universe.name) || 'Non classé',
+        }));
+        
+        console.log('✅ Pièces mappées:', mapped);
+        
+        setPieces(mapped);
+        setError(null);
+      } catch (err) {
+        console.error('❌ Erreur chargement pièces:', err);
+        setError('Impossible de charger les pièces');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadPieces();
+  }, []);
 
   // ------------------------
   // STATE FILTRES
@@ -124,7 +152,37 @@ export default function Pieces() {
         </div>
       </section>
 
+      {/* État de chargement */}
+      {loading && (
+        <section className="py-16">
+          <div className="container mx-auto px-6 lg:px-20">
+            <div className="text-center py-16">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
+              <p className="text-xl text-stone-600">Chargement des pièces...</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* État d'erreur */}
+      {error && !loading && (
+        <section className="py-16">
+          <div className="container mx-auto px-6 lg:px-20">
+            <div className="text-center py-16">
+              <p className="text-red-600 mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-amber-600 text-white rounded-sm hover:bg-amber-700"
+              >
+                Réessayer
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Contenu principal */}
+      {!loading && !error && (
       <section className="py-16">
         <div className="container mx-auto px-6 lg:px-20">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
@@ -239,9 +297,14 @@ export default function Pieces() {
                     className="group bg-white border border-stone-200 rounded-sm overflow-hidden hover:shadow-xl transition-all duration-300"
                   >
                     <Link to={`/produit/${produit.id}`}>
-                      <div className="h-64 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center text-7xl relative overflow-hidden">
+                      <div className="h-64 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center relative overflow-hidden">
                         <div className="absolute inset-0 bg-amber-600/0 group-hover:bg-amber-600/5 transition-colors duration-300"></div>
-                        {produit.image}
+                        <img
+                          src={getImageUrl(produit.image)}
+                          alt={produit.nom}
+                          onError={handleImageError}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     </Link>
                     <div className="p-6 space-y-4">
@@ -257,17 +320,37 @@ export default function Pieces() {
                       </div>
                       
                       <div className="flex items-center justify-between pt-2 border-t border-stone-100">
-                       <p className="text-base font-normal text-amber-700">
-  {produit.prix.toFixed(2)} €
-</p>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleAddToCart(produit)}
-                          className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-sm hover:bg-amber-700 transition-colors duration-300"
-                        >
-                          Ajouter
-                        </motion.button>
+                        <p className="text-base font-normal text-amber-700">
+                          {produit.prix.toFixed(2)} €
+                        </p>
+                        <div className="flex gap-2">
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => toggleFavorite({
+                              id: produit.id,
+                              nom: produit.nom,
+                              prix: produit.prix,
+                              image: produit.image,
+                              collection: produit.collection,
+                            })}
+                            className={`px-3 py-2 text-lg rounded-sm transition-colors duration-300 ${
+                              isFavorite(produit.id)
+                                ? 'text-red-500 hover:text-red-600'
+                                : 'text-stone-400 hover:text-red-500'
+                            }`}
+                          >
+                            {isFavorite(produit.id) ? '❤️' : '♡'}
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleAddToCart(produit)}
+                            className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-sm hover:bg-amber-700 transition-colors duration-300"
+                          >
+                            Ajouter
+                          </motion.button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -331,6 +414,7 @@ export default function Pieces() {
           </div>
         </div>
       </section>
+      )}
     </main>
   );
 }

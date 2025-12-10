@@ -4,6 +4,7 @@ import { ThemeProvider } from "./context/ThemeContext.jsx";
 import Home from "./pages/Home";
 import About from "./pages/about";
 import Contact from "./pages/contact";
+import CGV from "./pages/cgv";
 import Echiquiers from "./pages/Echiquiers";
 import Pieces from "./pages/Pieces";
 import Accessoires from "./pages/Accessoires";
@@ -14,6 +15,7 @@ import Connexion from "./pages/Connexion";
 import Inscription from "./pages/Inscription";
 import Profil from "./pages/Profil";
 import Panier from "./pages/Panier";
+import Favoris from "./pages/Favoris";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +33,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/cgv" element={<CGV />} />
           <Route path="/echiquiers" element={<Echiquiers />} />
           <Route path="/pieces" element={<Pieces />} />
           <Route path="/accessoires" element={<Accessoires />} />
@@ -38,6 +41,7 @@ export default function App() {
           <Route path="/collections/:univers" element={<CollectionDetail />} />
           <Route path="/produit/:id" element={<ProductDetail />} />
           <Route path="/panier" element={<Panier />} />
+          <Route path="/favoris" element={<Favoris />} />
           <Route path="/connexion" element={<Connexion />} />
           <Route path="/inscription" element={<Inscription />} />
           <Route path="/profil" element={<Profil />} />

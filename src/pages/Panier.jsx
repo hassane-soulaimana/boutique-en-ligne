@@ -1,7 +1,9 @@
 ﻿import { useState, useContext } from "react";
+import API_URL from "../services/api";
 import { Link } from "react-router-dom";
 import { TrashIcon, MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { ThemeContext } from "../context/ThemeContext.jsx";
+import { getImageUrl, handleImageError } from "../services/imageLoader";
 
 export default function Panier() {
   const { cart: items, removeItem, updateQuantity, getSubtotal } = useContext(ThemeContext);
@@ -58,15 +60,12 @@ export default function Panier() {
                   {/* IMAGE PRODUIT */}
                   <div className="flex-shrink-0">
                     <div className="w-28 h-28 rounded-sm border border-stone-200 bg-stone-100 flex items-center justify-center overflow-hidden">
-                      {typeof item.image === "string" && item.image.startsWith("http") ? (
-                        <img
-                          src={item.image}
-                          alt={item.nom}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-4xl">{item.image}</span>
-                      )}
+                      <img
+                        src={getImageUrl(item.image)}
+                        alt={item.nom}
+                        className="w-full h-full object-cover"
+                        onError={handleImageError}
+                      />
                     </div>
                   </div>
 

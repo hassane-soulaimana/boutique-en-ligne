@@ -1,22 +1,55 @@
 // Page Echiquiers avec filtres par fourchettes + pagination
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ThemeContext } from '../context/ThemeContext.jsx';
+import { animeApi } from '../services/animeApi';
+import { getImageUrl, handleImageError } from '../services/imageLoader';
 
 export default function Echiquiers() {
-  const { addItem } = useContext(ThemeContext);
+  const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
   
-  const echiquiers = [
-    { id: 1, nom: 'Échiquier Naruto Premium', prix: 149.99, image: '🎮', collection: 'naruto' },
-    { id: 2, nom: 'Échiquier Studio Ghibli', prix: 179.99, image: '🌸', collection: 'ghibli' },
-    { id: 3, nom: 'Échiquier Hunter x Hunter', prix: 159.99, image: '⚔️', collection: 'hxh' },
-    { id: 4, nom: 'Échiquier Demon Slayer', prix: 169.99, image: '🔥', collection: 'demonslayer' },
-    { id: 5, nom: 'Échiquier Naruto Classic', prix: 129.99, image: '🍥', collection: 'naruto' },
-    { id: 6, nom: 'Échiquier Ghibli Totoro', prix: 199.99, image: '🌿', collection: 'ghibli' },
-    { id: 7, nom: 'Échiquier HXH Kuroro', prix: 149.99, image: '🖤', collection: 'hxh' },
-    { id: 8, nom: 'Échiquier Demon Slayer Zenitsu', prix: 159.99, image: '⚡', collection: 'demonslayer' },
-  ];
+  const [echiquiers, setEchiquiers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Charger les échiquiers depuis l'API
+  useEffect(() => {
+    async function loadEchiquiers() {
+      try {
+        setLoading(true);
+        console.log('🔄 Chargement des échiquiers...');
+        const data = await animeApi.getProductsByCategory('echiquiers');
+        console.log('📦 Données reçues:', data);
+        
+        // Mapper les données API au format local
+        const mapped = data.map(p => ({
+          id: p._id || p.id,
+          nom: p.nom || p.name,
+          prix: parseFloat(p.prix || p.price || 0),
+          image: p.image,
+          collection: (p.collection && p.collection.name) || (p.universe && p.universe.name) || 'Non classé',
+        }));
+        
+        console.log('✅ Échiquiers mappés:', mapped);
+        console.log('🔍 Premier échiquier pour debug:', mapped[0]);
+        
+        // Extraire les collections uniques
+        const collectionsUniques = [...new Set(mapped.map(p => p.collection))];
+        console.log('📚 Collections disponibles:', collectionsUniques);
+        
+        setEchiquiers(mapped);
+        setError(null);
+      } catch (err) {
+        console.error('❌ Erreur chargement échiquiers:', err);
+        setError('Impossible de charger les échiquiers');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadEchiquiers();
+  }, []);
 
   // ------------------------
   // STATE FILTRES
@@ -35,7 +68,9 @@ export default function Echiquiers() {
   // FILTRAGE
   // ------------------------
   let produitsFiltres = echiquiers.filter((p) => {
-    const okCollection = collectionFiltre ? p.collection === collectionFiltre : true;
+    const okCollection = collectionFiltre 
+      ? p.collection?.toLowerCase().includes(collectionFiltre.toLowerCase())
+      : true;
 
     let okPrix = true;
 
@@ -83,6 +118,34 @@ export default function Echiquiers() {
     });
     alert(`${produit.nom} ajouté au panier !`);
   };
+
+  // États de chargement et erreur
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-stone-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
+          <p className="text-xl text-stone-600">Chargement des échiquiers...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-stone-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-amber-600 text-white rounded-sm hover:bg-amber-700"
+          >
+            Réessayer
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-stone-50 to-white">
@@ -239,9 +302,14 @@ export default function Echiquiers() {
                     className="group bg-white border border-stone-200 rounded-sm overflow-hidden hover:shadow-xl transition-all duration-300"
                   >
                     <Link to={`/produit/${produit.id}`}>
-                      <div className="h-64 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center text-7xl relative overflow-hidden">
+                      <div className="h-64 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center relative overflow-hidden">
                         <div className="absolute inset-0 bg-amber-600/0 group-hover:bg-amber-600/5 transition-colors duration-300"></div>
-                        {produit.image}
+                        <img
+                          src={getImageUrl(produit.image)}
+                          alt={produit.nom}
+                          onError={handleImageError}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     </Link>
                     <div className="p-6 space-y-4">
@@ -258,18 +326,37 @@ export default function Echiquiers() {
                       
                       <div className="flex items-center justify-between pt-2 border-t border-stone-100">
                         <p className="text-base font-normal text-amber-700">
-  {produit.prix.toFixed(2)} €
-</p>
-
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => handleAddToCart(produit)}
-                          className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-sm hover:bg-amber-700 transition-colors duration-300"
-                        >
-                          Ajouter
-                        </motion.button>
-                      </div>
+                          {produit.prix ? produit.prix.toFixed(2) : '0.00'} €
+                        </p>
+                        <div className="flex gap-2">
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => toggleFavorite({
+                              id: produit.id,
+                              nom: produit.nom,
+                              prix: produit.prix,
+                              image: produit.image,
+                              collection: produit.collection,
+                            })}
+                            className={`px-3 py-2 text-lg rounded-sm transition-colors duration-300 ${
+                              isFavorite(produit.id)
+                                ? 'text-red-500 hover:text-red-600'
+                                : 'text-stone-400 hover:text-red-500'
+                            }`}
+                          >
+                            {isFavorite(produit.id) ? '❤️' : '♡'}
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleAddToCart(produit)}
+                            className="px-4 py-2 bg-stone-900 text-white text-sm font-medium rounded-sm hover:bg-amber-700 transition-colors duration-300"
+                          >
+                            Ajouter
+                          </motion.button>
+                        </div>
+                </div>
                     </div>
                   </motion.div>
                 ))}

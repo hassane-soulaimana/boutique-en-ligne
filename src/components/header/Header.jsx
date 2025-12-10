@@ -6,6 +6,7 @@ import {
   MagnifyingGlassIcon,
   UserIcon,
   ShoppingCartIcon,
+  HeartIcon,
   Bars3Icon,
   XMarkIcon,
   ChevronDownIcon,
@@ -15,8 +16,9 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [collectionsOpen, setCollectionsOpen] = useState(false);
   
-const { getTotalItems } = useContext(ThemeContext);
+  const { getTotalItems, favorites } = useContext(ThemeContext);
   const cartCount = getTotalItems();
+  const favCount = favorites.length;
 
   return (
     <header className="bg-white/90 backdrop-blur-lg border-b border-stone-200 sticky top-0 z-50">
@@ -88,6 +90,16 @@ const { getTotalItems } = useContext(ThemeContext);
               <Link className="block px-4 py-2 text-sm border-t hover:bg-orange-50" to="/profil">Mon Profil</Link>
             </div>
           </div>
+
+          {/* FAVORIS */}
+          <Link to="/favoris" className="relative block hover:text-black transition">
+            <HeartIcon className="w-6 h-6" />
+            {favCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                {favCount}
+              </span>
+            )}
+          </Link>
 
           {/* PANIER */}
           <Link to="/panier" className="relative block hover:text-black transition">
@@ -167,6 +179,20 @@ const { getTotalItems } = useContext(ThemeContext);
               <Link to="/profil" onClick={() => setMenuOpen(false)}>Mon Profil</Link>
             </div>
           </details>
+
+          <Link
+            to="/favoris"
+            className="flex items-center gap-3"
+            onClick={() => setMenuOpen(false)}
+          >
+            <HeartIcon className="w-6 h-6" />
+            Favoris
+            {favCount > 0 && (
+              <span className="bg-red-500 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                {favCount}
+              </span>
+            )}
+          </Link>
 
           <Link
             to="/panier"

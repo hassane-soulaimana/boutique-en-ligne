@@ -1,6 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { animeApi } from '../services/animeApi';
+import { getImageUrl, handleImageError } from '../services/imageLoader';
 
 export default function CollectionDetail() {
   const { univers: universId } = useParams();
@@ -9,21 +11,47 @@ export default function CollectionDetail() {
   const collections = {
     naruto: { nom: 'Naruto', description: 'Collection exclusive Naruto', couleur: '#FF6B35' },
     ghibli: { nom: 'Studio Ghibli', description: 'Films Studio Ghibli', couleur: '#6B5B95' },
-    hxh: { nom: 'Hunter x Hunter', description: 'Collection Hunter x Hunter', couleur: '#F8B500' },
     demonslayer: { nom: 'Demon Slayer', description: 'Collection Demon Slayer', couleur: '#D92E3D' },
     onepiece: { nom: 'One Piece', description: 'Collection One Piece', couleur: '#001F3F' },
   };
 
   const currentUnivers = collections[universId] || { nom: 'Inconnu', description: '', couleur: '#999' };
 
-  const produits = [
-    { id: 1, type: "echiquier", nom: `Échiquier ${currentUnivers.nom}`, prix: 149.99, image: '♟️' },
-    { id: 2, type: "pieces", nom: `Pièces ${currentUnivers.nom}`, prix: 79.99, image: '🎯' },
-    { id: 3, type: "accessoires", nom: `Accessoires ${currentUnivers.nom}`, prix: 39.99, image: '🎁' },
-    { id: 4, type: "echiquier", nom: `Échiquier Deluxe ${currentUnivers.nom}`, prix: 199.99, image: '🏆' },
-    { id: 5, type: "pieces", nom: `Pièces Collector ${currentUnivers.nom}`, prix: 99.99, image: '💠' },
-    { id: 6, type: "accessoires", nom: `Set d'entretien ${currentUnivers.nom}`, prix: 29.99, image: '🧽' },
-  ];
+  const [produits, setProduits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Charger les produits depuis l'API
+  useEffect(() => {
+    async function loadProduits() {
+      try {
+        setLoading(true);
+        console.log(`🔄 Chargement des produits pour l'univers: ${universId}`);
+        const data = await animeApi.getProductsByUniverse(universId);
+        console.log('📦 Données reçues:', data);
+        
+        // Mapper les données API au format local
+        const mapped = data.map(p => ({
+          id: p._id || p.id,
+          type: (p.categorie && p.categorie.toLowerCase()) || 'produit',
+          nom: p.nom || p.name,
+          prix: parseFloat(p.prix || p.price || 0),
+          image: p.image,
+        }));
+        
+        console.log('✅ Produits mappés:', mapped);
+        setProduits(mapped);
+        setError(null);
+      } catch (err) {
+        console.error('❌ Erreur chargement produits:', err);
+        setError('Impossible de charger les produits');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadProduits();
+  }, [universId]);
 
   const [typeFiltre, setTypeFiltre] = useState('');
   const [prixRange, setPrixRange] = useState('');
@@ -66,6 +94,30 @@ export default function CollectionDetail() {
         >
           ← Retour aux collections
         </button>
+
+        {/* État de chargement */}
+        {loading && (
+          <div className="text-center py-16">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
+            <p className="text-xl text-stone-600">Chargement des produits...</p>
+          </div>
+        )}
+
+        {/* État d'erreur */}
+        {error && (
+          <div className="text-center py-16">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2 bg-amber-600 text-white rounded-sm hover:bg-amber-700"
+            >
+              Réessayer
+            </button>
+          </div>
+        )}
+
+        {/* Contenu si pas de chargement/erreur */}
+        {!loading && !error && (
 
         <div className="flex flex-col lg:flex-row gap-10">
 
@@ -166,10 +218,15 @@ export default function CollectionDetail() {
                   onClick={() => navigate(`/produit/${produit.id}`)}
                 >
                   <div
-                    className="h-64 flex items-center justify-center text-7xl bg-stone-50"
+                    className="h-64 flex items-center justify-center bg-stone-50 overflow-hidden"
                     style={{ backgroundColor: currentUnivers.couleur + "15" }}
                   >
-                    {produit.image}
+                    <img
+                      src={getImageUrl(produit.image)}
+                      alt={produit.nom}
+                      onError={handleImageError}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="p-6 space-y-4">
                     <div>
@@ -222,6 +279,7 @@ export default function CollectionDetail() {
 
           </div>
         </div>
+        )}
       </div>
     </main>
   );

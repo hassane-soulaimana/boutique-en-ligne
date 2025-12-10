@@ -19,13 +19,6 @@ export default function Collections() {
       image: 'https://i.imgur.com/U4dKJpM.jpeg'
     },
     {
-      id: 'hxh',
-      nom: 'Hunter x Hunter',
-      description: "L'aventure et l'action avec Hunter x Hunter",
-      couleur: '#F8B500',
-      image: 'https://i.imgur.com/6IMV3pS.jpeg'
-    },
-    {
       id: 'demonslayer',
       nom: 'Demon Slayer',
       description: 'Les samouraïs et démons de Demon Slayer',
