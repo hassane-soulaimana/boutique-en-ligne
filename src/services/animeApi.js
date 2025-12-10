@@ -321,6 +321,118 @@ export const animeApi = {
     }
   },
 
+  // Récupérer les commandes de l'utilisateur
+  async getOrders() {
+    let apiOrders = [];
+    
+    try {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        console.log("🔄 getOrders: Appel API /orders...");
+        const response = await fetch(`${API_BASE_URL}/orders`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("📥 getOrders: Status", response.status);
+        const data = await response.json();
+        console.log("📥 getOrders: Réponse brute", data);
+
+        // Gérer différents formats de réponse
+        if (data.success && data.data) {
+          apiOrders = data.data;
+        } else if (Array.isArray(data)) {
+          apiOrders = data;
+        } else if (data.orders) {
+          apiOrders = data.orders;
+        }
+      }
+    } catch (error) {
+      console.error("❌ Erreur API getOrders:", error);
+    }
+
+    // Récupérer les commandes locales (backup)
+    const localOrders = JSON.parse(localStorage.getItem("localOrders") || "[]");
+    console.log("💾 Commandes locales:", localOrders.length);
+
+    // Combiner API + local (éviter les doublons par orderNumber)
+    const apiOrderNumbers = new Set(apiOrders.map(o => o.orderNumber || o._id));
+    const uniqueLocalOrders = localOrders.filter(o => !apiOrderNumbers.has(o.orderNumber));
+    
+    const allOrders = [...apiOrders, ...uniqueLocalOrders];
+    
+    // Trier par date décroissante
+    allOrders.sort((a, b) => {
+      const dateA = new Date(a.createdAt || a.date || 0);
+      const dateB = new Date(b.createdAt || b.date || 0);
+      return dateB - dateA;
+    });
+
+    console.log("✅ getOrders: Total commandes", allOrders.length);
+    return { data: allOrders };
+  },
+
+  // Récupérer les favoris de l'utilisateur
+  async getFavorites() {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("Non authentifié");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/favorites`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        // Transformer les favoris pour avoir le bon format
+        const favorites = data.data.map(fav => ({
+          id: fav.product?._id || fav._id,
+          nom: fav.product?.name || fav.name,
+          prix: fav.product?.price || fav.price,
+          image: normalizeImageUrl(fav.product?.image || fav.image),
+        }));
+        return { data: favorites };
+      }
+      
+      return { data: [] };
+    } catch (error) {
+      console.error("Erreur getFavorites:", error);
+      return { data: [] };
+    }
+  },
+
+  // Supprimer un favori
+  async removeFavorite(productId) {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("Non authentifié");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/favorites/${productId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Erreur removeFavorite:", error);
+      throw error;
+    }
+  },
+
   // Déconnexion
   logout() {
     localStorage.removeItem("token");

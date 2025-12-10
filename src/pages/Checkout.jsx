@@ -1,15 +1,19 @@
 import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeContext.jsx";
+import API_URL from "../services/api";
 import {
   ArrowLeftIcon,
   TagIcon,
+  ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Checkout() {
-  const { cart: items, getSubtotal } = useContext(ThemeContext);
+  const { cart: items, getSubtotal, clearCart } = useContext(ThemeContext);
   const subtotal = getSubtotal();
   const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [shipping, setShipping] = useState("standard"); // standard / express
   const shippingCost = shipping === "express" ? 10 : 0;
@@ -30,21 +34,135 @@ export default function Checkout() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  // --------------------------------------------
-  // 🔒 NOTE BACKEND / STRIPE
-  // Cette fonction sera remplacée par :
-  // 1. Création de commande dans ta base
-  // 2. Création session Stripe Checkout
-  // 3. Redirection vers STRIPE
-  //
-  // Pour l’instant → redirection interne (mock)
-  // --------------------------------------------
-  const handlePayment = () => {
-    // ⚠️ à supprimer plus tard
-    console.log("Checkout form values:", form);
-    alert("Paiement non connecté (Stripe API à venir).");
+  // Validation du formulaire
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!form.email.trim()) {
+      newErrors.email = "L'adresse e-mail est requise";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = "L'adresse e-mail n'est pas valide";
+    }
+    
+    if (!form.prenom.trim()) newErrors.prenom = "Le prénom est requis";
+    if (!form.nom.trim()) newErrors.nom = "Le nom est requis";
+    if (!form.adresse.trim()) newErrors.adresse = "L'adresse est requise";
+    if (!form.ville.trim()) newErrors.ville = "La ville est requise";
+    if (!form.codePostal.trim()) {
+      newErrors.codePostal = "Le code postal est requis";
+    } else if (!/^\d{5}$/.test(form.codePostal.trim())) {
+      newErrors.codePostal = "Le code postal doit contenir 5 chiffres";
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    // ➜ Redirection vers la confirmation interne
+  // Enregistrement de la commande et paiement
+  const handlePayment = async () => {
+    console.log("🔄 handlePayment appelé");
+    console.log("📦 Items dans le panier:", items);
+    console.log("📝 Formulaire:", form);
+    
+    // Valider le formulaire
+    if (!validateForm()) {
+      console.log("❌ Validation échouée:", errors);
+      return;
+    }
+    
+    // Vérifier que le panier n'est pas vide
+    if (!items || items.length === 0) {
+      console.log("❌ Panier vide");
+      alert("Votre panier est vide");
+      return;
+    }
+    
+    console.log("✅ Validation OK, envoi de la commande...");
+    setIsSubmitting(true);
+    
+    // Générer un numéro de commande unique
+    const orderNumber = `CMD-${Date.now()}`;
+    
+    // Préparer les données de la commande
+    const orderData = {
+      orderNumber: orderNumber,
+      customer: {
+        email: form.email,
+        firstName: form.prenom,
+        lastName: form.nom,
+        phone: form.telephone || null,
+      },
+      shippingAddress: {
+        address: form.adresse,
+        city: form.ville,
+        postalCode: form.codePostal,
+        country: form.pays,
+      },
+      items: items.map(item => ({
+        productId: item.id,
+        name: item.nom,
+        price: item.prix,
+        quantity: item.quantity,
+        image: item.image,
+      })),
+      shipping: {
+        method: shipping,
+        cost: shippingCost,
+      },
+      subtotal: subtotal,
+      total: total,
+      status: "En cours de traitement",
+      createdAt: new Date().toISOString(),
+    };
+    
+    console.log("📤 Envoi des données:", orderData);
+    
+    try {
+      // Envoyer la commande au backend
+      const token = localStorage.getItem("token");
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers.Authorization = `Bearer ${token}`;
+      
+      const response = await fetch(`${API_URL}/api/orders`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(orderData),
+      });
+      
+      console.log("📥 Réponse:", response.status);
+      const data = await response.json();
+      console.log("📥 Data:", data);
+      
+      // Mettre à jour le numéro de commande si retourné par l'API
+      if (data.data?.orderNumber) {
+        orderData.orderNumber = data.data.orderNumber;
+      }
+      if (data.data?._id) {
+        orderData._id = data.data._id;
+      }
+    } catch (error) {
+      console.error("❌ Erreur envoi API:", error);
+    }
+    
+    // Sauvegarder la commande en local (backup)
+    const localOrders = JSON.parse(localStorage.getItem("localOrders") || "[]");
+    localOrders.unshift(orderData);
+    localStorage.setItem("localOrders", JSON.stringify(localOrders));
+    console.log("💾 Commande sauvegardée localement");
+    
+    // Vider le panier
+    clearCart();
+    
+    // Stocker les infos de commande pour la page de confirmation
+    sessionStorage.setItem("lastOrder", JSON.stringify({
+      orderNumber: orderData.orderNumber,
+      total: total,
+      email: form.email,
+    }));
+    
+    console.log("✅ Commande créée, redirection...");
+    setIsSubmitting(false);
+    // Rediriger vers la confirmation
     navigate("/confirmation-commande");
   };
 
@@ -72,11 +190,17 @@ export default function Checkout() {
 
             <input
               type="email"
-              placeholder="Adresse e-mail"
-              className="w-full border border-stone-300 rounded-sm p-3 focus:ring-amber-600 focus:border-amber-600"
+              placeholder="Adresse e-mail *"
+              className={`w-full border rounded-sm p-3 focus:ring-amber-600 focus:border-amber-600 ${errors.email ? 'border-red-500' : 'border-stone-300'}`}
               value={form.email}
               onChange={(e) => handleChange("email", e.target.value)}
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                <ExclamationCircleIcon className="w-4 h-4" />
+                {errors.email}
+              </p>
+            )}
 
             <label className="flex items-center gap-3 mt-4 text-sm text-stone-700 cursor-pointer">
               <input type="checkbox" className="w-4 h-4" />
@@ -89,45 +213,70 @@ export default function Checkout() {
             <h2 className="text-xl font-semibold text-stone-900">Livraison</h2>
 
             <div className="grid grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Prénom"
-                className="border border-stone-300 rounded-sm p-3"
-                value={form.prenom}
-                onChange={(e) => handleChange("prenom", e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Nom"
-                className="border border-stone-300 rounded-sm p-3"
-                value={form.nom}
-                onChange={(e) => handleChange("nom", e.target.value)}
-              />
+              <div>
+                <input
+                  type="text"
+                  placeholder="Prénom *"
+                  className={`w-full border rounded-sm p-3 ${errors.prenom ? 'border-red-500' : 'border-stone-300'}`}
+                  value={form.prenom}
+                  onChange={(e) => handleChange("prenom", e.target.value)}
+                />
+                {errors.prenom && (
+                  <p className="text-red-500 text-sm mt-1">{errors.prenom}</p>
+                )}
+              </div>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Nom *"
+                  className={`w-full border rounded-sm p-3 ${errors.nom ? 'border-red-500' : 'border-stone-300'}`}
+                  value={form.nom}
+                  onChange={(e) => handleChange("nom", e.target.value)}
+                />
+                {errors.nom && (
+                  <p className="text-red-500 text-sm mt-1">{errors.nom}</p>
+                )}
+              </div>
             </div>
 
-            <input
-              type="text"
-              placeholder="Adresse"
-              className="w-full border border-stone-300 rounded-sm p-3"
-              value={form.adresse}
-              onChange={(e) => handleChange("adresse", e.target.value)}
-            />
+            <div>
+              <input
+                type="text"
+                placeholder="Adresse *"
+                className={`w-full border rounded-sm p-3 ${errors.adresse ? 'border-red-500' : 'border-stone-300'}`}
+                value={form.adresse}
+                onChange={(e) => handleChange("adresse", e.target.value)}
+              />
+              {errors.adresse && (
+                <p className="text-red-500 text-sm mt-1">{errors.adresse}</p>
+              )}
+            </div>
 
             <div className="grid grid-cols-3 gap-4">
-              <input
-                type="text"
-                placeholder="Ville"
-                className="border border-stone-300 rounded-sm p-3"
-                value={form.ville}
-                onChange={(e) => handleChange("ville", e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Code postal"
-                className="border border-stone-300 rounded-sm p-3"
-                value={form.codePostal}
-                onChange={(e) => handleChange("codePostal", e.target.value)}
-              />
+              <div>
+                <input
+                  type="text"
+                  placeholder="Ville *"
+                  className={`w-full border rounded-sm p-3 ${errors.ville ? 'border-red-500' : 'border-stone-300'}`}
+                  value={form.ville}
+                  onChange={(e) => handleChange("ville", e.target.value)}
+                />
+                {errors.ville && (
+                  <p className="text-red-500 text-sm mt-1">{errors.ville}</p>
+                )}
+              </div>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Code postal *"
+                  className={`w-full border rounded-sm p-3 ${errors.codePostal ? 'border-red-500' : 'border-stone-300'}`}
+                  value={form.codePostal}
+                  onChange={(e) => handleChange("codePostal", e.target.value)}
+                />
+                {errors.codePostal && (
+                  <p className="text-red-500 text-sm mt-1">{errors.codePostal}</p>
+                )}
+              </div>
               <select
                 className="border border-stone-300 rounded-sm p-3"
                 value={form.pays}
@@ -250,10 +399,17 @@ export default function Checkout() {
           {/* Bouton payer */}
           <button
             onClick={handlePayment}
-            className="mt-8 w-full bg-stone-900 text-white rounded-sm py-3 font-medium hover:bg-amber-700 transition"
+            disabled={isSubmitting || items.length === 0}
+            className={`mt-8 w-full rounded-sm py-3 font-medium transition ${isSubmitting || items.length === 0 ? 'bg-stone-400 text-stone-200 cursor-not-allowed' : 'bg-stone-900 text-white hover:bg-amber-700'}`}
           >
-            Procéder au paiement
+            {isSubmitting ? "Traitement en cours..." : "Confirmer la commande"}
           </button>
+          
+          {Object.keys(errors).length > 0 && (
+            <p className="text-red-500 text-sm text-center mt-3">
+              Veuillez corriger les erreurs ci-dessus
+            </p>
+          )}
         </aside>
       </div>
     </main>

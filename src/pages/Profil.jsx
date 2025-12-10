@@ -2,20 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { animeApi } from "../services/animeApi";
-
-
-
-const getOrders = async (token) => {
-  return animeApi.getOrders(token);
-};
-
-const getFavorites = async (token) => {
-  return animeApi.getFavorites(token);
-};
-
-const removeFavorite = async (token, productId) => {
-  return animeApi.removeFavorite(token, productId);
-};
+import { ShoppingBagIcon, ClockIcon, TruckIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 
 export default function Profil() {
   const navigate = useNavigate();
@@ -24,16 +11,16 @@ export default function Profil() {
   const [orders, setOrders] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(null);
 
-  const loadUserProfile = async (authToken) => {
+  const loadUserProfile = async () => {
     try {
       const userData = await animeApi.getMe();
       setUser(userData);
 
       // Charger les commandes
       try {
-        const ordersData = await getOrders(authToken);
+        const ordersData = await animeApi.getOrders();
+        console.log("📦 Commandes récupérées:", ordersData);
         setOrders(ordersData.data || []);
       } catch (err) {
         console.error("❌ Erreur commandes:", err);
@@ -41,7 +28,8 @@ export default function Profil() {
 
       // Charger les favoris
       try {
-        const favData = await getFavorites(authToken);
+        const favData = await animeApi.getFavorites();
+        console.log("❤️ Favoris récupérés:", favData);
         setFavorites(favData.data || []);
       } catch (err) {
         console.error("❌ Erreur favoris:", err);
@@ -60,8 +48,7 @@ export default function Profil() {
       navigate("/connexion");
       return;
     }
-    setToken(authToken);
-    loadUserProfile(authToken);
+    loadUserProfile();
   }, []);
 
   const handleLogout = () => {
@@ -74,10 +61,50 @@ export default function Profil() {
 
   const handleRemoveFavorite = async (productId) => {
     try {
-      await removeFavorite(token, productId);
+      await animeApi.removeFavorite(productId);
       setFavorites((prev) => prev.filter((fav) => fav.id !== productId));
     } catch (error) {
       console.error("❌ Erreur suppression favori:", error);
+    }
+  };
+
+  // Fonction pour obtenir l'icône du statut
+  const getStatusIcon = (status) => {
+    const statusLower = status?.toLowerCase() || "";
+    if (statusLower.includes("livré") || statusLower.includes("delivered")) {
+      return <CheckCircleIcon className="w-5 h-5" />;
+    } else if (statusLower.includes("expédié") || statusLower.includes("shipped")) {
+      return <TruckIcon className="w-5 h-5" />;
+    } else if (statusLower.includes("traitement") || statusLower.includes("processing")) {
+      return <ClockIcon className="w-5 h-5" />;
+    }
+    return <ShoppingBagIcon className="w-5 h-5" />;
+  };
+
+  // Fonction pour obtenir la couleur du statut
+  const getStatusColor = (status) => {
+    const statusLower = status?.toLowerCase() || "";
+    if (statusLower.includes("livré") || statusLower.includes("delivered")) {
+      return "bg-green-600";
+    } else if (statusLower.includes("expédié") || statusLower.includes("shipped")) {
+      return "bg-blue-600";
+    } else if (statusLower.includes("annulé") || statusLower.includes("cancelled")) {
+      return "bg-red-600";
+    }
+    return "bg-amber-600";
+  };
+
+  // Formater la date
+  const formatDate = (dateString) => {
+    if (!dateString) return "Date inconnue";
+    try {
+      return new Date(dateString).toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    } catch {
+      return dateString;
     }
   };
 
@@ -190,12 +217,13 @@ export default function Profil() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white px-10 py-10 rounded-sm shadow-sm space-y-6"
           >
-            <h2 className="text-2xl font-semibold text-stone-900 mb-6 text-center">
+            <h2 className="text-2xl font-semibold text-stone-900 mb-6">
               Historique des commandes
             </h2>
 
             {orders.length === 0 ? (
               <div className="text-center py-10">
+                <ShoppingBagIcon className="w-16 h-16 text-stone-300 mx-auto mb-4" />
                 <p className="text-stone-600 text-lg">
                   Vous n'avez pas encore passé de commande.
                 </p>
@@ -207,62 +235,92 @@ export default function Profil() {
                 </button>
               </div>
             ) : (
-              orders.map((order) => (
-                <div
-                  key={order.id}
-                  className="border border-stone-200 rounded-sm p-6 hover:shadow-md transition"
-                >
-                  {/* HEADER COMMANDE */}
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="text-center w-full">
-                      <h3 className="font-semibold text-lg text-stone-900">
-                        Commande {order.id}
-                      </h3>
-                      <p className="text-stone-600 text-sm">
-                        {new Date(order.date).toLocaleDateString("fr-FR")}
-                      </p>
+              <div className="space-y-6">
+                {orders.map((order) => (
+                  <div
+                    key={order._id || order.id}
+                    className="border border-stone-200 rounded-sm overflow-hidden hover:shadow-md transition"
+                  >
+                    {/* HEADER COMMANDE */}
+                    <div className="bg-stone-50 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+                      <div>
+                        <p className="text-sm text-stone-500">Commande</p>
+                        <p className="font-semibold text-stone-900">
+                          #{order.orderNumber || order._id?.slice(-8) || order.id}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-stone-500">Date</p>
+                        <p className="font-medium text-stone-700">
+                          {formatDate(order.createdAt || order.date)}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-sm text-stone-500">Total</p>
+                        <p className="font-semibold text-amber-700 text-lg">
+                          {(order.total || 0).toFixed(2)} €
+                        </p>
+                      </div>
+
+                      <span
+                        className={`
+                          flex items-center gap-2 px-4 py-2 rounded-full text-white text-sm font-medium
+                          ${getStatusColor(order.status || order.statut)}
+                        `}
+                      >
+                        {getStatusIcon(order.status || order.statut)}
+                        {order.status || order.statut || "En cours"}
+                      </span>
                     </div>
 
-                    <span
-                      className={`
-                        px-5 py-1 rounded-full text-white text-sm font-medium whitespace-nowrap
-                        ${
-                          order.statut === "Livré"
-                            ? "bg-green-600"
-                            : "bg-amber-600"
-                        }
-                      `}
-                    >
-                      {order.statut}
-                    </span>
-                  </div>
-
-                  {/* PRODUITS CENTRÉS */}
-                  <div className="border-t border-b py-4 space-y-3">
-                    {order.produits?.map((p, i) => (
-                      <div
-                        key={i}
-                        className="grid grid-cols-2 text-stone-700 text-center"
-                      >
-                        <span>
-                          {p.nom} x{p.quantite}
-                        </span>
-                        <span className="font-semibold">
-                          {p.prix.toFixed(2)} €
-                        </span>
+                    {/* PRODUITS */}
+                    <div className="px-6 py-4">
+                      <p className="text-sm font-medium text-stone-500 mb-3">Articles</p>
+                      <div className="space-y-3">
+                        {(order.items || order.produits || []).map((item, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-between py-2 border-b border-stone-100 last:border-0"
+                          >
+                            <div className="flex items-center gap-4">
+                              {(item.image || item.product?.image) && (
+                                <img
+                                  src={item.image || item.product?.image}
+                                  alt={item.name || item.nom}
+                                  className="w-12 h-12 object-cover rounded-sm bg-stone-100"
+                                />
+                              )}
+                              <div>
+                                <p className="font-medium text-stone-900">
+                                  {item.name || item.nom || item.product?.name}
+                                </p>
+                                <p className="text-sm text-stone-500">
+                                  Quantité: {item.quantity || item.quantite || 1}
+                                </p>
+                              </div>
+                            </div>
+                            <p className="font-semibold text-stone-700">
+                              {((item.price || item.prix || 0) * (item.quantity || item.quantite || 1)).toFixed(2)} €
+                            </p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
 
-                  {/* TOTAL CENTRÉ */}
-                  <div className="text-center mt-6 text-lg font-semibold">
-                    Total :{" "}
-                    <span className="text-amber-700">
-                      {order.total.toFixed(2)} €
-                    </span>
+                    {/* ADRESSE LIVRAISON */}
+                    {order.shippingAddress && (
+                      <div className="px-6 py-4 bg-stone-50 border-t border-stone-200">
+                        <p className="text-sm font-medium text-stone-500 mb-1">Adresse de livraison</p>
+                        <p className="text-stone-700">
+                          {order.shippingAddress.address}, {order.shippingAddress.postalCode} {order.shippingAddress.city}
+                        </p>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))
+                ))}
+              </div>
             )}
           </motion.div>
         )}
