@@ -1,22 +1,50 @@
 // Page Accessoires avec filtres + pagination - Style Premium
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ThemeContext } from '../context/ThemeContext.jsx';
+import { animeApi } from '../services/animeApi';
+import { getImageUrl, handleImageError } from '../services/imageLoader';
 
 export default function Accessoires() {
-  const { addItem } = useContext(ThemeContext);
+  const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
 
-  const accessoires = [
-    { id: 1, nom: 'Étui de rangement Naruto', prix: 29.99, image: '📦', collection: 'naruto' },
-    { id: 2, nom: 'Tapis de jeu Ghibli', prix: 39.99, image: '🖼️', collection: 'ghibli' },
-    { id: 3, nom: 'Horloge d\'échecs', prix: 49.99, image: '⏰', collection: 'hxh' },
-    { id: 4, nom: 'Bloc-notes manga', prix: 19.99, image: '📝', collection: 'demonslayer' },
-    { id: 5, nom: 'Porte-pièces Naruto', prix: 15.99, image: '🍥', collection: 'naruto' },
-    { id: 6, nom: 'Tapis Ghibli Totoro', prix: 24.99, image: '🌿', collection: 'ghibli' },
-    { id: 7, nom: 'Horloge HXH Kuroro', prix: 59.99, image: '🖤', collection: 'hxh' },
-    { id: 8, nom: 'Support Demon Slayer', prix: 34.99, image: '⚡', collection: 'demonslayer' },
-  ];
+  const [accessoires, setAccessoires] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Charger les accessoires depuis l'API
+  useEffect(() => {
+    async function loadAccessoires() {
+      try {
+        setLoading(true);
+        console.log('🔄 Chargement des accessoires...');
+        const data = await animeApi.getProductsByCategory('accessoires');
+        console.log('📦 Données reçues:', data);
+        
+        // Mapper les données API au format local
+        const mapped = data.map(p => ({
+          id: p._id || p.id,
+          nom: p.nom || p.name,
+          prix: parseFloat(p.prix || p.price || 0),
+          image: p.image,
+          collection: (p.collection && p.collection.name) || (p.universe && p.universe.name) || 'Non classé',
+        }));
+        
+        console.log('✅ Accessoires mappés:', mapped);
+        
+        setAccessoires(mapped);
+        setError(null);
+      } catch (err) {
+        console.error('❌ Erreur chargement accessoires:', err);
+        setError('Impossible de charger les accessoires');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadAccessoires();
+  }, []);
 
   // ------------------------
   // STATE FILTRES
@@ -124,7 +152,37 @@ export default function Accessoires() {
         </div>
       </section>
 
+      {/* État de chargement */}
+      {loading && (
+        <section className="py-16">
+          <div className="container mx-auto px-6 lg:px-20">
+            <div className="text-center py-16">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mb-4"></div>
+              <p className="text-xl text-stone-600">Chargement des accessoires...</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* État d'erreur */}
+      {error && !loading && (
+        <section className="py-16">
+          <div className="container mx-auto px-6 lg:px-20">
+            <div className="text-center py-16">
+              <p className="text-red-600 mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-amber-600 text-white rounded-sm hover:bg-amber-700"
+              >
+                Réessayer
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Contenu principal */}
+      {!loading && !error && (
       <section className="py-16">
         <div className="container mx-auto px-6 lg:px-20">
           <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
@@ -239,9 +297,14 @@ export default function Accessoires() {
                     className="group bg-white border border-stone-200 rounded-sm overflow-hidden hover:shadow-xl transition-all duration-300"
                   >
                     <Link to={`/produit/${produit.id}`}>
-                      <div className="h-64 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center text-7xl relative overflow-hidden">
+                      <div className="h-64 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center relative overflow-hidden">
                         <div className="absolute inset-0 bg-amber-600/0 group-hover:bg-amber-600/5 transition-colors duration-300"></div>
-                        {produit.image}
+                        <img
+                          src={getImageUrl(produit.image)}
+                          alt={produit.nom}
+                          onError={handleImageError}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     </Link>
                     <div className="p-6 space-y-4">
@@ -331,6 +394,7 @@ export default function Accessoires() {
           </div>
         </div>
       </section>
+      )}
     </main>
   );
 }

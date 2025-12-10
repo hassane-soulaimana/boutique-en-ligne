@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ThemeContext } from '../context/ThemeContext.jsx';
 import { animeApi } from '../services/animeApi';
+import { getImageUrl, handleImageError } from '../services/imageLoader';
 
 export default function Echiquiers() {
   const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
@@ -301,9 +302,14 @@ export default function Echiquiers() {
                     className="group bg-white border border-stone-200 rounded-sm overflow-hidden hover:shadow-xl transition-all duration-300"
                   >
                     <Link to={`/produit/${produit.id}`}>
-                      <div className="h-64 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center text-7xl relative overflow-hidden">
+                      <div className="h-64 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center relative overflow-hidden">
                         <div className="absolute inset-0 bg-amber-600/0 group-hover:bg-amber-600/5 transition-colors duration-300"></div>
-                        {produit.image}
+                        <img
+                          src={getImageUrl(produit.image)}
+                          alt={produit.nom}
+                          onError={handleImageError}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     </Link>
                     <div className="p-6 space-y-4">
