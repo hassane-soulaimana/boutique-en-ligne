@@ -39,7 +39,6 @@ export default function CollectionDetail() {
     async function loadData() {
       try {
         setLoading(true);
-        console.log(`🔄 Chargement de l'univers et des produits pour: ${universId}`);
         
         // Charger les univers pour obtenir les détails
         const universes = await animeApi.getUniverses();
@@ -63,7 +62,6 @@ export default function CollectionDetail() {
         
         // Charger tous les produits et filtrer par univers
         const universName = getUniversName(universId);
-        console.log('🔄 Chargement des produits pour univers:', universId, '-> Nom:', universName);
         const allProducts = await animeApi.getProducts();
         
         // Filtrer les produits de cet univers (en utilisant le nom ou le slug)
@@ -74,7 +72,6 @@ export default function CollectionDetail() {
           const searchName = universName.toLowerCase();
           return pUniverse.includes(searchSlug) || pUniverse.includes(searchName) || pUniverse === searchSlug;
         });
-        console.log('📦 Produits de l\'univers:', universeProducts);
         
         // Mapper les données API au format local
         const mapped = universeProducts.map(p => ({
@@ -85,11 +82,9 @@ export default function CollectionDetail() {
           image: p.image,
         }));
         
-        console.log('✅ Produits mappés:', mapped);
         setProduits(mapped);
         setError(null);
       } catch (err) {
-        console.error('❌ Erreur chargement produits:', err);
         setError('Impossible de charger les produits');
       } finally {
         setLoading(false);

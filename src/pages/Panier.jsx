@@ -1,12 +1,11 @@
 ﻿import { useState, useContext } from "react";
-import API_URL from "../services/api";
 import { Link } from "react-router-dom";
 import { TrashIcon, MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { ThemeContext } from "../context/ThemeContext.jsx";
+import { ShopContext } from "../context/ShopContext.jsx";
 import { getImageUrl, handleImageError } from "../services/imageLoader";
 
 export default function Panier() {
-  const { cart: items, removeItem, updateQuantity, getSubtotal } = useContext(ThemeContext);
+  const { cart: items, removeItem, updateQuantity, getSubtotal } = useContext(ShopContext);
   const [shippingMethod, setShippingMethod] = useState("standard");
 
   const shippingCost = shippingMethod === "express" ? 10 : 0;

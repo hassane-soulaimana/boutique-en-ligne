@@ -54,8 +54,6 @@ export default function Connexion() {
     try {
       const data = await animeApi.login({ email: formData.email, password: formData.password });
 
-      console.log("Réponse login:", data);
-
       // La fonction animeApi.login sauvegarde déjà le token
       if (data.success || data.data?.token) {
         setTimeout(() => {
@@ -67,7 +65,6 @@ export default function Connexion() {
         setErrors({ general: errorMsg });
       }
     } catch (error) {
-      console.error("Erreur connexion:", error);
       setErrors({ general: error.message || "Identifiants incorrects" });
     } finally {
       setLoading(false);

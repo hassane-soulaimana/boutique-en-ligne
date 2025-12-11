@@ -46,15 +46,12 @@ export default function Collections() {
     async function loadUnivers() {
       try {
         setLoading(true);
-        console.log('🔄 Chargement des univers/collections...');
         
         // Récupérer tous les produits pour extraire les univers uniques
         const allProducts = await animeApi.getProducts();
-        console.log('📦 Produits récupérés:', allProducts.length);
         
         // Extraire les univers uniques
         const universUniques = [...new Set(allProducts.map(p => p.universe).filter(Boolean))];
-        console.log('🌍 Univers disponibles:', universUniques);
         
         if (universUniques.length > 0) {
           // Créer les collections à partir des univers
@@ -71,15 +68,12 @@ export default function Collections() {
               image: produitUnivers?.image || 'https://images.unsplash.com/photo-1586165368502-1bad197a6461?w=800&q=80'
             };
           });
-          console.log('✅ Univers mappés:', mapped);
           setUnivers(mapped);
         } else {
-          console.log('⚠️ Aucun univers trouvé, utilisation des données par défaut');
           setUnivers(defaultUnivers);
         }
         setError(null);
       } catch (err) {
-        console.error('❌ Erreur chargement univers:', err);
         setError('Impossible de charger les collections');
         setUnivers(defaultUnivers);
       } finally {

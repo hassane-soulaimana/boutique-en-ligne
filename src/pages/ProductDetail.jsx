@@ -1,13 +1,13 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
-import { ThemeContext } from '../context/ThemeContext.jsx';
+import { ShopContext } from '../context/ShopContext.jsx';
 import { animeApi } from '../services/animeApi';
 import { getImageUrl, handleImageError } from '../services/imageLoader';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
+  const { addItem, toggleFavorite, isFavorite } = useContext(ShopContext);
   const [quantity, setQuantity] = useState(1);
 
   // State pour produit, chargement et erreur
@@ -20,9 +20,7 @@ export default function ProductDetail() {
     async function fetchProduit() {
       try {
         setLoading(true);
-        console.log(`🔄 Chargement du produit avec ID: ${id}`);
         const data = await animeApi.getProductById(id);
-        console.log('📦 Produit reçu:', data);
         
         if (!data) {
           setError('Produit non trouvé');
@@ -32,7 +30,6 @@ export default function ProductDetail() {
           setError(null);
         }
       } catch (err) {
-        console.error("❌ Erreur API produit:", err);
         setError('Erreur lors du chargement du produit');
         setProduit(null);
       } finally {

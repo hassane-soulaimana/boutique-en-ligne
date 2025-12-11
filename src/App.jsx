@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "./context/ThemeContext.jsx";
+import { ShopProvider } from "./context/ShopContext.jsx";
 
 import Home from "./pages/Home";
-import About from "./pages/about";
-import Contact from "./pages/contact";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 import CGV from "./pages/cgv";
 import Echiquiers from "./pages/Echiquiers";
 import Pieces from "./pages/Pieces";
@@ -22,13 +22,13 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 import Header from "./components/header/Header";
-import Footer from "./components/footer/footer";
+import Footer from "./components/footer/Footer";
 
 import "./App.css";
 
 export default function App() {
   return (
-    <ThemeProvider>
+    <ShopProvider>
       <Router>
         <Header />
         <Routes>
@@ -54,6 +54,6 @@ export default function App() {
         </Routes>
         <Footer />
       </Router>
-    </ThemeProvider>
+    </ShopProvider>
   );
 }
