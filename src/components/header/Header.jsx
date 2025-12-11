@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ThemeContext } from "../../context/ThemeContext.jsx";
+import { ShopContext } from "../../context/ShopContext.jsx";
 
 import {
   MagnifyingGlassIcon,
@@ -17,7 +17,7 @@ export default function Header() {
   const [collectionsOpen, setCollectionsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  const { getTotalItems, favorites } = useContext(ThemeContext);
+  const { getTotalItems, favorites } = useContext(ShopContext);
   const cartCount = getTotalItems();
   const favCount = favorites.length;
 

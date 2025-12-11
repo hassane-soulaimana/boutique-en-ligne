@@ -1,8 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
-import { ThemeContext } from "../../context/ThemeContext.jsx";
+import { ShopContext } from "../../context/ShopContext.jsx";
 import { animeApi } from "../../services/animeApi";
-import API_URL from "../../services/api";
 import { getImageUrl, handleImageError } from "../../services/imageLoader";
 
 export default function ChessPieces() {
@@ -11,7 +10,7 @@ export default function ChessPieces() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { addItem, toggleFavorite, isFavorite } = useContext(ThemeContext);
+  const { addItem, toggleFavorite, isFavorite } = useContext(ShopContext);
 
   useEffect(() => {
     fetchProducts();
@@ -20,13 +19,9 @@ export default function ChessPieces() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      console.log('🔄 Chargement des produits...');
       const data = await animeApi.getProducts();
-      console.log('✅ Produits récupérés:', data);
-      console.log('📊 Nombre de produits:', data.length);
       setProducts(data);
     } catch (err) {
-      console.error('❌ Erreur:', err);
       setError("Impossible de charger les produits.");
     } finally {
       setLoading(false);

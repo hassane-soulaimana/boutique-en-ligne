@@ -1,11 +1,11 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ThemeContext } from '../context/ThemeContext.jsx';
+import { ShopContext } from '../context/ShopContext.jsx';
 import { getImageUrl, handleImageError } from '../services/imageLoader';
 
 export default function Favoris() {
-  const { favorites, removeFavorite, addItem } = useContext(ThemeContext);
+  const { favorites, removeFavorite, addItem } = useContext(ShopContext);
 
   const handleAddToCart = (produit) => {
     addItem({

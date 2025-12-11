@@ -1,14 +1,13 @@
 import { useRef, useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeftIcon, ChevronRightIcon, ShoppingCartIcon } from "@heroicons/react/24/solid";
-import { ThemeContext } from "../../context/ThemeContext.jsx";
+import { ShopContext } from "../../context/ShopContext.jsx";
 import { animeApi } from "../../services/animeApi";
-import API_URL from "../../services/api";
 import { getImageUrl, handleImageError } from "../../services/imageLoader";
 
 export default function NewProducts() {
   const sliderRef = useRef(null);
-  const { addItem } = useContext(ThemeContext);
+  const { addItem } = useContext(ShopContext);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,11 +27,9 @@ export default function NewProducts() {
       if (data && data.length > 0) {
         setProducts(data);
       } else {
-        console.warn('⚠️ API vide, aucun produit disponible');
         setProducts([]);
       }
     } catch (error) {
-      console.error('❌ Erreur lors du chargement des produits:', error);
       setError('Impossible de charger les produits. Veuillez réessayer plus tard.');
       setProducts([]);
     } finally {

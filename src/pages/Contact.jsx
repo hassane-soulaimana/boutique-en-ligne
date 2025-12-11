@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import mapboxgl from "mapbox-gl";
 
-// Configuration du token Mapbox
-mapboxgl.accessToken = "pk.eyJ1IjoiaHNuZTIwIiwiYSI6ImNtaWhkM29mZTBkbXozZHIxNDNnZHZwc28ifQ.KaY1UNrpNjNwscYCNsUNJw";
+// Configuration du token Mapbox via variable d'environnement
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 export default function Contact() {
   const mapContainer = useRef(null);

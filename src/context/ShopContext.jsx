@@ -2,10 +2,12 @@
 import { createContext, useState, useEffect } from "react";
 import API_URL from "../services/api";
 
-export const ThemeContext = createContext();
+export const ShopContext = createContext();
+// Alias pour compatibilité avec l'ancien nom
+export const ThemeContext = ShopContext;
 
 
-export const ThemeProvider = ({ children }) => {
+export const ShopProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem("favorites");
@@ -183,7 +185,7 @@ export const ThemeProvider = ({ children }) => {
     cart.reduce((sum, i) => sum + i.prix * i.quantity, 0);
 
   return (
-    <ThemeContext.Provider
+    <ShopContext.Provider
       value={{
         cart,
         favorites,
@@ -201,6 +203,9 @@ export const ThemeProvider = ({ children }) => {
       }}
     >
       {children}
-    </ThemeContext.Provider>
+    </ShopContext.Provider>
   );
 };
+
+// Alias pour compatibilité avec l'ancien nom
+export const ThemeProvider = ShopProvider;

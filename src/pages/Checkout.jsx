@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ThemeContext } from "../context/ThemeContext.jsx";
+import { ShopContext } from "../context/ShopContext.jsx";
 import API_URL from "../services/api";
 import {
   ArrowLeftIcon,
@@ -10,7 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function Checkout() {
-  const { cart: items, getSubtotal, clearCart } = useContext(ThemeContext);
+  const { cart: items, getSubtotal, clearCart } = useContext(ShopContext);
   const subtotal = getSubtotal();
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -111,24 +111,17 @@ export default function Checkout() {
 
   // Enregistrement de la commande et paiement
   const handlePayment = async () => {
-    console.log("🔄 handlePayment appelé");
-    console.log("📦 Items dans le panier:", items);
-    console.log("📝 Formulaire:", form);
-    
     // Valider le formulaire
     if (!validateForm()) {
-      console.log("❌ Validation échouée:", errors);
       return;
     }
     
     // Vérifier que le panier n'est pas vide
     if (!items || items.length === 0) {
-      console.log("❌ Panier vide");
       alert("Votre panier est vide");
       return;
     }
     
-    console.log("✅ Validation OK, envoi de la commande...");
     setIsSubmitting(true);
     
     // Générer un numéro de commande unique
@@ -166,8 +159,6 @@ export default function Checkout() {
       createdAt: new Date().toISOString(),
     };
     
-    console.log("📤 Envoi des données:", orderData);
-    
     try {
       // Envoyer la commande au backend
       const token = localStorage.getItem("token");
@@ -180,9 +171,7 @@ export default function Checkout() {
         body: JSON.stringify(orderData),
       });
       
-      console.log("📥 Réponse:", response.status);
       const data = await response.json();
-      console.log("📥 Data:", data);
       
       // Mettre à jour le numéro de commande si retourné par l'API
       if (data.data?.orderNumber) {
@@ -192,14 +181,13 @@ export default function Checkout() {
         orderData._id = data.data._id;
       }
     } catch (error) {
-      console.error("❌ Erreur envoi API:", error);
+      // Erreur silencieuse - la commande sera sauvegardée localement
     }
     
     // Sauvegarder la commande en local (backup)
     const localOrders = JSON.parse(localStorage.getItem("localOrders") || "[]");
     localOrders.unshift(orderData);
     localStorage.setItem("localOrders", JSON.stringify(localOrders));
-    console.log("💾 Commande sauvegardée localement");
     
     // Vider le panier
     clearCart();
@@ -211,7 +199,6 @@ export default function Checkout() {
       email: form.email,
     }));
     
-    console.log("✅ Commande créée, redirection...");
     setIsSubmitting(false);
     // Rediriger vers la confirmation
     navigate("/confirmation-commande");
