@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { animeApi } from '../services/animeApi';
 
-const ADMIN_EMAIL = 'admin@animechess.com';
-const ADMIN_PASSWORD = 'admin123';
-
 // ---- UI helpers -----------------------------------------------------------
 const CARD_TONES = {
   blue: {
@@ -588,12 +585,15 @@ const CollectionsTab = ({ collections, products }) => (
 
 // ---- Main ----------------------------------------------------------------
 export default function Admin() {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('adminToken'));
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
   const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [datasets, setDatasets] = useState({ products: [], orders: [], users: [], collections: [] });
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState('');
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   const showToast = (text) => {
     setToast(text);
@@ -624,26 +624,89 @@ export default function Admin() {
     }
   };
 
+  // Vérifier si l'utilisateur est déjà connecté en tant qu'admin au chargement
+  useEffect(() => {
+    const checkAdminAuth = async () => {
+      const token = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+      
+      if (token && storedUser) {
+        try {
+          const user = JSON.parse(storedUser);
+          // Vérifier si c'est un admin
+          if (user.role === 'admin') {
+            setAdminUser(user);
+            setIsLoggedIn(true);
+          } else {
+            // Essayer de récupérer le profil pour vérifier le rôle
+            const profile = await animeApi.getMe();
+            if (profile && profile.role === 'admin') {
+              setAdminUser(profile);
+              setIsLoggedIn(true);
+            }
+          }
+        } catch (error) {
+          console.error('Erreur vérification auth admin:', error);
+        }
+      }
+      setCheckingAuth(false);
+    };
+    
+    checkAdminAuth();
+  }, []);
+
   useEffect(() => {
     if (isLoggedIn) {
       fetchAll();
     }
   }, [isLoggedIn]);
 
-  const handleLogin = (email, password) => {
+  const handleLogin = async (email, password) => {
     setLoginError('');
+    setLoginLoading(true);
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      localStorage.setItem('adminToken', `admin-${Date.now()}`);
-      setIsLoggedIn(true);
-    } else {
-      setLoginError('Email ou mot de passe incorrect');
+    try {
+      const response = await animeApi.login({ email, password });
+      
+      // Récupérer l'utilisateur depuis la réponse ou le localStorage
+      let user = response?.data?.user || response?.user;
+      if (!user) {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          user = JSON.parse(storedUser);
+        }
+      }
+      
+      // Si pas d'user dans la réponse, récupérer le profil
+      if (!user) {
+        user = await animeApi.getMe();
+      }
+      
+      // Vérifier si l'utilisateur est admin
+      if (user && user.role === 'admin') {
+        setAdminUser(user);
+        setIsLoggedIn(true);
+        showToast(`✅ Bienvenue ${user.name || user.firstName || 'Admin'} !`);
+      } else {
+        // Pas admin - déconnecter
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setLoginError('Accès refusé. Vous devez avoir un compte administrateur.');
+      }
+    } catch (error) {
+      console.error('Erreur login admin:', error);
+      setLoginError(error.message || 'Email ou mot de passe incorrect');
+    } finally {
+      setLoginLoading(false);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setIsLoggedIn(false);
+    setAdminUser(null);
+    showToast('👋 Déconnexion réussie');
   };
 
   const handleSaveProduct = async (payload, editing) => {
@@ -704,8 +767,19 @@ export default function Admin() {
     }
   };
 
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="animate-spin w-12 h-12 border-4 border-white/20 border-t-white rounded-full mx-auto mb-4"></div>
+          <p className="text-slate-300">Vérification de l'authentification...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isLoggedIn) {
-    return <LoginPage onSubmit={handleLogin} error={loginError} />;
+    return <LoginPage onSubmit={handleLogin} error={loginError} loading={loginLoading} />;
   }
 
   const tabs = [
@@ -749,9 +823,22 @@ export default function Admin() {
             </h1>
             <p className="text-sm text-white/70 mt-1">Surveillez vos ventes et orchestrez votre catalogue depuis un espace unique.</p>
           </div>
-          <Button variant="danger" onClick={handleLogout} className="px-5 py-2.5">
-            Déconnexion
-          </Button>
+          <div className="flex items-center gap-4">
+            {adminUser && (
+              <div className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-2">
+                <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  {(adminUser.name || adminUser.firstName || adminUser.email || 'A')[0].toUpperCase()}
+                </div>
+                <div className="text-sm">
+                  <p className="font-medium">{adminUser.name || adminUser.firstName || 'Admin'}</p>
+                  <p className="text-white/60 text-xs">{adminUser.email}</p>
+                </div>
+              </div>
+            )}
+            <Button variant="danger" onClick={handleLogout} className="px-5 py-2.5">
+              Déconnexion
+            </Button>
+          </div>
         </div>
       </header>
 
