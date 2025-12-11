@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeContext.jsx";
 import API_URL from "../services/api";
@@ -6,6 +6,7 @@ import {
   ArrowLeftIcon,
   TagIcon,
   ExclamationCircleIcon,
+  LockClosedIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Checkout() {
@@ -14,6 +15,56 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Vérifier si l'utilisateur est connecté
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    setIsLoggedIn(!!(token && user));
+  }, []);
+
+  // Rediriger si non connecté ou afficher message
+  if (!isLoggedIn) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-stone-50 to-white py-12 px-4">
+        <div className="max-w-lg mx-auto text-center">
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-stone-200">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <LockClosedIcon className="w-8 h-8 text-orange-600" />
+            </div>
+            <h1 className="text-2xl font-bold text-stone-900 mb-4">
+              Connexion requise
+            </h1>
+            <p className="text-stone-600 mb-6">
+              Vous devez être connecté pour passer une commande. Connectez-vous ou créez un compte pour continuer.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/connexion"
+                className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-amber-600 transition-all"
+              >
+                Se connecter
+              </Link>
+              <Link
+                to="/inscription"
+                className="px-6 py-3 border-2 border-stone-300 text-stone-700 font-semibold rounded-lg hover:border-stone-400 hover:bg-stone-50 transition-all"
+              >
+                Créer un compte
+              </Link>
+            </div>
+            <Link
+              to="/panier"
+              className="inline-flex items-center gap-2 text-stone-500 hover:text-stone-700 mt-6 text-sm"
+            >
+              <ArrowLeftIcon className="w-4 h-4" />
+              Retour au panier
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   const [shipping, setShipping] = useState("standard"); // standard / express
   const shippingCost = shipping === "express" ? 10 : 0;
