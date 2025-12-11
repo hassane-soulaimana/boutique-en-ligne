@@ -282,6 +282,26 @@ const ProductsTab = ({ products, onSave, onDelete, loading }) => {
       stock: parseInt(form.stock, 10)
     };
 
+    // Validation côté front
+    if (!payload.nom || !payload.prix || !payload.image || !payload.collection || !payload.categorie || !payload.description) {
+      alert('Tous les champs sont obligatoires');
+      return;
+    }
+    if (isNaN(payload.prix) || payload.prix <= 0) {
+      alert('Le prix doit être un nombre positif');
+      return;
+    }
+    if (isNaN(payload.stock) || payload.stock < 0) {
+      alert('Le stock doit être un nombre positif');
+      return;
+    }
+
+    if (editing) {
+      if (!window.confirm('Confirmer la modification du produit ?')) {
+        return;
+      }
+    }
+
     await onSave(payload, editing);
     setForm(defaultForm);
     setEditing(null);
@@ -480,7 +500,8 @@ const OrdersTab = ({ orders, onUpdateStatus }) => (
   </section>
 );
 
-const UsersTab = ({ users, onDelete }) => (
+
+const UsersTab = ({ users, onDelete, onChangeRole, changingRoleId }) => (
   <section className="space-y-6">
     <div className="flex items-center justify-between flex-wrap gap-4">
       <div>
@@ -514,7 +535,15 @@ const UsersTab = ({ users, onDelete }) => (
               </td>
               <td className="px-5 py-4 text-slate-500">{user.email}</td>
               <td className="px-5 py-4">
-                <StatusBadge status={user.role || 'client'} />
+                <select
+                  value={user.role || 'user'}
+                  disabled={changingRoleId === (user._id || user.id)}
+                  onChange={e => onChangeRole(user._id || user.id, e.target.value)}
+                  className="px-2 py-1 rounded border border-slate-200 bg-white text-slate-700"
+                >
+                  <option value="user">Utilisateur</option>
+                  <option value="admin">Admin</option>
+                </select>
               </td>
               <td className="px-5 py-4 text-sm text-slate-500">
                 {user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : '—'}
@@ -585,6 +614,7 @@ const CollectionsTab = ({ collections, products }) => (
 
 // ---- Main ----------------------------------------------------------------
 export default function Admin() {
+  // TOUS LES HOOKS EN HAUT DU COMPOSANT
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [adminUser, setAdminUser] = useState(null);
   const [loginError, setLoginError] = useState('');
@@ -594,6 +624,39 @@ export default function Admin() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState('');
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [changingRoleId, setChangingRoleId] = useState(null);
+
+  useEffect(() => {
+    const checkAdminAuth = async () => {
+      const token = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+      if (token && storedUser) {
+        try {
+          const user = JSON.parse(storedUser);
+          if (user.role === 'admin') {
+            setAdminUser(user);
+            setIsLoggedIn(true);
+          } else {
+            const profile = await animeApi.getMe();
+            if (profile && profile.role === 'admin') {
+              setAdminUser(profile);
+              setIsLoggedIn(true);
+            }
+          }
+        } catch (error) {
+          console.error('Erreur vérification auth admin:', error);
+        }
+      }
+      setCheckingAuth(false);
+    };
+    checkAdminAuth();
+  }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchAll();
+    }
+  }, [isLoggedIn]);
 
   const showToast = (text) => {
     setToast(text);
@@ -711,7 +774,22 @@ export default function Admin() {
 
   const handleSaveProduct = async (payload, editing) => {
     setLoading(true);
-
+    // Validation côté front
+    if (!payload.nom || !payload.prix || !payload.image || !payload.collection || !payload.categorie || !payload.description) {
+      showToast('❌ Tous les champs sont obligatoires');
+      setLoading(false);
+      return;
+    }
+    if (isNaN(payload.prix) || payload.prix <= 0) {
+      showToast('❌ Le prix doit être un nombre positif');
+      setLoading(false);
+      return;
+    }
+    if (isNaN(payload.stock) || payload.stock < 0) {
+      showToast('❌ Le stock doit être un nombre positif');
+      setLoading(false);
+      return;
+    }
     try {
       if (editing) {
         await animeApi.updateProduct(editing._id || editing.id, payload);
@@ -720,7 +798,6 @@ export default function Admin() {
         await animeApi.createProduct(payload);
         showToast('✅ Produit ajouté');
       }
-
       fetchAll();
     } catch (error) {
       showToast(`❌ Erreur: ${error.message}`);
@@ -730,10 +807,10 @@ export default function Admin() {
   };
 
   const handleDeleteProduct = async (product) => {
-    if (!window.confirm(`Supprimer "${product.nom || product.name}" ?`)) {
+    if (!window.confirm(`Voulez-vous vraiment supprimer "${product.nom || product.name}" ? Cette action est irréversible.`)) {
+      showToast('Suppression annulée');
       return;
     }
-
     try {
       await animeApi.deleteProduct(product._id || product.id);
       showToast('✅ Produit supprimé');
@@ -744,9 +821,15 @@ export default function Admin() {
   };
 
   const handleUpdateOrderStatus = async (orderId, status) => {
+    if (status === 'cancelled') {
+      if (!window.confirm('Voulez-vous vraiment annuler cette commande ? Cette action est irréversible.')) {
+        showToast('Annulation de commande annulée');
+        return;
+      }
+    }
     try {
       await animeApi.updateOrderStatus(orderId, status);
-      showToast('✅ Statut mis à jour');
+      showToast(status === 'cancelled' ? '✅ Commande annulée' : '✅ Statut mis à jour');
       fetchAll();
     } catch (error) {
       showToast(`❌ Erreur: ${error.message}`);
@@ -782,6 +865,24 @@ export default function Admin() {
     return <LoginPage onSubmit={handleLogin} error={loginError} loading={loginLoading} />;
   }
 
+
+  const handleChangeUserRole = async (userId, newRole) => {
+    setChangingRoleId(userId);
+    try {
+      const result = await animeApi.updateUserRole(userId, newRole);
+      if (result.success) {
+        showToast('✅ Rôle mis à jour');
+        fetchAll();
+      } else {
+        showToast(`❌ Erreur: ${result.message}`);
+      }
+    } catch (error) {
+      showToast(`❌ Erreur: ${error.message}`);
+    } finally {
+      setChangingRoleId(null);
+    }
+  };
+
   const tabs = [
     { id: 'dashboard', label: '📊 Dashboard', render: () => (
       <DashboardTab
@@ -805,7 +906,12 @@ export default function Admin() {
       <OrdersTab orders={datasets.orders} onUpdateStatus={handleUpdateOrderStatus} />
     ) },
     { id: 'users', label: '👥 Utilisateurs', render: () => (
-      <UsersTab users={datasets.users} onDelete={handleDeleteUser} />
+      <UsersTab
+        users={datasets.users}
+        onDelete={handleDeleteUser}
+        onChangeRole={handleChangeUserRole}
+        changingRoleId={changingRoleId}
+      />
     ) },
     { id: 'collections', label: '🎨 Collections', render: () => (
       <CollectionsTab collections={datasets.collections} products={datasets.products} />
