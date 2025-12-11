@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import inscriptionImg from "../assets/inscription.png";
@@ -16,6 +16,15 @@ const register = async (nom, prenom, email, password, confirmPassword) => {
 
 export default function Inscription() {
   const navigate = useNavigate();
+
+  // Redirection si déjà connecté
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/profil");
+    }
+  }, [navigate]);
+
   const [formData, setFormData] = useState({
     nom: "",
     prenom: "",

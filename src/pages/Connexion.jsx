@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import connexionImg from "../assets/connexion.png";
@@ -6,17 +6,16 @@ import connexionImg from "../assets/connexion.png";
 
 import { animeApi } from "../services/animeApi";
 
-const login = async (email, password) => {
-  try {
-    const payload = await animeApi.login(email, password);
-    return payload;
-  } catch (error) {
-    throw error;
-  }
-};
-
 export default function Connexion() {
   const navigate = useNavigate();
+
+  // Redirection si déjà connecté
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/profil");
+    }
+  }, [navigate]);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -53,20 +52,12 @@ export default function Connexion() {
     setLoading(true);
 
     try {
-      const data = await login(formData.email, formData.password);
+      const data = await animeApi.login({ email: formData.email, password: formData.password });
 
       console.log("Réponse login:", data);
 
-      //
-      const token = data.token || data.data?.token || data.accessToken;
-      const success = data.success || data.token || data.accessToken;
-
-      if (success && token) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("authToken", token); // Pour compatibilité
-        if (data.data?.user) {
-          localStorage.setItem("user", JSON.stringify(data.data.user));
-        }
+      // La fonction animeApi.login sauvegarde déjà le token
+      if (data.success || data.data?.token) {
         setTimeout(() => {
           navigate("/profil");
         }, 500);
@@ -76,8 +67,8 @@ export default function Connexion() {
         setErrors({ general: errorMsg });
       }
     } catch (error) {
-      console.error(" Erreur connexion:", error);
-      setErrors({ general: error.message || "Erreur lors de la connexion" });
+      console.error("Erreur connexion:", error);
+      setErrors({ general: error.message || "Identifiants incorrects" });
     } finally {
       setLoading(false);
     }
