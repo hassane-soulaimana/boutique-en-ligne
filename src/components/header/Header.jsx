@@ -58,7 +58,7 @@ export default function Header() {
         {/* LOGO */}
         <Link to="/" className="flex items-center group">
           <img
-            src="/logo.png"
+            src={process.env.PUBLIC_URL ? process.env.PUBLIC_URL + '/logo.png' : 'logo.png'}
             alt="logo"
             className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
           />
