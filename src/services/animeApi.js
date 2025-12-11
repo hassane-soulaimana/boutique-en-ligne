@@ -433,6 +433,45 @@ export const animeApi = {
     }
   },
 
+  // Mettre à jour le profil utilisateur
+  async updateProfile(profileData) {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("Non authentifié");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Erreur lors de la mise à jour du profil"
+        );
+      }
+
+      // Mettre à jour le localStorage avec les nouvelles données
+      const updatedUser = data.data || data.user || data;
+      if (updatedUser) {
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+
+      return { success: true, data: updatedUser };
+    } catch (error) {
+      console.error("Erreur updateProfile:", error);
+      throw error;
+    }
+  },
+
   // Déconnexion
   logout() {
     localStorage.removeItem("token");

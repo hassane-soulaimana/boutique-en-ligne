@@ -11,11 +11,20 @@ export default function Profil() {
   const [orders, setOrders] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ prenom: "", nom: "", email: "" });
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
 
   const loadUserProfile = async () => {
     try {
       const userData = await animeApi.getMe();
       setUser(userData);
+      setEditForm({
+        prenom: userData.prenom || "",
+        nom: userData.nom || "",
+        email: userData.email || "",
+      });
 
       // Charger les commandes
       try {
@@ -65,6 +74,52 @@ export default function Profil() {
       setFavorites((prev) => prev.filter((fav) => fav.id !== productId));
     } catch (error) {
       console.error("❌ Erreur suppression favori:", error);
+    }
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setMessage({ type: "", text: "" });
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditForm({
+      prenom: user.prenom || "",
+      nom: user.nom || "",
+      email: user.email || "",
+    });
+    setMessage({ type: "", text: "" });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setMessage({ type: "", text: "" });
+
+    try {
+      const response = await animeApi.updateProfile(editForm);
+      if (response.success || response.data) {
+        const updatedUser = response.data || { ...user, ...editForm };
+        setUser(updatedUser);
+        setIsEditing(false);
+        setMessage({ type: "success", text: "Profil mis à jour avec succès !" });
+        
+        // Faire disparaître le message après 3 secondes
+        setTimeout(() => {
+          setMessage({ type: "", text: "" });
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("❌ Erreur mise à jour profil:", error);
+      setMessage({ type: "error", text: error.message || "Erreur lors de la mise à jour" });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -183,30 +238,122 @@ export default function Profil() {
               Informations personnelles
             </h2>
 
-            <div className="space-y-4">
-              <div className="flex justify-between border-b border-stone-200 pb-3">
-                <span className="font-medium text-stone-700">Prénom</span>
-                <span className="text-stone-600">{user.prenom}</span>
+            {/* Message de succès/erreur */}
+            {message.text && (
+              <div
+                className={`mb-6 p-4 rounded-sm ${
+                  message.type === "success"
+                    ? "bg-green-50 text-green-700 border border-green-200"
+                    : "bg-red-50 text-red-700 border border-red-200"
+                }`}
+              >
+                {message.text}
               </div>
-              <div className="flex justify-between border-b border-stone-200 pb-3">
-                <span className="font-medium text-stone-700">Nom</span>
-                <span className="text-stone-600">{user.nom}</span>
-              </div>
-              <div className="flex justify-between border-b border-stone-200 pb-3">
-                <span className="font-medium text-stone-700">Email</span>
-                <span className="text-stone-600">{user.email}</span>
-              </div>
-              <div className="flex justify-between border-b border-stone-200 pb-3">
-                <span className="font-medium text-stone-700">Rôle</span>
-                <span className="text-stone-600">
-                  {user.role === "admin" ? "Administrateur" : "Utilisateur"}
-                </span>
-              </div>
-            </div>
+            )}
 
-            <button className="mt-10 px-8 py-3 font-semibold bg-stone-900 text-white rounded-sm hover:bg-amber-700 transition">
-              Modifier mes informations
-            </button>
+            {isEditing ? (
+              /* MODE ÉDITION */
+              <form onSubmit={handleSaveProfile} className="space-y-6">
+                <div>
+                  <label className="block font-medium text-stone-700 mb-2">
+                    Prénom
+                  </label>
+                  <input
+                    type="text"
+                    name="prenom"
+                    value={editForm.prenom}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-medium text-stone-700 mb-2">
+                    Nom
+                  </label>
+                  <input
+                    type="text"
+                    name="nom"
+                    value={editForm.nom}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-medium text-stone-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={editForm.email}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-stone-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-medium text-stone-700 mb-2">
+                    Rôle
+                  </label>
+                  <p className="px-4 py-3 bg-stone-100 rounded-sm text-stone-600">
+                    {user.role === "admin" ? "Administrateur" : "Utilisateur"}
+                  </p>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="px-8 py-3 font-semibold bg-amber-600 text-white rounded-sm hover:bg-amber-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {saving ? "Enregistrement..." : "Enregistrer"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="px-8 py-3 font-semibold bg-stone-200 text-stone-700 rounded-sm hover:bg-stone-300 transition"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            ) : (
+              /* MODE AFFICHAGE */
+              <>
+                <div className="space-y-4">
+                  <div className="flex justify-between border-b border-stone-200 pb-3">
+                    <span className="font-medium text-stone-700">Prénom</span>
+                    <span className="text-stone-600">{user.prenom}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-stone-200 pb-3">
+                    <span className="font-medium text-stone-700">Nom</span>
+                    <span className="text-stone-600">{user.nom}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-stone-200 pb-3">
+                    <span className="font-medium text-stone-700">Email</span>
+                    <span className="text-stone-600">{user.email}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-stone-200 pb-3">
+                    <span className="font-medium text-stone-700">Rôle</span>
+                    <span className="text-stone-600">
+                      {user.role === "admin" ? "Administrateur" : "Utilisateur"}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleEditClick}
+                  className="mt-10 px-8 py-3 font-semibold bg-stone-900 text-white rounded-sm hover:bg-amber-700 transition"
+                >
+                  Modifier mes informations
+                </button>
+              </>
+            )}
           </motion.div>
         )}
 
