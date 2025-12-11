@@ -64,7 +64,7 @@ export default function Univers() {
             </p>
 
             <Link
-              to="/collections/onepiece"
+              to="/collections/one-piece"
               className="mt-6 inline-block bg-blue-600 text-white text-sm px-6 py-2 rounded-full hover:bg-blue-700 transition shadow"
             >
               Voir la collection →
@@ -88,7 +88,7 @@ export default function Univers() {
             </p>
 
             <Link
-              to="/collections/dragonball"
+              to="/collections/dragon-ball"
               className="mt-6 inline-block bg-yellow-500 text-white text-sm px-6 py-2 rounded-full hover:bg-yellow-600 transition shadow"
             >
               Voir la collection →

@@ -222,8 +222,8 @@ export default function About() {
               />
               <PremiumArtisanCard
                 name="Hassane"
-                role="Directeur Créatif"
-                desc="Maitre chanteur et imposteur."
+                role="Directeur Artistique"
+                desc="Imagine et supervise l’identité visuelle des collections, garantissant l’harmonie entre l’univers des animés et l’élégance du jeu d’échecs."
               />
               <PremiumArtisanCard
                 name="Nordine"
@@ -236,8 +236,8 @@ export default function About() {
               <div className="w-full sm:w-1/2">
                 <PremiumArtisanCard
                   name="Sadio"
-                  role="Responsable Technique"
-                  desc="Gère l'infrastructure numérique et la base de données des collections."
+                  role="Expert Échiquiers"
+                  desc="Spécialiste de la conception et de l’assemblage des échiquiers, il veille à la qualité et à l’originalité de chaque plateau."
                 />
               </div>
             </div>
