@@ -1,3 +1,4 @@
+            <li><Link to="/confidentialite" className="hover:text-orange-600 transition">Confidentialité</Link></li>
 import { Link } from "react-router-dom";
 
 export default function Footer() {
@@ -26,14 +27,13 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* === SUPPORT === */}
+        {/* === SERVICE CLIENT === */}
         <div>
-          <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
+          <h4 className="font-semibold text-gray-900 mb-4">Service client</h4>
           <ul className="space-y-2">
             <li><Link to="/contact" className="hover:text-orange-600 transition">Contact</Link></li>
-            <li><span className="cursor-pointer hover:text-orange-600 transition">Livraison</span></li>
-            <li><span className="cursor-pointer hover:text-orange-600 transition">Retours</span></li>
-            <li><span className="cursor-pointer hover:text-orange-600 transition">FAQ</span></li>
+            <li><Link to="/livraison" className="hover:text-orange-600 transition">Livraison</Link></li>
+            <li><Link to="/retours" className="hover:text-orange-600 transition">Retours</Link></li>
           </ul>
         </div>
 
@@ -43,9 +43,10 @@ export default function Footer() {
           <ul className="space-y-2">
             <li><Link to="/about" className="hover:text-orange-600 transition">Notre histoire</Link></li>
             <li><Link to="/cgv" className="hover:text-orange-600 transition">CGV</Link></li>
-            <li><span className="cursor-pointer hover:text-orange-600 transition">Licences</span></li>
-            <li><span className="cursor-pointer hover:text-orange-600 transition">Artistes</span></li>
-            <li><span className="cursor-pointer hover:text-orange-600 transition">Carrières</span></li>
+            <li><Link to="/cgu" className="hover:text-orange-600 transition">CGU</Link></li>
+            <li><Link to="/confidentialite" className="hover:text-orange-600 transition">Confidentialité</Link></li>
+            <li><Link to="/mentions-legales" className="hover:text-orange-600 transition">Mentions légales</Link></li>
+            {/* Liens supprimés car non présents */}
           </ul>
         </div>
       </div>
