@@ -86,9 +86,8 @@ export default function Header() {
             >
               <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/naruto">Naruto</Link>
               <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/ghibli">Studio Ghibli</Link>
-              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/naruto">Naruto</Link>
-              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/demonslayer">Demon Slayer</Link>
-              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/onepiece">One Piece</Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/demon-slayer">Demon Slayer</Link>
+              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/one-piece">One Piece</Link>
             </div>
           </div>
 
