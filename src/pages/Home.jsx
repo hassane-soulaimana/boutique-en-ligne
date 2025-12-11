@@ -6,12 +6,12 @@ import Why from "../components/why/Why";
 
 export default function Home() {
   return (
-    <>
+    <div id="main-content">
       <Hero />
       <NewProducts />
       <ChessPieces />
       <Univers />
       <Why />
-    </>
+    </div>
   );
 }

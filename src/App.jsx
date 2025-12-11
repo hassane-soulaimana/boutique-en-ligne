@@ -1,3 +1,4 @@
+import SkipToContent from "./components/ui/SkipToContent";
 import Livraison from "./pages/Livraison";
 import Retours from "./pages/Retours";
 import Confidentialite from "./pages/Confidentialite";
@@ -36,6 +37,7 @@ export default function App() {
   return (
     <ShopProvider>
       <Router>
+        <SkipToContent />
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
