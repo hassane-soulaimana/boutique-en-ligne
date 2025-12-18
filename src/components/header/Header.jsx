@@ -41,6 +41,24 @@ export default function Header() {
     };
   }, []);
 
+  // Fermer le menu au press 'Escape' et bloquer le scroll du body quand menu ouvert
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   // Fonction de déconnexion
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -154,7 +172,13 @@ export default function Header() {
         </div>
 
         {/* BURGER MENU */}
-        <button className="md:hidden text-stone-700" onClick={() => setMenuOpen(true)}>
+        <button
+          className="md:hidden text-stone-700"
+          onClick={() => setMenuOpen(prev => !prev)}
+          aria-controls="mobile-menu"
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+        >
           <Bars3Icon className="w-7 h-7" />
         </button>
       </div>

@@ -2,9 +2,28 @@
 import API_URL from "./api";
 const API_BASE_URL = `${API_URL}/api`;
 
+// Vérifie qu'on est en environnement navigateur
+const isBrowser = typeof window !== 'undefined' && !!window.localStorage;
+
+// Wrappers sûrs pour localStorage (protège SSR / environnements non-navigateur)
+const safeGetItem = (key) => {
+  if (!isBrowser) return null;
+  try { return window.localStorage.getItem(key); } catch (e) { return null; }
+};
+
+const safeSetItem = (key, value) => {
+  if (!isBrowser) return;
+  try { window.localStorage.setItem(key, value); } catch (e) { /* ignore */ }
+};
+
+const safeRemoveItem = (key) => {
+  if (!isBrowser) return;
+  try { window.localStorage.removeItem(key); } catch (e) { /* ignore */ }
+};
+
 // ============ HELPERS ============
 
-const getStoredToken = () => localStorage.getItem('token');
+const getStoredToken = () => safeGetItem('token');
 
 const buildHeaders = ({ auth = false, isJson = true, extra = {} } = {}) => {
   const headers = { ...extra };
@@ -24,7 +43,7 @@ const buildHeaders = ({ auth = false, isJson = true, extra = {} } = {}) => {
   return headers;
 };
 
-const request = async (path, { method = 'GET', body, auth = false, isFormData = false, headers = {} } = {}) => {
+const request = async (path, { method = 'GET', body, auth = false, isFormData = false, headers = {}, timeout = 15000 } = {}) => {
   const config = {
     method,
     headers: buildHeaders({ auth, isJson: !isFormData, extra: headers })
@@ -34,12 +53,29 @@ const request = async (path, { method = 'GET', body, auth = false, isFormData = 
     config.body = isFormData ? body : JSON.stringify(body);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, config);
+  // AbortController pour timeout de requête
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+  config.signal = controller.signal;
+
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, config);
+  } catch (err) {
+    clearTimeout(timer);
+    if (err.name === 'AbortError') {
+      throw new Error('Requête annulée (timeout)');
+    }
+    throw err;
+  }
+
+  clearTimeout(timer);
+
   const contentType = response.headers.get('content-type') || '';
-  const data = contentType.includes('application/json') ? await response.json() : await response.text();
+  const data = contentType.includes('application/json') ? await response.json().catch(() => null) : await response.text().catch(() => null);
 
   if (!response.ok) {
-    const message = typeof data === 'string' ? data : data.message || data.error || `Erreur ${response.status}`;
+    const message = typeof data === 'string' ? data : (data && (data.message || data.error)) || `Erreur ${response.status}`;
     throw new Error(message);
   }
 
@@ -83,10 +119,10 @@ export const animeApi = {
       const user = responseData?.user || data?.user;
 
       if (token) {
-        localStorage.setItem('token', token);
+        safeSetItem('token', token);
       }
       if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
+        safeSetItem('user', JSON.stringify(user));
       }
 
       return { success: true, data: responseData };
@@ -109,10 +145,10 @@ export const animeApi = {
       const user = responseData?.user || data?.user;
 
       if (token) {
-        localStorage.setItem('token', token);
+        safeSetItem('token', token);
       }
       if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
+        safeSetItem('user', JSON.stringify(user));
       }
 
       return { success: true, data: responseData, user, token };
@@ -128,7 +164,7 @@ export const animeApi = {
       const data = await request('/auth/profile', { auth: true });
       const profile = unwrapData(data) || data;
       if (profile) {
-        localStorage.setItem('user', JSON.stringify(profile));
+        safeSetItem('user', JSON.stringify(profile));
       }
       return profile;
     } catch (error) {
@@ -147,7 +183,7 @@ export const animeApi = {
       });
       const updatedUser = unwrapData(data) || data;
       if (updatedUser) {
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        safeSetItem('user', JSON.stringify(updatedUser));
       }
       return { success: true, data: updatedUser };
     } catch (error) {
@@ -173,8 +209,8 @@ export const animeApi = {
 
   // Déconnexion (local)
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    safeRemoveItem('token');
+    safeRemoveItem('user');
   },
 
   // ============ PRODUITS ============
