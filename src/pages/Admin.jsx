@@ -248,16 +248,17 @@ const DashboardTab = ({ products, orders, users, collections, onRefresh, loading
   );
 };
 
-const ProductsTab = ({ products, onSave, onDelete, loading }) => {
+const ProductsTab = ({ products, universes, categories, onSave, onDelete, loading }) => {
   const defaultForm = useMemo(
     () => ({
-      nom: '',
-      prix: '',
+      name: '',
+      price: '',
       image: '',
-      collection: '',
-      categorie: '',
+      universe: '',
+      category: '',
       description: '',
-      stock: '10'
+      stock: '10',
+      featured: false
     }),
     []
   );
@@ -278,23 +279,9 @@ const ProductsTab = ({ products, onSave, onDelete, loading }) => {
 
     const payload = {
       ...form,
-      prix: parseFloat(form.prix),
+      price: parseFloat(form.price),
       stock: parseInt(form.stock, 10)
     };
-
-    // Validation côté front
-    if (!payload.nom || !payload.prix || !payload.image || !payload.collection || !payload.categorie || !payload.description) {
-      alert('Tous les champs sont obligatoires');
-      return;
-    }
-    if (isNaN(payload.prix) || payload.prix <= 0) {
-      alert('Le prix doit être un nombre positif');
-      return;
-    }
-    if (isNaN(payload.stock) || payload.stock < 0) {
-      alert('Le stock doit être un nombre positif');
-      return;
-    }
 
     if (editing) {
       if (!window.confirm('Confirmer la modification du produit ?')) {
@@ -309,13 +296,15 @@ const ProductsTab = ({ products, onSave, onDelete, loading }) => {
 
   const handleEdit = (product) => {
     setForm({
-      nom: product.nom || product.name || '',
-      prix: String(product.prix || product.price || ''),
+      name: product.name || product.nom || '',
+      price: String(product.price ?? product.prix ?? ''),
       image: product.image || '',
-      collection: product.collection || '',
-      categorie: product.categorie || product.category || '',
+      // Le backend renvoie universe/category comme un nom (string) ; on retrouve l'id correspondant pour préremplir le select.
+      universe: universes.find((u) => u.name === product.universe)?._id || '',
+      category: categories.find((c) => c.name === product.category)?._id || '',
       description: product.description || '',
-      stock: String(product.stock || 10)
+      stock: String(product.stock ?? 10),
+      featured: !!product.featured
     });
     setEditing(product);
   };
@@ -342,17 +331,30 @@ const ProductsTab = ({ products, onSave, onDelete, loading }) => {
         onSubmit={handleSubmit}
         className="rounded-2xl border border-slate-100 bg-white/80 p-6 shadow-lg backdrop-blur grid grid-cols-1 md:grid-cols-2 gap-5"
       >
-        <Input label="Nom" value={form.nom} onChange={updateForm('nom')} required />
-        <Input label="Prix (€)" type="number" step="0.01" value={form.prix} onChange={updateForm('prix')} required />
-        <Input label="Image (URL ou emoji)" value={form.image} onChange={updateForm('image')} required />
-        <Input label="Collection" value={form.collection} onChange={updateForm('collection')} required />
-        <Select label="Catégorie" value={form.categorie} onChange={updateForm('categorie')} required>
+        <Input label="Nom" value={form.name} onChange={updateForm('name')} required />
+        <Input label="Prix (€)" type="number" step="0.01" value={form.price} onChange={updateForm('price')} required />
+        <Input label="Image (URL)" value={form.image} onChange={updateForm('image')} required />
+        <Select label="Univers" value={form.universe} onChange={updateForm('universe')} required>
           <option value="">Choisir...</option>
-          <option value="echiquiers">Échiquiers</option>
-          <option value="pieces">Pièces</option>
-          <option value="accessoires">Accessoires</option>
+          {universes.map((u) => (
+            <option key={u._id} value={u._id}>{u.name}</option>
+          ))}
+        </Select>
+        <Select label="Catégorie" value={form.category} onChange={updateForm('category')} required>
+          <option value="">Choisir...</option>
+          {categories.map((c) => (
+            <option key={c._id} value={c._id}>{c.name}</option>
+          ))}
         </Select>
         <Input label="Stock" type="number" value={form.stock} onChange={updateForm('stock')} />
+        <label className="flex items-center gap-2 text-sm font-medium text-slate-600 self-end pb-2">
+          <input
+            type="checkbox"
+            checked={form.featured}
+            onChange={(event) => setForm((prev) => ({ ...prev, featured: event.target.checked }))}
+          />
+          Mettre en avant (section "Nouveautés" de l'accueil)
+        </label>
         <TextArea label="Description" rows={3} value={form.description} onChange={updateForm('description')} required />
 
         <div className="md:col-span-2 flex gap-3">
@@ -371,7 +373,7 @@ const ProductsTab = ({ products, onSave, onDelete, loading }) => {
         <table className="w-full text-left">
           <thead className="bg-slate-50">
             <tr>
-              {['Produit', 'Prix', 'Collection', 'Catégorie', 'Actions'].map((heading) => (
+              {['Produit', 'Prix', 'Univers', 'Catégorie', 'Actions'].map((heading) => (
                 <th key={heading} className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
                   {heading}
                 </th>
@@ -385,13 +387,14 @@ const ProductsTab = ({ products, onSave, onDelete, loading }) => {
                   {product.image?.startsWith('http') ? (
                     <img src={product.image} alt="" className="w-10 h-10 object-cover rounded" />
                   ) : (
-                    <span className="text-2xl">{product.image || '📦'}</span>
+                    <span className="text-2xl">📦</span>
                   )}
-                  {product.nom || product.name}
+                  {product.name || product.nom}
+                  {product.featured && <span title="Mis en avant">⭐</span>}
                 </td>
-                <td className="px-5 py-4 text-indigo-600 font-semibold">{product.prix || product.price}€</td>
-                <td className="px-5 py-4 text-slate-500">{product.collection || '-'}</td>
-                <td className="px-5 py-4 text-slate-500">{product.categorie || product.category || '-'}</td>
+                <td className="px-5 py-4 text-indigo-600 font-semibold">{product.price ?? product.prix}€</td>
+                <td className="px-5 py-4 text-slate-500">{product.universe || '-'}</td>
+                <td className="px-5 py-4 text-slate-500">{product.category || '-'}</td>
                 <td className="px-5 py-3 flex gap-3 text-sm">
                   <button onClick={() => handleEdit(product)} className="inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-500">
                     ✏️ Modifier
@@ -588,7 +591,7 @@ const CollectionsTab = ({ collections, products }) => (
       {collections.map((collection) => {
         const name = collection.name || collection.nom || collection;
         const count = products.filter((product) =>
-          (product.collection || '').toLowerCase() === (name || '').toLowerCase()
+          (product.universe || '').toLowerCase() === (name || '').toLowerCase()
         ).length;
 
         return (
@@ -620,7 +623,7 @@ export default function Admin() {
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [datasets, setDatasets] = useState({ products: [], orders: [], users: [], collections: [] });
+  const [datasets, setDatasets] = useState({ products: [], orders: [], users: [], collections: [], categories: [] });
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState('');
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -666,18 +669,20 @@ export default function Admin() {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [products, orders, users, collections] = await Promise.all([
+      const [products, orders, users, collections, categories] = await Promise.all([
         animeApi.getProducts(),
         animeApi.getAllOrders(),
         animeApi.getAllUsers(),
-        animeApi.getCollections()
+        animeApi.getCollections(),
+        animeApi.getCategories()
       ]);
 
       setDatasets({
         products: products || [],
         orders: orders || [],
         users: users || [],
-        collections: collections || []
+        collections: collections || [],
+        categories: categories || []
       });
     } catch (error) {
       console.error('Erreur de chargement des données :', error);
@@ -686,43 +691,6 @@ export default function Admin() {
       setLoading(false);
     }
   };
-
-  // Vérifier si l'utilisateur est déjà connecté en tant qu'admin au chargement
-  useEffect(() => {
-    const checkAdminAuth = async () => {
-      const token = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
-      
-      if (token && storedUser) {
-        try {
-          const user = JSON.parse(storedUser);
-          // Vérifier si c'est un admin
-          if (user.role === 'admin') {
-            setAdminUser(user);
-            setIsLoggedIn(true);
-          } else {
-            // Essayer de récupérer le profil pour vérifier le rôle
-            const profile = await animeApi.getMe();
-            if (profile && profile.role === 'admin') {
-              setAdminUser(profile);
-              setIsLoggedIn(true);
-            }
-          }
-        } catch (error) {
-          console.error('Erreur vérification auth admin:', error);
-        }
-      }
-      setCheckingAuth(false);
-    };
-    
-    checkAdminAuth();
-  }, []);
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchAll();
-    }
-  }, [isLoggedIn]);
 
   const handleLogin = async (email, password) => {
     setLoginError('');
@@ -775,12 +743,12 @@ export default function Admin() {
   const handleSaveProduct = async (payload, editing) => {
     setLoading(true);
     // Validation côté front
-    if (!payload.nom || !payload.prix || !payload.image || !payload.collection || !payload.categorie || !payload.description) {
+    if (!payload.name || !payload.price || !payload.image || !payload.universe || !payload.category || !payload.description) {
       showToast('❌ Tous les champs sont obligatoires');
       setLoading(false);
       return;
     }
-    if (isNaN(payload.prix) || payload.prix <= 0) {
+    if (isNaN(payload.price) || payload.price <= 0) {
       showToast('❌ Le prix doit être un nombre positif');
       setLoading(false);
       return;
@@ -897,6 +865,8 @@ export default function Admin() {
     { id: 'products', label: '📦 Produits', render: () => (
       <ProductsTab
         products={datasets.products}
+        universes={datasets.collections}
+        categories={datasets.categories}
         onSave={handleSaveProduct}
         onDelete={handleDeleteProduct}
         loading={loading}

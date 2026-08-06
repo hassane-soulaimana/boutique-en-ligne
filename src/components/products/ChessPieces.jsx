@@ -37,17 +37,17 @@ export default function ChessPieces() {
   // Ajout au panier
   const handleAddToCart = (product) => {
     addItem({
-      id: product._id || product.id,
-      nom: product.nom || product.name,
-      prix: product.prix || product.price,
-      image: product.image || product.imageUrl,
+      id: product._id,
+      nom: product.name,
+      prix: product.price,
+      image: product.image,
     });
 
-    // Petite notification 
+    // Petite notification
     const notif = document.createElement("div");
     notif.className =
       "fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg";
-    notif.textContent = `${product.nom || product.name} ajouté au panier !`;
+    notif.textContent = `${product.name} ajouté au panier !`;
     document.body.appendChild(notif);
     setTimeout(() => notif.remove(), 2500);
   };
@@ -105,7 +105,7 @@ export default function ChessPieces() {
                     <div className="relative h-40 bg-gradient-to-br from-stone-100 to-stone-50 rounded-lg mb-4 overflow-hidden">
                       <img
                         src={getImageUrl(product.image)}
-                        alt={product.nom || product.name}
+                        alt={product.name}
                         className="w-full h-full object-cover"
                         onError={handleImageError}
                       />
@@ -114,29 +114,29 @@ export default function ChessPieces() {
                     {/* Contenu */}
                     <div className="space-y-2">
                       <h3 className="text-lg font-semibold text-stone-900 line-clamp-2">
-                        {product.nom || product.name}
+                        {product.name}
                       </h3>
 
                       <p className="text-amber-600 font-bold text-xl">
-                        {product.prix || product.price} €
+                        {product.price} €
                       </p>
 
                       {/* Actions */}
                       <div className="flex gap-2 pt-2">
                         <button
                           onClick={() => toggleFavorite({
-                            id: product._id || product.id,
-                            nom: product.nom || product.name,
-                            prix: product.prix || product.price,
-                            image: product.image || product.imageUrl,
+                            id: product._id,
+                            nom: product.name,
+                            prix: product.price,
+                            image: product.image,
                           })}
                           className={`p-2 rounded-lg transition-colors ${
-                            isFavorite(product._id || product.id)
+                            isFavorite(product._id)
                               ? 'text-red-500 hover:text-red-600'
                               : 'text-stone-400 hover:text-red-500'
                           }`}
                         >
-                          {isFavorite(product._id || product.id) ? '❤️' : '♡'}
+                          {isFavorite(product._id) ? '❤️' : '♡'}
                         </button>
                         <button
                           onClick={() => handleAddToCart(product)}

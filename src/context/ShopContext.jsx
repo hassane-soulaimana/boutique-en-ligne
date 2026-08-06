@@ -1,11 +1,9 @@
 
 import { createContext, useState, useEffect } from "react";
-import API_URL from "../services/api";
+import { animeApi } from "../services/animeApi";
 
+// eslint-disable-next-line react-refresh/only-export-components -- Context et Provider volontairement dans le même fichier
 export const ShopContext = createContext();
-// Alias pour compatibilité avec l'ancien nom
-export const ThemeContext = ShopContext;
-
 
 export const ShopProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
@@ -18,54 +16,19 @@ export const ShopProvider = ({ children }) => {
   // Récupère le token (si l'utilisateur est connecté)
   const getToken = () => localStorage.getItem("token");
 
-  // Helper simple pour appeler l'API.
-  const api = async (url, method = "GET", body) => {
-    const headers = { "Content-Type": "application/json" };
-    const t = getToken();
-    if (t) headers.Authorization = `Bearer ${t}`;
-
-    const res = await fetch(`${API_URL}/api${url}`, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
-
-    return res.json();
-  };
-
-// Auto load
-  useEffect(() => {
-    const t = getToken();
-    if (t) {
-      fetchCart();
-      fetchFavorites();
-    }
-  }, []);
-
-//  Favoris 
+//  Favoris
   const fetchFavorites = async () => {
-    const data = await api("/favorites");
-    if (!data?.success) return;
-
-    const favs = data.data.map((p) => ({
-      id: p.product._id,
-      nom: p.product.name,
-      prix: p.product.price,
-      image: p.product.image,
-      collection: p.product.collection,
-    }));
-
-    setFavorites(favs);
+    const { data } = await animeApi.getFavorites();
+    setFavorites(data);
   };
 
   const addFavorite = async (product) => {
     setFavorites((prev) => (prev.some((f) => f.id === product.id) ? prev : [...prev, product]));
 
-    const t = getToken();
-    if (!t) return;
+    if (!getToken()) return;
 
     try {
-      await api(`/favorites/${product.id}`, "POST");
+      await animeApi.addFavorite(product.id);
       await fetchFavorites();
     } catch (err) {
       console.error("Erreur ajout favoris:", err);
@@ -76,11 +39,10 @@ export const ShopProvider = ({ children }) => {
     // Mise à jour locale immédiate
     setFavorites((prev) => prev.filter((f) => f.id !== id));
 
-    const t = getToken();
-    if (!t) return;
+    if (!getToken()) return;
 
     try {
-      await api(`/favorites/${id}`, "DELETE");
+      await animeApi.removeFavorite(id);
       await fetchFavorites();
     } catch (err) {
       console.error("Erreur suppression favoris:", err);
@@ -106,13 +68,10 @@ export const ShopProvider = ({ children }) => {
 
   const fetchCart = async () => {
     setLoading(true);
-
-    const data = await api("/cart");
+    const data = await animeApi.getCart();
     setLoading(false);
 
-    if (!data?.success || !data?.data?.items) return;
-
-    const items = data.data.items.map((it) => ({
+    const items = (data.items || []).map((it) => ({
       id: it.product._id,
       nom: it.product.name,
       prix: it.product.price,
@@ -123,6 +82,15 @@ export const ShopProvider = ({ children }) => {
 
     setCart(items);
   };
+
+  // Auto load
+  useEffect(() => {
+    if (getToken()) {
+      fetchCart();
+      fetchFavorites();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const addItem = async (product) => {
     if (!getToken()) {
@@ -140,9 +108,7 @@ export const ShopProvider = ({ children }) => {
       return;
     }
 
-    await api(`/cart/${product.id}`, "POST", {
-      quantity: product.quantity || 1,
-    });
+    await animeApi.addToCart(product.id, product.quantity || 1);
     fetchCart();
   };
 
@@ -152,7 +118,7 @@ export const ShopProvider = ({ children }) => {
       return;
     }
 
-    await api(`/cart/${id}`, "DELETE");
+    await animeApi.removeFromCart(id);
     fetchCart();
   };
 
@@ -166,14 +132,14 @@ export const ShopProvider = ({ children }) => {
       return;
     }
 
-      await api(`/cart/${id}`, "PUT", { quantity });
+    await animeApi.updateCartItem(id, quantity);
     fetchCart();
   };
 
   const clearCart = async () => {
     if (!getToken()) return setCart([]);
 
-      await api("/cart", "DELETE");
+    await animeApi.clearCart();
     setCart([]);
   };
 
@@ -206,6 +172,3 @@ export const ShopProvider = ({ children }) => {
     </ShopContext.Provider>
   );
 };
-
-// Alias pour compatibilité avec l'ancien nom
-export const ThemeProvider = ShopProvider;

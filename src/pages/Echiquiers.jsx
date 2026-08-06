@@ -78,7 +78,6 @@ export default function Echiquiers() {
 
   return (
     <ProductGrid
-      products={echiquiers}
       filter={filter}
       onAddToCart={handleAddToCart}
       onToggleFavorite={handleToggleFavorite}

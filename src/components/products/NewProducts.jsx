@@ -21,8 +21,8 @@ export default function NewProducts() {
     setLoading(true);
     setError(null);
     try {
-      // Charger les produits depuis l'API
-      const data = await animeApi.getProducts();
+      // Charger les produits mis en avant (section "Nouveautés")
+      const data = await animeApi.getFeaturedProducts();
       
       if (data && data.length > 0) {
         setProducts(data);

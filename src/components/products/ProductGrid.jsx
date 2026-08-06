@@ -1,14 +1,11 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { HeartIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { getImageUrl, handleImageError } from '../../services/imageLoader';
 
-/**
- * Composant de grille de produits réutilisable
- */
+// Composant de grille de produits réutilisable
+
 export default function ProductGrid({
-  products,
   filter,
   onAddToCart,
   onToggleFavorite,
@@ -93,9 +90,9 @@ export default function ProductGrid({
             </div>
             <button
               onClick={() => {
-                setFiltreCollection('');
-                setFiltrePrix('');
-                setTri('');
+                setFiltreCollection('Toutes');
+                setFiltrePrix('Tous');
+                setTri('populaire');
                 setCurrentPage(1);
               }}
               className="w-full bg-stone-900 text-white font-medium py-3 rounded-sm hover:bg-stone-800 transition-colors duration-300 mb-2"

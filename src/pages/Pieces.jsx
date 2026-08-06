@@ -78,7 +78,6 @@ export default function Pieces() {
 
   return (
     <ProductGrid
-      products={pieces}
       filter={filter}
       onAddToCart={handleAddToCart}
       onToggleFavorite={handleToggleFavorite}

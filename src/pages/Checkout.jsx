@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext.jsx";
-import API_URL from "../services/api";
+import { animeApi } from "../services/animeApi";
 import {
   ArrowLeftIcon,
   TagIcon,
@@ -85,82 +85,52 @@ export default function Checkout() {
     }
     
     setIsSubmitting(true);
-    
-    // Générer un numéro de commande unique
-    const orderNumber = `CMD-${Date.now()}`;
-    
-    // Préparer les données de la commande
-    const orderData = {
-      orderNumber: orderNumber,
-      customer: {
-        email: form.email,
-        firstName: form.prenom,
-        lastName: form.nom,
-        phone: form.telephone || null,
-      },
-      shippingAddress: {
-        address: form.adresse,
-        city: form.ville,
-        postalCode: form.codePostal,
-        country: form.pays,
-      },
-      items: items.map(item => ({
-        productId: item.id,
-        name: item.nom,
-        price: item.prix,
-        quantity: item.quantity,
-        image: item.image,
-      })),
-      shipping: {
-        method: shipping,
-        cost: shippingCost,
-      },
-      subtotal: subtotal,
-      total: total,
-      status: "En cours de traitement",
-      createdAt: new Date().toISOString(),
+
+    // Adresse de livraison au format attendu par le backend (modèle Order)
+    const shippingAddress = {
+      nom: form.nom,
+      prenom: form.prenom,
+      adresse: form.adresse,
+      ville: form.ville,
+      codePostal: form.codePostal,
+      pays: form.pays,
+      telephone: form.telephone || undefined,
     };
-    
+
+    let orderNumber = `CMD-${Date.now()}`;
+    let orderTotal = total;
+
     try {
-      // Envoyer la commande au backend
-      const token = localStorage.getItem("token");
-      const headers = { "Content-Type": "application/json" };
-      if (token) headers.Authorization = `Bearer ${token}`;
-      
-      const response = await fetch(`${API_URL}/api/orders`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(orderData),
-      });
-      
-      const data = await response.json();
-      
-      // Mettre à jour le numéro de commande si retourné par l'API
-      if (data.data?.orderNumber) {
-        orderData.orderNumber = data.data.orderNumber;
-      }
-      if (data.data?._id) {
-        orderData._id = data.data._id;
-      }
+      // La commande est créée côté serveur à partir du panier de l'utilisateur connecté
+      const order = await animeApi.createOrder({ shippingAddress, shippingCost });
+      orderNumber = order?._id ? order._id.slice(-8) : orderNumber;
+      orderTotal = order?.total ?? total;
     } catch (error) {
-      // Erreur silencieuse - la commande sera sauvegardée localement
+      // Utilisateur non connecté ou erreur serveur : la commande est sauvegardée localement uniquement
     }
-    
-    // Sauvegarder la commande en local (backup)
+
+    // Sauvegarder la commande en local (historique invité / backup)
     const localOrders = JSON.parse(localStorage.getItem("localOrders") || "[]");
-    localOrders.unshift(orderData);
+    localOrders.unshift({
+      orderNumber,
+      items,
+      shippingAddress,
+      total: orderTotal,
+      email: form.email,
+      createdAt: new Date().toISOString(),
+    });
     localStorage.setItem("localOrders", JSON.stringify(localOrders));
-    
+
     // Vider le panier
     clearCart();
-    
+
     // Stocker les infos de commande pour la page de confirmation
     sessionStorage.setItem("lastOrder", JSON.stringify({
-      orderNumber: orderData.orderNumber,
-      total: total,
+      orderNumber,
+      total: orderTotal,
       email: form.email,
     }));
-    
+
     setIsSubmitting(false);
     // Rediriger vers la confirmation
     navigate("/confirmation-commande");

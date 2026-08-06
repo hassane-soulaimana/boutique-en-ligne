@@ -89,9 +89,13 @@ const normalizeImageUrl = (image) => {
 };
 
 // Fonction pour transformer un produit
+// Le backend "populate" category/universe en objets { _id, name } : on les
+// ramène à un simple nom de chaîne pour que le reste du front (filtres, affichage) reste simple.
 const transformProduct = (product) => ({
   ...product,
-  image: normalizeImageUrl(product.image)
+  image: normalizeImageUrl(product.image),
+  category: product.category?.name || product.category,
+  universe: product.universe?.name || product.universe,
 });
 
 const unwrapData = (response) => {
@@ -207,6 +211,21 @@ export const animeApi = {
     }
   },
 
+  // PUT /api/auth/role/:id (admin) — changer le rôle d'un utilisateur
+  async updateUserRole(userId, role) {
+    try {
+      const data = await request(`/auth/role/${userId}`, {
+        method: 'PUT',
+        body: { role },
+        auth: true
+      });
+      return { success: true, data: unwrapData(data) };
+    } catch (error) {
+      console.error("Erreur updateUserRole:", error);
+      return { success: false, message: error.message };
+    }
+  },
+
   // Déconnexion (local)
   logout() {
     safeRemoveItem('token');
@@ -259,10 +278,6 @@ export const animeApi = {
 
   async getProductsByUniverse(universe) {
     return this.getProducts({ universe });
-  },
-
-  async getProductsByCollection(collection) {
-    return this.getProducts({ collection });
   },
 
   // ============ CATÉGORIES ============
@@ -530,6 +545,7 @@ export const animeApi = {
         nom: fav.product?.name || fav.name || fav.nom,
         prix: fav.product?.price || fav.price || fav.prix,
         image: normalizeImageUrl(fav.product?.image || fav.image),
+        collection: fav.product?.universe?.name || fav.collection,
         ...fav
       }));
       return { data: formattedFavorites };

@@ -14,7 +14,6 @@ import {
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [collectionsOpen, setCollectionsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   const { getTotalItems, favorites } = useContext(ShopContext);
@@ -102,6 +101,7 @@ export default function Header() {
                 transition-all duration-150 origin-top
               "
             >
+              <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/dragon-ball">Dragon Ball</Link>
               <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/naruto">Naruto</Link>
               <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/ghibli">Studio Ghibli</Link>
               <Link className="block px-4 py-2 text-sm hover:bg-stone-100" to="/collections/demon-slayer">Demon Slayer</Link>
@@ -193,6 +193,7 @@ export default function Header() {
 
       {/* MOBILE SIDEBAR */}
       <div
+        id="mobile-menu"
         className={`
           md:hidden fixed top-0 right-0 w-72 h-full bg-white shadow-2xl z-50 p-6
           transition-transform duration-300
@@ -216,11 +217,11 @@ export default function Header() {
           <details className="border-b pb-3">
             <summary className="cursor-pointer text-lg">Collections</summary>
             <div className="pl-4 flex flex-col gap-3 mt-3 text-base">
+              <Link to="/collections/dragon-ball" onClick={() => setMenuOpen(false)}>Dragon Ball</Link>
               <Link to="/collections/naruto" onClick={() => setMenuOpen(false)}>Naruto</Link>
               <Link to="/collections/ghibli" onClick={() => setMenuOpen(false)}>Studio Ghibli</Link>
-              <Link to="/collections/naruto" onClick={() => setMenuOpen(false)}>Naruto</Link>
-              <Link to="/collections/demonslayer" onClick={() => setMenuOpen(false)}>Demon Slayer</Link>
-              <Link to="/collections/onepiece" onClick={() => setMenuOpen(false)}>One Piece</Link>
+              <Link to="/collections/demon-slayer" onClick={() => setMenuOpen(false)}>Demon Slayer</Link>
+              <Link to="/collections/one-piece" onClick={() => setMenuOpen(false)}>One Piece</Link>
             </div>
           </details>
 

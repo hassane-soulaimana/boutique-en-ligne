@@ -75,7 +75,6 @@ export default function Accessoires() {
 
   return (
     <ProductGrid
-      products={accessoires}
       filter={filter}
       onAddToCart={handleAddToCart}
       onToggleFavorite={handleToggleFavorite}
