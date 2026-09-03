@@ -1,4 +1,3 @@
-// Page Accessoires - Version refactorisée
 import { useState, useContext, useEffect } from 'react';
 import { ShopContext } from '../context/ShopContext.jsx';
 import { animeApi } from '../services/animeApi';

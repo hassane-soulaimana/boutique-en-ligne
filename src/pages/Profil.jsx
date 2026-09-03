@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { animeApi } from "../services/animeApi";
+import API_URL from "../services/api";
 import { ShoppingBagIcon, ClockIcon, TruckIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 
 export default function Profil() {
@@ -508,7 +509,7 @@ export default function Profil() {
                   >
                     {fav.image && (
                       <img
-                        src={fav.image.startsWith("http") ? fav.image : `https://apianime.alwaysdata.net${fav.image}`}
+                        src={fav.image.startsWith("http") ? fav.image : `${API_URL}${fav.image}`}
                         alt={fav.nom}
                         className="w-full h-40 object-cover rounded-sm mb-4"
                       />

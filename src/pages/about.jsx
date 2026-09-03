@@ -32,7 +32,7 @@ export default function About() {
                 <motion.a
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  href="/Collections"
+                  href="#/collections"
                   className="px-8 py-4 bg-amber-600 text-white font-medium rounded-sm hover:bg-amber-700 transition-colors duration-300"
                 >
                   Explorer les Collections
@@ -40,7 +40,7 @@ export default function About() {
                 <motion.a
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  href="/contact"
+                  href="#/contact"
                   className="px-8 py-4 bg-transparent text-white font-medium rounded-sm border border-amber-400 hover:bg-amber-600/20 transition-colors duration-300"
                 >
                   Nous Contacter
@@ -272,7 +272,7 @@ export default function About() {
                 <motion.a
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  href="/Collections"
+                  href="#/collections"
                   className="px-10 py-4 bg-amber-600 text-white font-medium rounded-sm hover:bg-amber-700 transition-colors duration-300"
                 >
                   Découvrir les Collections
@@ -280,7 +280,7 @@ export default function About() {
                 <motion.a
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  href="/contact"
+                  href="#/contact"
                   className="px-10 py-4 bg-transparent text-white font-medium rounded-sm border border-amber-400 hover:bg-amber-600/20 transition-colors duration-300"
                 >
                   Obtenir un Devis

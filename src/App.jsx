@@ -2,7 +2,7 @@ import SkipToContent from "./components/ui/SkipToContent";
 import Livraison from "./pages/Livraison";
 import Retours from "./pages/Retours";
 import Confidentialite from "./pages/Confidentialite";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { ShopProvider } from "./context/ShopContext.jsx";
 
 import Home from "./pages/Home";

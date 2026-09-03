@@ -81,6 +81,10 @@ export default function Contact() {
             <div className="pt-4">
               <a
                 href="#formulaire"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("formulaire")?.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="inline-block px-8 py-4 bg-white text-gray-900 font-medium rounded-sm hover:bg-gray-100 transition-colors duration-300"
               >
                 Nous écrire
@@ -232,13 +236,13 @@ export default function Contact() {
               <div className="space-y-4">
                 <h3 className="text-2xl font-light text-gray-900">Suivez-nous</h3>
                 <div className="flex gap-6">
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <a href="#" onClick={(e) => e.preventDefault()} className="text-gray-600 hover:text-gray-900 transition-colors">
                     <span className="text-sm uppercase tracking-wide">Instagram</span>
                   </a>
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <a href="#" onClick={(e) => e.preventDefault()} className="text-gray-600 hover:text-gray-900 transition-colors">
                     <span className="text-sm uppercase tracking-wide">Facebook</span>
                   </a>
-                  <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">
+                  <a href="#" onClick={(e) => e.preventDefault()} className="text-gray-600 hover:text-gray-900 transition-colors">
                     <span className="text-sm uppercase tracking-wide">TikTok</span>
                   </a>
                 </div>
