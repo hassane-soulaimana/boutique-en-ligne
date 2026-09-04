@@ -4,42 +4,42 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { animeApi } from '../services/animeApi';
 
+// Données de fallback en cas d'échec de l'API (constante, ne dépend d'aucun state)
+const defaultUnivers = [
+  {
+    id: 'dragon-ball',
+    nom: 'Dragon Ball',
+    description: 'Collection exclusive Dragon Ball avec designs authentiques',
+    couleur: '#F7A800',
+    image: 'https://i.imgur.com/oxQYxkU.jpeg'
+  },
+  {
+    id: 'naruto',
+    nom: 'Naruto',
+    description: 'Collection exclusive Naruto avec designs authentiques',
+    couleur: '#FF6B35',
+    image: 'https://i.imgur.com/oxQYxkU.jpeg'
+  },
+  {
+    id: 'demon-slayer',
+    nom: 'Demon Slayer',
+    description: 'Les samouraïs et démons de Demon Slayer',
+    couleur: '#D92E3D',
+    image: 'https://i.imgur.com/2EBIW3O.jpeg'
+  },
+  {
+    id: 'one-piece',
+    nom: 'One Piece',
+    description: "L'univers pirate de One Piece",
+    couleur: '#001F3F',
+    image: 'https://i.imgur.com/yx7M7xL.jpeg'
+  }
+];
+
 export default function Collections() {
   const [univers, setUnivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Données de fallback en cas d'échec de l'API
-  const defaultUnivers = [
-    {
-      id: 'dragon-ball',
-      nom: 'Dragon Ball',
-      description: 'Collection exclusive Dragon Ball avec designs authentiques',
-      couleur: '#F7A800',
-      image: 'https://i.imgur.com/oxQYxkU.jpeg'
-    },
-    {
-      id: 'naruto',
-      nom: 'Naruto',
-      description: 'Collection exclusive Naruto avec designs authentiques',
-      couleur: '#FF6B35',
-      image: 'https://i.imgur.com/oxQYxkU.jpeg'
-    },
-    {
-      id: 'demon-slayer',
-      nom: 'Demon Slayer',
-      description: 'Les samouraïs et démons de Demon Slayer',
-      couleur: '#D92E3D',
-      image: 'https://i.imgur.com/2EBIW3O.jpeg'
-    },
-    {
-      id: 'one-piece',
-      nom: 'One Piece',
-      description: "L'univers pirate de One Piece",
-      couleur: '#001F3F',
-      image: 'https://i.imgur.com/yx7M7xL.jpeg'
-    }
-  ];
 
   // Charger les univers depuis l'API
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function Collections() {
           setUnivers(defaultUnivers);
         }
         setError(null);
-      } catch (err) {
+      } catch {
         setError('Impossible de charger les collections');
         setUnivers(defaultUnivers);
       } finally {

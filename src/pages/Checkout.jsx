@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext.jsx";
 import { animeApi } from "../services/animeApi";
@@ -15,14 +15,12 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // Vérifier si l'utilisateur est connecté
-  useEffect(() => {
+  // Vérifier si l'utilisateur est connecté (lu une seule fois, à l'initialisation)
+  const [isLoggedIn] = useState(() => {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
-    setIsLoggedIn(!!(token && user));
-  }, []);
+    return !!(token && user);
+  });
 
   // On n'empêche plus l'accès au formulaire si l'utilisateur n'est pas connecté.
   // Un bandeau l'invitera à se connecter, mais le guest checkout reste possible
@@ -105,7 +103,7 @@ export default function Checkout() {
       const order = await animeApi.createOrder({ shippingAddress, shippingCost });
       orderNumber = order?._id ? order._id.slice(-8) : orderNumber;
       orderTotal = order?.total ?? total;
-    } catch (error) {
+    } catch {
       // Utilisateur non connecté ou erreur serveur : la commande est sauvegardée localement uniquement
     }
 

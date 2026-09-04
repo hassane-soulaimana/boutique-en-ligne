@@ -21,7 +21,7 @@ export default function ChessPieces() {
       setLoading(true);
       const data = await animeApi.getProducts();
       setProducts(data);
-    } catch (err) {
+    } catch {
       setError("Impossible de charger les produits.");
     } finally {
       setLoading(false);

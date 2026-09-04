@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { animeApi } from "../services/animeApi";
@@ -17,7 +17,7 @@ export default function Profil() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
-  const loadUserProfile = async () => {
+  const loadUserProfile = useCallback(async () => {
     try {
       const userData = await animeApi.getMe();
       setUser(userData);
@@ -30,7 +30,6 @@ export default function Profil() {
       // Charger les commandes
       try {
         const ordersData = await animeApi.getOrders();
-        console.log("📦 Commandes récupérées:", ordersData);
         setOrders(ordersData.data || []);
       } catch (err) {
         console.error("❌ Erreur commandes:", err);
@@ -39,7 +38,6 @@ export default function Profil() {
       // Charger les favoris
       try {
         const favData = await animeApi.getFavorites();
-        console.log("❤️ Favoris récupérés:", favData);
         setFavorites(favData.data || []);
       } catch (err) {
         console.error("❌ Erreur favoris:", err);
@@ -50,7 +48,7 @@ export default function Profil() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     const authToken = localStorage.getItem("token") || localStorage.getItem("authToken");
@@ -59,7 +57,7 @@ export default function Profil() {
       return;
     }
     loadUserProfile();
-  }, []);
+  }, [navigate, loadUserProfile]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");

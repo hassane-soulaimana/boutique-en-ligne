@@ -4,18 +4,18 @@ import { motion } from 'framer-motion';
 import { animeApi } from '../services/animeApi';
 import { getImageUrl, handleImageError } from '../services/imageLoader';
 
+// Données de fallback pour les collections (constante, ne dépend d'aucun state)
+const defaultCollections = {
+  'dragon-ball': { nom: 'Dragon Ball', description: 'Collection exclusive Dragon Ball', couleur: '#F7A800' },
+  'naruto': { nom: 'Naruto', description: 'Collection exclusive Naruto avec designs authentiques', couleur: '#FF6B35' },
+  'demon-slayer': { nom: 'Demon Slayer', description: 'Les samouraïs et démons de Demon Slayer', couleur: '#D92E3D' },
+  'one-piece': { nom: 'One Piece', description: "L'univers pirate de One Piece", couleur: '#001F3F' },
+};
+
 export default function CollectionDetail() {
   const { univers: universId } = useParams();
   const navigate = useNavigate();
 
-  // Données de fallback pour les collections
-  const defaultCollections = {
-    'dragon-ball': { nom: 'Dragon Ball', description: 'Collection exclusive Dragon Ball', couleur: '#F7A800' },
-    'naruto': { nom: 'Naruto', description: 'Collection exclusive Naruto avec designs authentiques', couleur: '#FF6B35' },
-    'demon-slayer': { nom: 'Demon Slayer', description: 'Les samouraïs et démons de Demon Slayer', couleur: '#D92E3D' },
-    'one-piece': { nom: 'One Piece', description: "L'univers pirate de One Piece", couleur: '#001F3F' },
-  };
-  
   // Fonction pour obtenir le nom d'univers à partir du slug
   const getUniversName = (slug) => {
     const mapping = {
@@ -84,7 +84,7 @@ export default function CollectionDetail() {
         
         setProduits(mapped);
         setError(null);
-      } catch (err) {
+      } catch {
         setError('Impossible de charger les produits');
       } finally {
         setLoading(false);

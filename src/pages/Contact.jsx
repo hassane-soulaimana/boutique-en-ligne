@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import mapboxgl from "mapbox-gl";
+import API_URL from "../services/api";
 
 // Configuration du token Mapbox via variable d'environnement
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
@@ -29,8 +30,7 @@ export default function Contact() {
             )
           )
           .addTo(map.current);
-      } catch (err) {
-        console.log("Mapbox not available, using fallback map");
+      } catch {
         // Fallback vers OpenStreetMap si Mapbox n'est pas disponible
         initFallbackMap();
       }
@@ -127,14 +127,15 @@ export default function Contact() {
                   };
 
                   try {
-                    await fetch("/api/contact", {
+                    const response = await fetch(`${API_URL}/api/contact`, {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify(formData),
                     });
+                    if (!response.ok) throw new Error("Échec de l'envoi");
                     alert("Message envoyé avec succès !");
                     e.target.reset();
-                  } catch (err) {
+                  } catch {
                     alert("Erreur lors de l'envoi du message");
                   }
                 }}

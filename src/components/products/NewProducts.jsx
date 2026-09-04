@@ -29,7 +29,7 @@ export default function NewProducts() {
       } else {
         setProducts([]);
       }
-    } catch (error) {
+    } catch {
       setError('Impossible de charger les produits. Veuillez réessayer plus tard.');
       setProducts([]);
     } finally {

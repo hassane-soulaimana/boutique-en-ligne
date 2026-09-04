@@ -23,7 +23,11 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // '^[A-Z_]' ignore les composants React (PascalCase) utilisés seulement en JSX.
+      // 'motion' est ajouté car ESLint ne détecte pas l'usage de <motion.div> (JSX en
+      // notation objet.propriété) : sans ça, tous les fichiers qui animent avec
+      // framer-motion sont signalés à tort comme import inutilisé.
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]|^motion$' }],
     },
   },
 ])

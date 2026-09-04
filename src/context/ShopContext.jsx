@@ -86,10 +86,10 @@ export const ShopProvider = ({ children }) => {
   // Auto load
   useEffect(() => {
     if (getToken()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- chargement volontaire au montage
       fetchCart();
       fetchFavorites();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addItem = async (product) => {

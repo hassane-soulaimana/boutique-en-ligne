@@ -3,20 +3,15 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 
 export default function ConfirmationCommande() {
-  const [orderInfo, setOrderInfo] = useState({
-    orderNumber: "",
-    total: 0,
-    email: "",
+  // Récupérer les infos de la dernière commande (lues une seule fois, à l'initialisation)
+  const [orderInfo] = useState(() => {
+    const lastOrder = sessionStorage.getItem("lastOrder");
+    return lastOrder ? JSON.parse(lastOrder) : { orderNumber: "", total: 0, email: "" };
   });
 
+  // Nettoyer après lecture
   useEffect(() => {
-    // Récupérer les infos de la dernière commande
-    const lastOrder = sessionStorage.getItem("lastOrder");
-    if (lastOrder) {
-      setOrderInfo(JSON.parse(lastOrder));
-      // Nettoyer après lecture
-      sessionStorage.removeItem("lastOrder");
-    }
+    sessionStorage.removeItem("lastOrder");
   }, []);
 
   return (

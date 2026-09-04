@@ -39,7 +39,7 @@ export default function Accessoires() {
       
       setAccessoires(mapped);
       setError(null);
-    } catch (err) {
+    } catch {
       setError('Impossible de charger les accessoires');
     } finally {
       setLoading(false);

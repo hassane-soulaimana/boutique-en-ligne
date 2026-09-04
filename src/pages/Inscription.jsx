@@ -5,14 +5,8 @@ import inscriptionImg from "../assets/inscription.png";
 import { animeApi } from "../services/animeApi";
 
 
-const register = async (nom, prenom, email, password, confirmPassword) => {
-  try {
-    const payload = await animeApi.register({ nom, prenom, email, password, confirmPassword });
-    return payload;
-  } catch (error) {
-    throw error;
-  }
-};
+const register = (nom, prenom, email, password, confirmPassword) =>
+  animeApi.register({ nom, prenom, email, password, confirmPassword });
 
 export default function Inscription() {
   const navigate = useNavigate();

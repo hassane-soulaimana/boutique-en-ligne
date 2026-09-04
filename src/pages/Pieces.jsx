@@ -43,7 +43,7 @@ export default function Pieces() {
       
       setPieces(mapped);
       setError(null);
-    } catch (err) {
+    } catch {
       setError('Impossible de charger les pièces');
     } finally {
       setLoading(false);

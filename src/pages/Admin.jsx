@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { animeApi } from '../services/animeApi';
 import { Button } from '../components/admin/AdminUI';
 import { LoginPage } from '../components/admin/LoginPage';
@@ -46,18 +46,12 @@ export default function Admin() {
     checkAdminAuth();
   }, []);
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchAll();
-    }
-  }, [isLoggedIn]);
-
-  const showToast = (text) => {
+  const showToast = useCallback((text) => {
     setToast(text);
     setTimeout(() => setToast(''), 3000);
-  };
+  }, []);
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
       const [products, orders, users, collections, categories] = await Promise.all([
@@ -81,7 +75,13 @@ export default function Admin() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchAll();
+    }
+  }, [isLoggedIn, fetchAll]);
 
   const handleLogin = async (email, password) => {
     setLoginError('');

@@ -29,7 +29,7 @@ export default function ProductDetail() {
           setProduit(data);
           setError(null);
         }
-      } catch (err) {
+      } catch {
         setError('Erreur lors du chargement du produit');
         setProduit(null);
       } finally {

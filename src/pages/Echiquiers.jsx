@@ -43,7 +43,7 @@ export default function Echiquiers() {
       
       setEchiquiers(mapped);
       setError(null);
-    } catch (err) {
+    } catch {
       setError('Impossible de charger les échiquiers');
     } finally {
       setLoading(false);

@@ -29,18 +29,6 @@ export default function useProductFilter(products, options = {}) {
     return ["Toutes", ...unique];
   }, [products]);
 
-  // Filtrer par prix
-  const filterByPrice = (product) => {
-    const prix = product.prix;
-    switch (filtrePrix) {
-      case "0-100": return prix < 100;
-      case "100-200": return prix >= 100 && prix < 200;
-      case "200-500": return prix >= 200 && prix < 500;
-      case "500+": return prix >= 500;
-      default: return true;
-    }
-  };
-
   // Produits filtrés et triés
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -51,7 +39,16 @@ export default function useProductFilter(products, options = {}) {
     }
 
     // Filtre par prix
-    result = result.filter(filterByPrice);
+    result = result.filter((product) => {
+      const prix = product.prix;
+      switch (filtrePrix) {
+        case "0-100": return prix < 100;
+        case "100-200": return prix >= 100 && prix < 200;
+        case "200-500": return prix >= 200 && prix < 500;
+        case "500+": return prix >= 500;
+        default: return true;
+      }
+    });
 
     // Tri
     switch (tri) {
