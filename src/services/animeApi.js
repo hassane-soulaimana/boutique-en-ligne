@@ -1,30 +1,31 @@
-// Service pour l'API Anime Chess
 import API_URL from "./api";
 const API_BASE_URL = `${API_URL}/api`;
 
-// Vérifie qu'on est en environnement navigateur
 const isBrowser = typeof window !== 'undefined' && !!window.localStorage;
 
-// Wrappers sûrs pour localStorage (protège SSR / environnements non-navigateur)
+// Stockage Local
+// Accès à localStorage protégés
 const safeGetItem = (key) => {
   if (!isBrowser) return null;
-  try { return window.localStorage.getItem(key); } catch (e) { return null; }
+  try { return window.localStorage.getItem(key); } catch { return null; }
 };
 
 const safeSetItem = (key, value) => {
   if (!isBrowser) return;
-  try { window.localStorage.setItem(key, value); } catch (e) { /* ignore */ }
+  try { window.localStorage.setItem(key, value); } catch { /* ignore */ }
 };
 
 const safeRemoveItem = (key) => {
   if (!isBrowser) return;
-  try { window.localStorage.removeItem(key); } catch (e) { /* ignore */ }
+  try { window.localStorage.removeItem(key); } catch { /* ignore */ }
 };
 
-// ============ HELPERS ============
+// Helpers
 
+// Token JWT stocké après connexion
 const getStoredToken = () => safeGetItem('token');
 
+// Construit les headers : JSON par défaut + Authorization si la route est protégée
 const buildHeaders = ({ auth = false, isJson = true, extra = {} } = {}) => {
   const headers = { ...extra };
 
@@ -43,6 +44,7 @@ const buildHeaders = ({ auth = false, isJson = true, extra = {} } = {}) => {
   return headers;
 };
 
+// Fetch centralisé : URL de base, timeout, parsing JSON et gestion d'erreur
 const request = async (path, { method = 'GET', body, auth = false, isFormData = false, headers = {}, timeout = 15000 } = {}) => {
   const config = {
     method,
@@ -53,7 +55,7 @@ const request = async (path, { method = 'GET', body, auth = false, isFormData = 
     config.body = isFormData ? body : JSON.stringify(body);
   }
 
-  // AbortController pour timeout de requête
+  // Coupe la requête si elle dépasse le délai
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
   config.signal = controller.signal;
@@ -82,15 +84,13 @@ const request = async (path, { method = 'GET', body, auth = false, isFormData = 
   return data;
 };
 
-// Fonction utilitaire pour transformer les URLs d'images
+// Complète les URLs d'images relatives avec le domaine de l'API
 const normalizeImageUrl = (image) => {
   if (!image) return null;
   return image.startsWith('http') ? image : `${API_URL}${image}`;
 };
 
-// Fonction pour transformer un produit
-// Le backend "populate" category/universe en objets { _id, name } : on les
-// ramène à un simple nom de chaîne pour que le reste du front (filtres, affichage) reste simple.
+// Ramène category/universe (objets peuplés par le backend) à un simple nom
 const transformProduct = (product) => ({
   ...product,
   image: normalizeImageUrl(product.image),
@@ -98,6 +98,7 @@ const transformProduct = (product) => ({
   universe: product.universe?.name || product.universe,
 });
 
+// Déballe la réponse backend : { data } ou { result }, sinon la réponse telle quelle
 const unwrapData = (response) => {
   if (!response) return response;
   if (response.data !== undefined) return response.data;
@@ -109,8 +110,9 @@ const unwrapData = (response) => {
 
 export const animeApi = {
 
-  // ============ AUTH ============
-  // POST /api/auth/register
+  // AUTHENTIFICATION
+
+  // Inscription
   async register(userData) {
     try {
       const data = await request('/auth/register', {
@@ -118,7 +120,7 @@ export const animeApi = {
         body: userData
       });
 
-      // Le backend renvoie { token, data: user } ; on tolère aussi l'ancien { data: { user, token } }
+      // Le backend renvoie { token, data: user }
       const responseData = unwrapData(data) || data;
       const token = data?.token || responseData?.token;
       const user = responseData?.user || responseData;
@@ -137,7 +139,7 @@ export const animeApi = {
     }
   },
 
-  // POST /api/auth/login
+  // Connexion : stocke token + user
   async login(credentials) {
     try {
       const data = await request('/auth/login', {
@@ -145,7 +147,7 @@ export const animeApi = {
         body: credentials
       });
 
-      // Le backend renvoie { token, data: user } ; on tolère aussi l'ancien { data: { user, token } }
+      // Le backend renvoie { token, data: user }
       const responseData = unwrapData(data) || data;
       const token = data?.token || responseData?.token;
       const user = responseData?.user || responseData;
@@ -164,7 +166,7 @@ export const animeApi = {
     }
   },
 
-  // GET /api/auth/profile (auth)
+  // Profil de l'utilisateur connecté
   async getMe() {
     try {
       const data = await request('/auth/profile', { auth: true });
@@ -179,7 +181,7 @@ export const animeApi = {
     }
   },
 
-  // PUT /api/auth/profile (auth)
+  // Met à jour le profil
   async updateProfile(profileData) {
     try {
       const data = await request('/auth/profile', {
@@ -198,22 +200,7 @@ export const animeApi = {
     }
   },
 
-  // PUT /api/auth/password (auth)
-  async updatePassword(passwordData) {
-    try {
-      const data = await request('/auth/password', {
-        method: 'PUT',
-        body: passwordData,
-        auth: true
-      });
-      return { success: true, data: unwrapData(data) };
-    } catch (error) {
-      console.error("Erreur updatePassword:", error);
-      throw error;
-    }
-  },
-
-  // PUT /api/auth/role/:id (admin) — changer le rôle d'un utilisateur
+  // Change le rôle d'un utilisateur (Admin)
   async updateUserRole(userId, role) {
     try {
       const data = await request(`/auth/role/${userId}`, {
@@ -228,14 +215,15 @@ export const animeApi = {
     }
   },
 
-  // Déconnexion (local)
+  // Déconnexion
   logout() {
     safeRemoveItem('token');
     safeRemoveItem('user');
   },
 
-  // ============ PRODUITS ============
-  // GET /api/products — liste avec filtres/tri/pagination
+  // PRODUITS
+
+  // Liste des produits (filtres, tri et pagination via params)
   async getProducts(params = {}) {
     try {
       const queryString = new URLSearchParams(params).toString();
@@ -249,7 +237,7 @@ export const animeApi = {
     }
   },
 
-  // GET /api/products/featured — produits mis en avant
+  // Produits mis en avant (page d'accueil)
   async getFeaturedProducts() {
     try {
       const data = await request('/products/featured');
@@ -261,7 +249,7 @@ export const animeApi = {
     }
   },
 
-  // GET /api/products/:id
+  // Un produit par son id
   async getProductById(id) {
     try {
       const data = await request(`/products/${id}`);
@@ -273,17 +261,9 @@ export const animeApi = {
     }
   },
 
-  // Raccourcis pour filtres
-  async getProductsByCategory(category) {
-    return this.getProducts({ category });
-  },
+  // CATEGORIES & UNIVERS
 
-  async getProductsByUniverse(universe) {
-    return this.getProducts({ universe });
-  },
-
-  // ============ CATÉGORIES ============
-  // GET /api/categories
+  // Liste des catégories
   async getCategories() {
     try {
       const data = await request('/categories');
@@ -294,60 +274,8 @@ export const animeApi = {
     }
   },
 
-  // GET /api/categories/:id
-  async getCategoryById(id) {
-    try {
-      const data = await request(`/categories/${id}`);
-      return unwrapData(data);
-    } catch (error) {
-      console.error("Erreur getCategoryById:", error);
-      return null;
-    }
-  },
 
-  // GET /api/categories/:id/products
-  async getCategoryProducts(categoryId) {
-    try {
-      const data = await request(`/categories/${categoryId}/products`);
-      const products = unwrapData(data) || [];
-      return Array.isArray(products) ? products.map(transformProduct) : [];
-    } catch (error) {
-      console.error("Erreur getCategoryProducts:", error);
-      return [];
-    }
-  },
-
-  // POST /api/categories (admin)
-  async createCategory(categoryData) {
-    const data = await request('/categories', {
-      method: 'POST',
-      body: categoryData,
-      auth: true
-    });
-    return unwrapData(data);
-  },
-
-  // PUT /api/categories/:id (admin)
-  async updateCategory(id, categoryData) {
-    const data = await request(`/categories/${id}`, {
-      method: 'PUT',
-      body: categoryData,
-      auth: true
-    });
-    return unwrapData(data);
-  },
-
-  // DELETE /api/categories/:id (admin)
-  async deleteCategory(id) {
-    const data = await request(`/categories/${id}`, {
-      method: 'DELETE',
-      auth: true
-    });
-    return unwrapData(data);
-  },
-
-  // ============ UNIVERS ============
-  // GET /api/universes
+  // Liste des univers
   async getUniverses() {
     try {
       const data = await request('/universes');
@@ -359,65 +287,14 @@ export const animeApi = {
     }
   },
 
-  // GET /api/universes/:id
-  async getUniverseById(id) {
-    try {
-      const data = await request(`/universes/${id}`);
-      return unwrapData(data);
-    } catch (error) {
-      console.error("Erreur getUniverseById:", error);
-      return null;
-    }
-  },
-
-  // GET /api/universes/:id/products
-  async getUniverseProducts(universeId) {
-    try {
-      const data = await request(`/universes/${universeId}/products`);
-      const products = unwrapData(data) || [];
-      return Array.isArray(products) ? products.map(transformProduct) : [];
-    } catch (error) {
-      console.error("Erreur getUniverseProducts:", error);
-      return [];
-    }
-  },
-
-  // POST /api/universes (admin)
-  async createUniverse(universeData) {
-    const data = await request('/universes', {
-      method: 'POST',
-      body: universeData,
-      auth: true
-    });
-    return unwrapData(data);
-  },
-
-  // PUT /api/universes/:id (admin)
-  async updateUniverse(id, universeData) {
-    const data = await request(`/universes/${id}`, {
-      method: 'PUT',
-      body: universeData,
-      auth: true
-    });
-    return unwrapData(data);
-  },
-
-  // DELETE /api/universes/:id (admin)
-  async deleteUniverse(id) {
-    const data = await request(`/universes/${id}`, {
-      method: 'DELETE',
-      auth: true
-    });
-    return unwrapData(data);
-  },
-
-  // Alias pour compatibilité
+  // Alias de getUniverses
   async getCollections() {
     return this.getUniverses();
   },
 
-  // ============ PANIER (AUTH) ============
-  // GET /api/cart (auth)
+  // PANIER (AUTH)
+
+  // Récupère le panier
   async getCart() {
     try {
       const data = await request('/cart', { auth: true });
@@ -428,7 +305,7 @@ export const animeApi = {
     }
   },
 
-  // POST /api/cart/:productId (auth) — ajouter
+  // Ajoute un produit au panier
   async addToCart(productId, quantity = 1) {
     const data = await request(`/cart/${productId}`, {
       method: 'POST',
@@ -438,7 +315,7 @@ export const animeApi = {
     return unwrapData(data);
   },
 
-  // PUT /api/cart/:productId (auth) — mettre à jour quantité
+  // Modifie la quantité d'un produit du panier
   async updateCartItem(productId, quantity) {
     const data = await request(`/cart/${productId}`, {
       method: 'PUT',
@@ -448,7 +325,7 @@ export const animeApi = {
     return unwrapData(data);
   },
 
-  // DELETE /api/cart/:productId (auth) — retirer un item
+  // Retire un produit du panier
   async removeFromCart(productId) {
     const data = await request(`/cart/${productId}`, {
       method: 'DELETE',
@@ -457,7 +334,7 @@ export const animeApi = {
     return unwrapData(data);
   },
 
-  // DELETE /api/cart (auth) — vider le panier
+  // Vide le panier
   async clearCart() {
     const data = await request('/cart', {
       method: 'DELETE',
@@ -466,8 +343,9 @@ export const animeApi = {
     return unwrapData(data);
   },
 
-  // ============ COMMANDES ============
-  // POST /api/orders (auth) — créer la commande depuis le panier
+  // COMMANDE
+
+  // Crée une commande à partir du panier
   async createOrder(orderData = {}) {
     const data = await request('/orders', {
       method: 'POST',
@@ -477,7 +355,7 @@ export const animeApi = {
     return unwrapData(data);
   },
 
-  // GET /api/orders (auth) — mes commandes
+  // Mes commandes
   async getOrders() {
     try {
       const data = await request('/orders', { auth: true });
@@ -489,18 +367,7 @@ export const animeApi = {
     }
   },
 
-  // GET /api/orders/:id (auth) — détail
-  async getOrderById(id) {
-    try {
-      const data = await request(`/orders/${id}`, { auth: true });
-      return unwrapData(data);
-    } catch (error) {
-      console.error("Erreur getOrderById:", error);
-      return null;
-    }
-  },
-
-  // GET /api/orders/admin/all (admin)
+  // Toutes les commandes
   async getAllOrders() {
     try {
       const data = await request('/orders/admin/all', { auth: true });
@@ -512,22 +379,11 @@ export const animeApi = {
     }
   },
 
-  // GET /api/orders/admin/stats (admin)
-  async getOrderStats() {
-    try {
-      const data = await request('/orders/admin/stats', { auth: true });
-      return unwrapData(data);
-    } catch (error) {
-      console.error("Erreur getOrderStats:", error);
-      return null;
-    }
-  },
-
-  // PATCH /api/orders/admin/:id/status (admin) — changer statut + tracking
+  // Change le statut et le n° de suivi d'une commande
   async updateOrderStatus(orderId, status, trackingNumber = null) {
     const body = { status };
     if (trackingNumber) body.trackingNumber = trackingNumber;
-    
+
     const data = await request(`/orders/admin/${orderId}/status`, {
       method: 'PATCH',
       body,
@@ -536,8 +392,8 @@ export const animeApi = {
     return unwrapData(data);
   },
 
-  // ============ FAVORIS (AUTH) ============
-  // GET /api/favorites (auth)
+  // FAVORIS 
+
   async getFavorites() {
     try {
       const data = await request('/favorites', { auth: true });
@@ -557,7 +413,7 @@ export const animeApi = {
     }
   },
 
-  // POST /api/favorites/:productId (auth)
+  // Ajoute un produit aux favoris
   async addFavorite(productId) {
     const data = await request(`/favorites/${productId}`, {
       method: 'POST',
@@ -566,7 +422,7 @@ export const animeApi = {
     return unwrapData(data);
   },
 
-  // DELETE /api/favorites/:productId (auth)
+  // Retire un produit des favoris
   async removeFavorite(productId) {
     const data = await request(`/favorites/${productId}`, {
       method: 'DELETE',
@@ -575,28 +431,9 @@ export const animeApi = {
     return unwrapData(data);
   },
 
-  // GET /api/favorites/check/:productId (auth)
-  async checkFavorite(productId) {
-    try {
-      const data = await request(`/favorites/check/${productId}`, { auth: true });
-      return unwrapData(data);
-    } catch (error) {
-      console.error("Erreur checkFavorite:", error);
-      return { isFavorite: false };
-    }
-  },
+  // ADMIN - UPLOAD 
 
-  // PUT /api/favorites/toggle/:productId (auth)
-  async toggleFavorite(productId) {
-    const data = await request(`/favorites/toggle/${productId}`, {
-      method: 'PUT',
-      auth: true
-    });
-    return unwrapData(data);
-  },
-
-  // ============ UPLOAD (ADMIN) ============
-  // POST /api/upload (admin) — upload d'une image
+  // Envoie une image au serveur et renvoie son URL
   async uploadImage(file) {
     const formData = new FormData();
     formData.append('image', file);
@@ -607,16 +444,18 @@ export const animeApi = {
       isFormData: true,
       auth: true
     });
-    
+
     const result = unwrapData(data) || data;
-    // Normaliser l'URL de l'image retournée
+    // URL absolue pour l'image renvoyée
     if (result.url) {
       result.url = normalizeImageUrl(result.url);
     }
     return result;
   },
 
-  // ============ ADMIN - UTILISATEURS ============
+  // ADMIN - Utilisateurs 
+
+  //Liste des utilisateurs
   async getAllUsers() {
     try {
       const data = await request('/users', { auth: true });
@@ -628,6 +467,7 @@ export const animeApi = {
     }
   },
 
+  // Supprime un utilisateur
   async deleteUser(userId) {
     const data = await request(`/users/${userId}`, {
       method: 'DELETE',
@@ -636,7 +476,9 @@ export const animeApi = {
     return unwrapData(data);
   },
 
-  // ============ ADMIN - PRODUITS (si activés) ============
+  // ADMIN PRODUITS
+
+  // Crée un produit
   async createProduct(productData) {
     const data = await request('/products', {
       method: 'POST',
@@ -646,6 +488,7 @@ export const animeApi = {
     return unwrapData(data);
   },
 
+  // Modifie un produit
   async updateProduct(id, productData) {
     const data = await request(`/products/${id}`, {
       method: 'PUT',
@@ -655,22 +498,13 @@ export const animeApi = {
     return unwrapData(data);
   },
 
+  // Supprime un produit
   async deleteProduct(id) {
     const data = await request(`/products/${id}`, {
       method: 'DELETE',
       auth: true
     });
     return unwrapData(data);
-  },
-
-  // ============ STATS (ADMIN) ============
-  async getStats() {
-    try {
-      return await this.getOrderStats();
-    } catch (error) {
-      console.error("Erreur getStats:", error);
-      return null;
-    }
   }
 };
 
