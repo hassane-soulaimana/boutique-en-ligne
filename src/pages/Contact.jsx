@@ -1,51 +1,16 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import mapboxgl from "mapbox-gl";
 import API_URL from "../services/api";
-
-// Configuration du token Mapbox via variable d'environnement
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
 export default function Contact() {
   const mapContainer = useRef(null);
   const map = useRef(null);
 
   useEffect(() => {
-    if (mapContainer.current && !map.current) {
-      try {
-        // Utiliser Mapbox avec le style light
-        map.current = new mapboxgl.Map({
-          container: mapContainer.current,
-          style: "mapbox://styles/mapbox/light-v11",
-          center: [2.3522, 48.8566],
-          zoom: 13,
-        });
+    if (!mapContainer.current || map.current) return;
 
-        // Ajouter un marqueur
-        new mapboxgl.Marker({ color: "#D97706" })
-          .setLngLat([2.3522, 48.8566])
-          .setPopup(
-            new mapboxgl.Popup().setHTML(
-              "<strong>Atelier Boutique en ligne</strong><br />12 rue des Artisans, 75000 Paris"
-            )
-          )
-          .addTo(map.current);
-      } catch {
-        // Fallback vers OpenStreetMap si Mapbox n'est pas disponible
-        initFallbackMap();
-      }
-    }
-
-    return () => {
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
-      }
-    };
-  }, []);
-
-  const initFallbackMap = () => {
     import("leaflet").then((L) => {
+      if (map.current) return;
       map.current = L.map(mapContainer.current).setView([48.8566, 2.3522], 13);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -57,7 +22,14 @@ export default function Contact() {
         .addTo(map.current)
         .bindPopup("Atelier Boutique en ligne<br />12 rue des Artisans, Paris");
     });
-  };
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, []);
 
   return (
     <main className="min-h-screen bg-white">

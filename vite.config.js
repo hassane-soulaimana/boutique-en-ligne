@@ -11,14 +11,4 @@ export default defineConfig({
     }),
   ],
   base: './',
-  // server: {
-  //   proxy: {
-  //     '/api': {
-  //       target: 'https://apianime.alwaysdata.net',
-  //       changeOrigin: true,
-  //       secure: false,
-  //       rewrite: (path) => path.replace(/^\/api/, ''),
-  //     }
-  //   }
-  // }
 })
