@@ -118,9 +118,10 @@ export const animeApi = {
         body: userData
       });
 
+      // Le backend renvoie { token, data: user } ; on tolère aussi l'ancien { data: { user, token } }
       const responseData = unwrapData(data) || data;
-      const token = responseData?.token || data?.token;
-      const user = responseData?.user || data?.user;
+      const token = data?.token || responseData?.token;
+      const user = responseData?.user || responseData;
 
       if (token) {
         safeSetItem('token', token);
@@ -129,7 +130,7 @@ export const animeApi = {
         safeSetItem('user', JSON.stringify(user));
       }
 
-      return { success: true, data: responseData };
+      return { success: true, data: user };
     } catch (error) {
       console.error("Erreur inscription:", error);
       return { success: false, message: error.message };
@@ -144,9 +145,10 @@ export const animeApi = {
         body: credentials
       });
 
+      // Le backend renvoie { token, data: user } ; on tolère aussi l'ancien { data: { user, token } }
       const responseData = unwrapData(data) || data;
-      const token = responseData?.token || data?.token;
-      const user = responseData?.user || data?.user;
+      const token = data?.token || responseData?.token;
+      const user = responseData?.user || responseData;
 
       if (token) {
         safeSetItem('token', token);
@@ -155,7 +157,7 @@ export const animeApi = {
         safeSetItem('user', JSON.stringify(user));
       }
 
-      return { success: true, data: responseData, user, token };
+      return { success: true, data: user, user, token };
     } catch (error) {
       console.error("Erreur connexion:", error);
       throw error;

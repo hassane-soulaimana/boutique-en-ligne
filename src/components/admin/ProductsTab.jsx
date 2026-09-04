@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Input, Select, TextArea, Button } from './AdminUI';
+import { animeApi } from '../../services/animeApi';
 
 export const ProductsTab = ({ products, universes, categories, onSave, onDelete, loading }) => {
   const defaultForm = useMemo(
@@ -18,8 +19,30 @@ export const ProductsTab = ({ products, universes, categories, onSave, onDelete,
 
   const [form, setForm] = useState(defaultForm);
   const [editing, setEditing] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   const updateForm = (field) => (event) => setForm((prev) => ({ ...prev, [field]: event.target.value }));
+
+  // Envoi du fichier image au backend (POST /api/upload) puis récupération de l'URL
+  const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadError('');
+    setUploading(true);
+    try {
+      const result = await animeApi.uploadImage(file);
+      const url = result?.url;
+      if (!url) throw new Error('Réponse invalide du serveur');
+      setForm((prev) => ({ ...prev, image: url }));
+    } catch (error) {
+      setUploadError(error.message || "Échec de l'envoi de l'image");
+    } finally {
+      setUploading(false);
+      event.target.value = ''; // permet de re-sélectionner le même fichier
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -39,6 +62,7 @@ export const ProductsTab = ({ products, universes, categories, onSave, onDelete,
     await onSave(payload, editing);
     setForm(defaultForm);
     setEditing(null);
+    setUploadError('');
   };
 
   const handleEdit = (product) => {
@@ -80,7 +104,31 @@ export const ProductsTab = ({ products, universes, categories, onSave, onDelete,
       >
         <Input label="Nom" value={form.name} onChange={updateForm('name')} required />
         <Input label="Prix (€)" type="number" step="0.01" value={form.price} onChange={updateForm('price')} required />
-        <Input label="Image (URL)" value={form.image} onChange={updateForm('image')} required />
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-slate-600 mb-1">Image du produit</label>
+          <div className="flex flex-wrap items-center gap-3">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              disabled={uploading}
+              className="text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-white hover:file:bg-indigo-500 disabled:opacity-50"
+            />
+            {uploading && <span className="text-xs text-slate-500">Envoi en cours…</span>}
+            {form.image && !uploading && (
+              <img src={form.image} alt="aperçu" className="w-16 h-16 rounded-lg border border-slate-200 object-cover" />
+            )}
+          </div>
+          {uploadError && <p className="mt-1 text-xs text-rose-500">{uploadError}</p>}
+          <input
+            type="text"
+            value={form.image}
+            onChange={updateForm('image')}
+            required
+            placeholder="…ou coller une URL d'image"
+            className="mt-2 w-full px-4 py-2 border border-stone-200 rounded-xl bg-white shadow-sm text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+          />
+        </div>
         <Select label="Univers" value={form.universe} onChange={updateForm('universe')} required>
           <option value="">Choisir...</option>
           {universes.map((u) => (

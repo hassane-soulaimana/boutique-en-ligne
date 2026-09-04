@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShopContext } from "../../context/ShopContext.jsx";
 
 import {
@@ -15,6 +15,7 @@ import {
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
   
   const { getTotalItems, favorites } = useContext(ShopContext);
   const cartCount = getTotalItems();
@@ -63,7 +64,7 @@ export default function Header() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (
